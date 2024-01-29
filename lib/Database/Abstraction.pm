@@ -60,7 +60,7 @@ Look for databases in $directory in this order:
 
 For example, you can access the files in /var/db/foo.csv via this class:
 
-    package MyPackageName::Database::Foo;;
+    package MyPackageName::Database::Foo;
 
     use Database::Abstraction;
 
