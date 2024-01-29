@@ -17,6 +17,7 @@ WriteMakefile(
 	PL_FILES	=> {},
 	TEST_REQUIRES => {
 		'File::Spec' => 0,
+		'Test::Compile' => 0,
 		'Test::Most' => 0
 	}, PREREQ_PM => {
 		'autodie' => 0,
