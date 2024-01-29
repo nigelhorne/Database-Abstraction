@@ -135,6 +135,9 @@ sub new {
 		return;
 	} elsif($class eq __PACKAGE__) {
 		croak("$class: abstract class");
+	} elsif(ref($class)) {
+		# clone the given object
+		return bless { %{$class}, %args }, ref($class);
 	}
 
 	croak("$class: where are the files?") unless($directory || $args{'directory'});

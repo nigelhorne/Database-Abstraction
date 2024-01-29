@@ -1,7 +1,6 @@
 use strict;
 use warnings;
 use ExtUtils::MakeMaker 6.64;	# 6.64 for TEST_REQUIRES
-use File::Spec 3.4;
 
 WriteMakefile(
 	NAME		=> 'Database::Abstraction',
@@ -17,11 +16,19 @@ WriteMakefile(
 	'INC' => '',	# e.g., '-I/usr/include/other'
 	PL_FILES	=> {},
 	TEST_REQUIRES => {
-		'Test::Most' => 0,
+		'File::Spec' => 0,
+		'Test::Most' => 0
 	}, PREREQ_PM => {
 		'autodie' => 0,
 		'strict' => 0,
 		'warnings' => 0,
+		'DBD::SQLite::Constants' => 0,
+		'File::Basename' => 0,
+		'File::Spec' => 0,
+		'File::pfopen' => 0.02,
+		'File::Temp' => 0,
+		'Error::Simple' => 0,
+		'Carp' => 0
 	},
 	dist		=> { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
 	clean		=> { FILES => 'Database-Abstraction-*' },
