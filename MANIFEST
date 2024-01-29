@@ -8,6 +8,9 @@ README.md
 t/00-load.t
 t/10-compile.t
 t/20-new.t
+t/comment-spelling.t
 t/lib/Database/Abstraction/Test.pm
 t/pod-cm.t
 t/pod-coverage.t
+t/pod-spelling.t
+t/pod-synopsis.t
