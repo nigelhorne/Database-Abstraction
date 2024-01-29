@@ -1,0 +1,8 @@
+lib/Database/Abstraction.pm
+lib/Database/Abstraction/Error.pm
+LICENSE
+Makefile.PL
+MANIFEST			This list of files
+README.md
+t/00-load.t
+t/10-compile.t
