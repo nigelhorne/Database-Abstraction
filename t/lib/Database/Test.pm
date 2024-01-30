@@ -1,4 +1,4 @@
-package Database::Abstraction::Test;
+package Database::Test;
 
 use strict;
 use warnings;

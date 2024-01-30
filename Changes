@@ -1,4 +1,7 @@
 Revision history for Database-Abstraction
 
+0.02
+	Simpler package name used for testing
+
 0.01    Mon Jan 29 14:02:37 EST 2024
         First draft
