@@ -28,7 +28,7 @@ WriteMakefile(
 		'File::Spec' => 0,
 		'File::pfopen' => 0.02,
 		'File::Temp' => 0,
-		'Error::Simple' => 0,
+		'Error' => 0,
 		'Carp' => 0
 	},
 	dist		=> { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },

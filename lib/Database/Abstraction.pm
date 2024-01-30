@@ -33,7 +33,7 @@ use File::Spec;
 use File::pfopen 0.02;
 use File::Temp;
 use Error::Simple;
-use Database::Abstraction::Error;
+# use Database::Abstraction::Error;
 use Carp;
 
 our $directory;
@@ -357,7 +357,8 @@ sub _open {
 				}
 				$dbh->func($table, 'XML', $slurp_file, 'xmlsimple_import');
 			} else {
-				throw Database::Abstraction::Error(-file => "$dir/$table");
+				# throw Database::Abstraction::Error(-file => "$dir/$table");
+				throw Error(-file => "$dir/$table");
 			}
 			$self->{'type'} = 'XML';
 		}
