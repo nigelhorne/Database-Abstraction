@@ -143,6 +143,8 @@ sub new {
 	}
 
 	croak("$class: where are the files?") unless($directory || $args{'directory'});
+
+	croak("$class: $directory is not a directory") unless(-d ($directory || $args{'directory'}));
 	# init(\%args);
 
 	return bless {
