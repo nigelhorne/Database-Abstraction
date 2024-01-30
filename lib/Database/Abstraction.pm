@@ -75,7 +75,8 @@ You can then access the data using:
     my $row = $foo->fetchrow_hashref(customer_id => 'xyzzy');
     print Data::Dumper->new([$row])->Dump();
 
-CSV files can have empty lines of comment lines starting with '#', to make them more readable
+CSV files can have empty lines or comment lines starting with '#',
+to make them more readable.
 
 If the table has a column called "entry", sorts are based on that
 To turn that off, pass 'no_entry' to the constructor, for legacy
