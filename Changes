@@ -1,6 +1,6 @@
 Revision history for Database-Abstraction
 
-0.02
+0.02	Tue 30 Jan 11:07:12 EST 2024
 	Simpler package name used for testing
 	Fix the Error objection being thrown
 
