@@ -43,11 +43,11 @@ our $cache_duration;
 
 =head1 VERSION
 
-Version 0.01
+Version 0.02
 
 =cut
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 =head1 SYNOPSIS
 
@@ -355,7 +355,7 @@ sub _open {
 				}
 				$dbh->func($table, 'XML', $slurp_file, 'xmlsimple_import');
 			} else {
-				throw Error::Database(-file => "$dir/$table");
+				throw Database::Abstraction::Error(-file => "$dir/$table");
 			}
 			$self->{'type'} = 'XML';
 		}
