@@ -357,8 +357,8 @@ sub _open {
 				}
 				$dbh->func($table, 'XML', $slurp_file, 'xmlsimple_import');
 			} else {
-				# throw Database::Abstraction::Error(-file => "$dir/$table");
-				throw Error(-file => "$dir/$table");
+				# throw Error(-file => "$dir/$table");
+				croak("Can't file a $table database in $dir");
 			}
 			$self->{'type'} = 'XML';
 		}
