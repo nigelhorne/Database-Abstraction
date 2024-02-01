@@ -32,7 +32,7 @@ use File::Basename;
 use File::Spec;
 use File::pfopen 0.02;
 use File::Temp;
-use Error::Simple;
+# use Error::Simple;	# A nice idea to use this but it doesn't play well with "use lib"
 # use Database::Abstraction::Error;
 use Carp;
 
@@ -427,12 +427,15 @@ sub selectall_hash {
 			if($self->{'logger'}) {
 				$self->{'logger'}->fatal("selectall_hash $query: argument is not a string");
 			}
-			throw Error::Simple("$query: argument is not a string: " . ref($arg));
+			# throw Error::Simple("$query: argument is not a string: " . ref($arg));
+			croak("$query: argument is not a string: ", ref($arg));
 		}
 		if(!defined($arg)) {
 			my @call_details = caller(0);
-			throw Error::Simple("$query: value for $c1 is not defined in call from " .
-				$call_details[2] . ' of ' . $call_details[1]);
+			# throw Error::Simple("$query: value for $c1 is not defined in call from " .
+				# $call_details[2] . ' of ' . $call_details[1]);
+			croak("$query: value for $c1 is not defined in call from ",
+				$call_details[2], ' of ', $call_details[1]);
 		}
 		if($done_where) {
 			if($arg =~ /\@/) {
@@ -489,7 +492,8 @@ sub selectall_hash {
 
 	if(my $sth = $self->{$table}->prepare($query)) {
 		$sth->execute(@query_args) ||
-			throw Error::Simple("$query: @query_args");
+			# throw Error::Simple("$query: @query_args");
+			croak("$query: @query_args");
 
 		my @rc;
 		while(my $href = $sth->fetchrow_hashref()) {
@@ -506,7 +510,8 @@ sub selectall_hash {
 	if($self->{'logger'}) {
 		$self->{'logger'}->warn("selectall_hash failure on $query: @query_args");
 	}
-	throw Error::Simple("$query: @query_args");
+	# throw Error::Simple("$query: @query_args");
+	croak("$query: @query_args");
 }
 
 =head2	fetchrow_hashref
@@ -581,7 +586,8 @@ sub fetchrow_hashref {
 		}
 	}
 	my $sth = $self->{$table}->prepare($query) or die $self->{$table}->errstr();
-	$sth->execute(@query_args) || throw Error::Simple("$query: @query_args");
+	# $sth->execute(@query_args) || throw Error::Simple("$query: @query_args");
+	$sth->execute(@query_args) || croak("$query: @query_args");
 	if($c) {
 		my $rc = $sth->fetchrow_hashref();
 		$c->set($key, $rc, $self->{'cache_duration'});
@@ -622,7 +628,8 @@ sub execute {
 		$self->{'logger'}->debug("execute $query");
 	}
 	my $sth = $self->{$table}->prepare($query);
-	$sth->execute() || throw Error::Simple($query);
+	# $sth->execute() || throw Error::Simple($query);
+	$sth->execute() || croak($query);
 	my @rc;
 	while(my $href = $sth->fetchrow_hashref()) {
 		return $href if(!wantarray);
@@ -751,8 +758,10 @@ sub AUTOLOAD {
 			$self->{'logger'}->debug("AUTOLOAD $query");
 		}
 	}
-	my $sth = $self->{$table}->prepare($query) || throw Error::Simple($query);
-	$sth->execute(@args) || throw Error::Simple($query);
+	# my $sth = $self->{$table}->prepare($query) || throw Error::Simple($query);
+	my $sth = $self->{$table}->prepare($query) || croak($query);
+	# $sth->execute(@args) || throw Error::Simple($query);
+	$sth->execute(@args) || croak($query);
 
 	if(wantarray) {
 		return map { $_->[0] } @{$sth->fetchall_arrayref()};
