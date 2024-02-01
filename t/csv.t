@@ -4,10 +4,10 @@ use strict;
 use FindBin qw($Bin);
 
 use lib 't/lib';
-use Test::Most tests => 4;
+use Test::Most tests => 3;
 
 use_ok('Database::test1');
-use_ok('Database::Abstraction::Error');
+# use_ok('Database::Abstraction::Error');
 
 my $test1 = new_ok('Database::test1' => ["$Bin/../data"]);
 

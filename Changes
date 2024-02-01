@@ -3,7 +3,8 @@ Revision history for Database-Abstraction
 0.03
 	Complain if the directory argument isn't a directory
 	Put the values from init() into a hash
-	Preparing to remove Database::Abstraction::Error - it's an artifact
+	Remove Database::Abstraction::Error - it's an artifact
+		It was a good idea, but Error doesn't play well with 'use lib'
 
 0.02	Tue 30 Jan 11:07:12 EST 2024
 	Simpler package name used for testing

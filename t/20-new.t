@@ -4,10 +4,10 @@ use strict;
 use File::Spec;
 
 use lib 't/lib';
-use Test::Most tests => 5;
+use Test::Most tests => 4;
 
 use_ok('Database::test1');
-use_ok('Database::Abstraction::Error');
+# use_ok('Database::Abstraction::Error');
 
 my $tmpdir = File::Spec->tmpdir();
 
