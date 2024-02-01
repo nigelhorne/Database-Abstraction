@@ -2,7 +2,6 @@ Changes
 data/test1.csv
 data/test2.psv
 lib/Database/Abstraction.pm
-lib/Database/Abstraction/Error.pm
 LICENSE
 Makefile.PL
 MANIFEST			This list of files

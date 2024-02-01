@@ -33,7 +33,6 @@ use File::Spec;
 use File::pfopen 0.02;
 use File::Temp;
 # use Error::Simple;	# A nice idea to use this but it doesn't play well with "use lib"
-# use Database::Abstraction::Error;
 use Carp;
 
 our %defaults;

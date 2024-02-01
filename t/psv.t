@@ -7,7 +7,6 @@ use lib 't/lib';
 use Test::Most tests => 3;
 
 use_ok('Database::test2');
-# use_ok('Database::Abstraction::Error');
 
 my $test2 = new_ok('Database::test2' => [directory => "$Bin/../data"]);
 
