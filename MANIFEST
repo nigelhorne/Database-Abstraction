@@ -1,4 +1,5 @@
 Changes
+data/test.csv
 lib/Database/Abstraction.pm
 lib/Database/Abstraction/Error.pm
 LICENSE
@@ -9,10 +10,11 @@ README.md
 t/00-load.t
 t/10-compile.t
 t/20-new.t
+t/csv.t
 t/comment-spelling.t
 t/eof.t
 t/eol.t
-t/lib/Database/Test.pm
+t/lib/Database/test.pm
 t/pod-cm.t
 t/pod-coverage.t
 t/pod-links.t

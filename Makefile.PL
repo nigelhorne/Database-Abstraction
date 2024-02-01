@@ -16,9 +16,12 @@ WriteMakefile(
 	'INC' => '',	# e.g., '-I/usr/include/other'
 	PL_FILES	=> {},
 	TEST_REQUIRES => {
+		'DBD::CSV' => 0,
 		'File::Spec' => 0,
+		'FindBin' => 0,
 		'Test::Compile' => 0,
-		'Test::Most' => 0
+		'Test::Most' => 0,
+		'Text::xSV::Slurp' => 0
 	}, PREREQ_PM => {
 		'autodie' => 0,
 		'strict' => 0,

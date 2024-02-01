@@ -1,4 +1,4 @@
-package Database::Test;
+package Database::test;
 
 use strict;
 use warnings;

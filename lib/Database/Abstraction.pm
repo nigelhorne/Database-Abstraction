@@ -779,6 +779,11 @@ sub DESTROY {
 
 Nigel Horne, C<< <njh at bandsman.co.uk> >>
 
+=head1 BUGS
+
+The default delimiter for CSV files is set to '!', not ',' for historical reasons.
+I really ought to fix that.
+
 =head1 LICENSE AND COPYRIGHT
 
 Copyright 2015-2024 Nigel Horne.
