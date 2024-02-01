@@ -24,4 +24,5 @@ t/pod-spelling.t
 t/pod-synopsis.t
 t/pod.t
 t/psv.t
+t/two_databases.t
 t/vars.t
