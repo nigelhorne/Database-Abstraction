@@ -4,7 +4,7 @@ Database::Abstraction - database abstraction layer
 
 # VERSION
 
-Version 0.02
+Version 0.03
 
 # SYNOPSIS
 
