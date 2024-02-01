@@ -4,11 +4,10 @@ use strict;
 use FindBin qw($Bin);
 
 use lib 't/lib';
-use Test::Most tests => 7;
+use Test::Most tests => 6;
 
 use_ok('Database::test1');
 use_ok('Database::test2');
-use_ok('Database::Abstraction::Error');
 
 Database::Abstraction::init({ directory => "$Bin/../data" });
 
