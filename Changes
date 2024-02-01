@@ -2,7 +2,8 @@ Revision history for Database-Abstraction
 
 0.03
 	Complain if the directory argument isn't a directory
-	Preparing to remove Database::Abstration::Error - it's an artifact
+	Put the values from init() into a hash
+	Preparing to remove Database::Abstraction::Error - it's an artifact
 
 0.02	Tue 30 Jan 11:07:12 EST 2024
 	Simpler package name used for testing

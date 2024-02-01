@@ -36,10 +36,7 @@ use Error::Simple;
 # use Database::Abstraction::Error;
 use Carp;
 
-our $directory;
-our $logger;
-our $cache;
-our $cache_duration;
+our %defaults;
 
 =head1 VERSION
 
@@ -97,10 +94,11 @@ See the documentation for new() to see what variables can be set
 sub init {
 	my %args = (ref($_[0]) eq 'HASH') ? %{$_[0]} : @_;
 
-	$directory ||= $args{'directory'};
-	$logger ||= $args{'logger'};
-	$cache ||= $args{'cache'};
-	$cache_duration ||= $args{'cache_duration'};
+	# $defaults->{'directory'} ||= $args{'directory'};
+	# $defaults->{'logger'} ||= $args{'logger'};
+	# $defaults->{'cache'} ||= $args{'cache'};
+	# $defaults->{'cache_duration'} ||= $args{'cache_duration'};
+	%defaults = %args;
 }
 
 =head2 new
@@ -142,19 +140,20 @@ sub new {
 		return bless { %{$class}, %args }, ref($class);
 	}
 
-	croak("$class: where are the files?") unless($directory || $args{'directory'});
+	croak("$class: where are the files?") unless($args{'directory'} || $defaults{'directory'});
 
-	croak("$class: $directory is not a directory") unless(-d ($directory || $args{'directory'}));
+	croak("$class: ", $args{'directory'} || $defaults{'directory'}, ' is not a directory') unless(-d ($args{'directory'} || $defaults{'directory'}));
 	# init(\%args);
 
-	return bless {
-		logger => $args{'logger'} || $logger,
-		directory => $args{'directory'} || $directory,	# The directory containing the tables in XML, SQLite or CSV format
-		cache => $args{'cache'} || $cache,
-		cache_duration => $args{'cache_duration'} || $cache_duration || '1 hour',
-		table => $args{'table'},	# The name of the file containing the table, defaults to the class name
-		no_entry => $args{'no_entry'} || 0,
-	}, $class;
+	# return bless {
+		# logger => $args{'logger'} || $logger,
+		# directory => $args{'directory'} || $directory,	# The directory containing the tables in XML, SQLite or CSV format
+		# cache => $args{'cache'} || $cache,
+		# cache_duration => $args{'cache_duration'} || $cache_duration || '1 hour',
+		# table => $args{'table'},	# The name of the file containing the table, defaults to the class name
+		# no_entry => $args{'no_entry'} || 0,
+	# }, $class;
+	return bless { %args, %defaults, no_entry => 0 }, $class;
 }
 
 =head2	set_logger
@@ -206,7 +205,7 @@ sub _open {
 	# Read in the database
 	my $dbh;
 
-	my $dir = $self->{'directory'} || $directory;
+	my $dir = $self->{'directory'} || $defaults{'directory'};
 	my $slurp_file = File::Spec->catfile($dir, "$table.sql");
 	if($self->{'logger'}) {
 		$self->{'logger'}->debug("_open: try to open $slurp_file");
