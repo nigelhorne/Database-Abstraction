@@ -36,6 +36,7 @@ use File::Temp;
 use Carp;
 
 our %defaults;
+use constant	MAX_SLURP_SIZE => 16 * 1024;	# CSV files <= than this size are read into memory
 
 =head1 VERSION
 
@@ -321,32 +322,34 @@ sub _open {
 			# $self->{'data'} = Text::CSV::Slurp->load(file => $slurp_file, %options);
 
 			# FIXME: Text::xSV::Slurp can't cope well with quotes in field contents
-			require Text::xSV::Slurp;
-			Text::xSV::Slurp->import();
+			if((-s $slurp_file) <= MAX_SLURP_SIZE) {
+				require Text::xSV::Slurp;
+				Text::xSV::Slurp->import();
 
-			my @data = @{xsv_slurp(
-				shape => 'aoh',
-				text_csv => {
-					sep_char => $sep_char,
-					allow_loose_quotes => 1,
-					blank_is_undef => 1,
-					empty_is_undef => 1,
-					binary => 1,
-					escape_char => '\\',
-				},
-				# string => \join('', grep(!/^\s*(#|$)/, <DATA>))
-				file => $slurp_file
-			)};
+				my @data = @{xsv_slurp(
+					shape => 'aoh',
+					text_csv => {
+						sep_char => $sep_char,
+						allow_loose_quotes => 1,
+						blank_is_undef => 1,
+						empty_is_undef => 1,
+						binary => 1,
+						escape_char => '\\',
+					},
+					# string => \join('', grep(!/^\s*(#|$)/, <DATA>))
+					file => $slurp_file
+				)};
 
-			# Ignore blank lines or lines starting with # in the CSV file
-			unless($self->{no_entry}) {
-				@data = grep { $_->{'entry'} !~ /^\s*#/ } grep { defined($_->{'entry'}) } @data;
-			}
-			# $self->{'data'} = @data;
-			my $i = 0;
-			$self->{'data'} = ();
-			foreach my $d(@data) {
-				$self->{'data'}[$i++] = $d;
+				# Ignore blank lines or lines starting with # in the CSV file
+				unless($self->{no_entry}) {
+					@data = grep { $_->{'entry'} !~ /^\s*#/ } grep { defined($_->{'entry'}) } @data;
+				}
+				# $self->{'data'} = @data;
+				my $i = 0;
+				$self->{'data'} = ();
+				foreach my $d(@data) {
+					$self->{'data'}[$i++] = $d;
+				}
 			}
 			$self->{'type'} = 'CSV';
 		} else {
