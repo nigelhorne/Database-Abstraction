@@ -157,7 +157,8 @@ sub new {
 		# table => $args{'table'},	# The name of the file containing the table, defaults to the class name
 		# no_entry => $args{'no_entry'} || 0,
 	# }, $class;
-	return bless { %args, %defaults, no_entry => 0 }, $class;
+	# Reseen keys take precendence, so defaults come first
+	return bless { no_entry => 0, %defaults, %args }, $class;
 }
 
 =head2	set_logger
