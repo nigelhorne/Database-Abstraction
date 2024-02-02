@@ -2,6 +2,7 @@ Revision history for Database-Abstraction
 
 0.04
 	init() can now be called more than once and will retain the old values
+	Added XML test
 
 0.03	Thu Feb  1 13:48:01 EST 2024
 	Complain if the directory argument isn't a directory
