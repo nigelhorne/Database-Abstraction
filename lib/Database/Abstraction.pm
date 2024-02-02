@@ -86,7 +86,9 @@ Set some class level defaults.
 
     MyPackageName::Database::init(directory => '../databases');
 
-See the documentation for new() to see what variables can be set
+See the documentation for new() to see what variables can be set.
+
+Returns a refernce to a hash of the current values.
 
 =cut
 
@@ -97,7 +99,9 @@ sub init {
 	# $defaults->{'logger'} ||= $args{'logger'};
 	# $defaults->{'cache'} ||= $args{'cache'};
 	# $defaults->{'cache_duration'} ||= $args{'cache_duration'};
-	%defaults = %args;
+	%defaults = (%args, %defaults);
+
+	return \%defaults;
 }
 
 =head2 new
