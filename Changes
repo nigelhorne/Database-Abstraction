@@ -1,6 +1,6 @@
 Revision history for Database-Abstraction
 
-0.04
+0.04	Fri Feb  2 13:14:18 EST 2024
 	init() can now be called more than once and will retain the old values
 	Added XML test
 	Restrict the size of the CSV file that are slurped to 16K

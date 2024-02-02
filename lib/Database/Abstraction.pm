@@ -40,11 +40,11 @@ use constant	MAX_SLURP_SIZE => 16 * 1024;	# CSV files <= than this size are read
 
 =head1 VERSION
 
-Version 0.03
+Version 0.04
 
 =cut
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 =head1 SYNOPSIS
 

@@ -4,7 +4,7 @@ Database::Abstraction - database abstraction layer
 
 # VERSION
 
-Version 0.03
+Version 0.04
 
 # SYNOPSIS
 
@@ -47,7 +47,9 @@ Set some class level defaults.
 
     MyPackageName::Database::init(directory => '../databases');
 
-See the documentation for new() to see what variables can be set
+See the documentation for new() to see what variables can be set.
+
+Returns a refernce to a hash of the current values.
 
 ## new
 
