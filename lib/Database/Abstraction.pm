@@ -106,7 +106,7 @@ sub init
 		# $defaults->{'logger'} ||= $args{'logger'};
 		# $defaults->{'cache'} ||= $args{'cache'};
 		# $defaults->{'cache_duration'} ||= $args{'cache_duration'};
-		%defaults = (%args, %defaults)
+		%defaults = (%defaults, %args)
 	}
 
 	return \%defaults
