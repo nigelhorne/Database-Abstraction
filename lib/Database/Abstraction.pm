@@ -63,8 +63,6 @@ For example, you can access the files in /var/db/foo.csv via this class:
 
     our @ISA = ('Database::Abstraction');
 
-    1;
-
 You can then access the data using:
 
     my $foo = MyPackageName::Database::Foo->new(directory => '/var/db');
@@ -77,7 +75,7 @@ to make them more readable.
 
 If the table has a column called "entry", sorts are based on that
 To turn that off, pass 'no_entry' to the constructor, for legacy
-reasons it's enabled by default
+reasons it's enabled by default.
 
 =head1 SUBROUTINES/METHODS
 
@@ -87,7 +85,7 @@ Set some class level defaults.
 
     MyPackageName::Database::init(directory => '../databases');
 
-See the documentation for new() to see what variables can be set.
+See the documentation for new to see what variables can be set.
 
 Returns a reference to a hash of the current values.
 Therefore when given with no arguments you can get the current default values:
@@ -128,15 +126,15 @@ If the arguments are not set, tries to take from class level defaults.
 
 sub new {
 	my $proto = shift;
-        my %args;
+	my %args;
 
-        if(ref($_[0]) eq 'HASH') {
-                %args = %{$_[0]};
-        } elsif(scalar(@_) % 2 == 0) {
-                %args = @_;
-        } elsif(scalar(@_) == 1) {
-                $args{'directory'} = shift;
-        }
+	if(ref($_[0]) eq 'HASH') {
+		%args = %{$_[0]};
+	} elsif(scalar(@_) % 2 == 0) {
+		%args = @_;
+	} elsif(scalar(@_) == 1) {
+		$args{'directory'} = shift;
+	}
 
 	my $class = ref($proto) || $proto;
 
@@ -170,7 +168,7 @@ sub new {
 
 =head2	set_logger
 
-Pass a class that will be used for logging
+Pass a class that will be used for logging.
 
 =cut
 
@@ -673,9 +671,10 @@ Returns an array of the matches, or just the first entry when called in
 scalar context
 
 If the first column if the database is "entry" you can do a quick lookup with
-    my $value = $table->column($entry);	# where column is the value you're after
 
-Set distinct to 1 if you're after a unique list
+    my $value = $foo->column('123');	# where "column" is the value you're after
+
+Set distinct to 1 if you're after a unique list.
 
 =cut
 
@@ -695,13 +694,13 @@ sub AUTOLOAD {
 	$self->_open() if(!$self->{$table});
 
 	my %params;
-        if(ref($_[0]) eq 'HASH') {
-                %params = %{$_[0]};
-        } elsif((scalar(@_) % 2) == 0) {
-                %params = @_;
-        } elsif(scalar(@_) == 1) {
-                $params{'entry'} = shift;
-        }
+	if(ref($_[0]) eq 'HASH') {
+		%params = %{$_[0]};
+	} elsif((scalar(@_) % 2) == 0) {
+		%params = @_;
+	} elsif(scalar(@_) == 1) {
+		$params{'entry'} = shift;
+	}
 
 	my $query;
 	my $done_where = 0;
