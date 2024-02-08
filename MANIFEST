@@ -29,4 +29,5 @@ t/pod.t
 t/psv.t
 t/two_databases.t
 t/vars.t
+t/version.t
 t/xml.t
