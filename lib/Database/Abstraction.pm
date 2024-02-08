@@ -89,20 +89,27 @@ Set some class level defaults.
 
 See the documentation for new() to see what variables can be set.
 
-Returns a refernce to a hash of the current values.
+Returns a reference to a hash of the current values.
+Therefore when given with no arguments you can get the current default values:
+
+    my $defaults = Database::Abstraction::init();
+    print $defaults->{'directory'}, "\n";
 
 =cut
 
-sub init {
-	my %args = (ref($_[0]) eq 'HASH') ? %{$_[0]} : @_;
+sub init
+{
+	if(scalar(@_)) {
+		my %args = (ref($_[0]) eq 'HASH') ? %{$_[0]} : @_;
 
-	# $defaults->{'directory'} ||= $args{'directory'};
-	# $defaults->{'logger'} ||= $args{'logger'};
-	# $defaults->{'cache'} ||= $args{'cache'};
-	# $defaults->{'cache_duration'} ||= $args{'cache_duration'};
-	%defaults = (%args, %defaults);
+		# $defaults->{'directory'} ||= $args{'directory'};
+		# $defaults->{'logger'} ||= $args{'logger'};
+		# $defaults->{'cache'} ||= $args{'cache'};
+		# $defaults->{'cache_duration'} ||= $args{'cache_duration'};
+		%defaults = (%args, %defaults)
+	}
 
-	return \%defaults;
+	return \%defaults
 }
 
 =head2 new
