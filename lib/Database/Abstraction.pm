@@ -604,7 +604,7 @@ sub fetchrow_hashref {
 	$sth->execute(@query_args) || croak("$query: @query_args");
 	if($c) {
 		my $rc = $sth->fetchrow_hashref();
-		if($self->{'logger'}) {
+		if(my $logger = $self->{'logger'}) {
 			$logger->debug("Stash $key=>$rc in the cache for ", $self->{'cache_duration'});
 		}
 		$c->set($key, $rc, $self->{'cache_duration'});
