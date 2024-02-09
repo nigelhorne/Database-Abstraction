@@ -23,6 +23,7 @@ Database::Abstraction - database abstraction layer
 # TODO:	Add redis database - could be of use for Geo::Coder::Free
 #	use select() to select a database - use the table arg
 #	new(database => 'redis://servername');
+# TODO:	Add a "key" property, defaulting to "entry", which would be the name of the key
 
 use warnings;
 use strict;
@@ -73,7 +74,8 @@ You can then access the data using:
 CSV files can have empty lines or comment lines starting with '#',
 to make them more readable.
 
-If the table has a column called "entry", sorts are based on that
+If the table has a column called "entry",
+entries are keyed on that and sorts are based on it.
 To turn that off, pass 'no_entry' to the constructor, for legacy
 reasons it's enabled by default.
 
@@ -667,10 +669,10 @@ sub updated {
 
 Return the contents of an arbitrary column in the database which match the
 given criteria
-Returns an array of the matches, or just the first entry when called in
-scalar context
+Returns an array of the matches,
+or only the first when called in scalar context
 
-If the first column if the database is "entry" you can do a quick lookup with
+If the database has a column called "entry" you can do a quick lookup with
 
     my $value = $foo->column('123');	# where "column" is the value you're after
 
@@ -804,6 +806,9 @@ Nigel Horne, C<< <njh at bandsman.co.uk> >>
 
 The default delimiter for CSV files is set to '!', not ',' for historical reasons.
 I really ought to fix that.
+
+It would be nice for the key column to be called key, not entry,
+however key's a reserved word in SQL.
 
 =head1 LICENSE AND COPYRIGHT
 
