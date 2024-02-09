@@ -34,10 +34,9 @@ sub warn {
 
 sub trace {
 	my $self = shift;
-	my $message = shift;
 
 	if($ENV{'TEST_VERBOSE'}) {
-		::diag($message);
+		::diag(@_);
 	}
 }
 

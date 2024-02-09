@@ -71,13 +71,13 @@ You can then access the data using:
     my $row = $foo->fetchrow_hashref(customer_id => 'xyzzy');
     print Data::Dumper->new([$row])->Dump();
 
-CSV files can have empty lines or comment lines starting with '#',
-to make them more readable.
-
 If the table has a column called "entry",
 entries are keyed on that and sorts are based on it.
 To turn that off, pass 'no_entry' to the constructor, for legacy
 reasons it's enabled by default.
+
+CSV files that are not no_entry can have empty lines or comment lines starting with '#',
+to make them more readable.
 
 =head1 SUBROUTINES/METHODS
 
@@ -334,6 +334,9 @@ sub _open {
 				require Text::xSV::Slurp;
 				Text::xSV::Slurp->import();
 
+				if($self->{'logger'}) {
+					$self->{'logger'}->trace('slurp in');
+				}
 				my @data = @{xsv_slurp(
 					shape => 'aoh',
 					text_csv => {
@@ -348,15 +351,21 @@ sub _open {
 					file => $slurp_file
 				)};
 
-				# Ignore blank lines or lines starting with # in the CSV file
-				unless($self->{no_entry}) {
-					@data = grep { $_->{'entry'} !~ /^\s*#/ } grep { defined($_->{'entry'}) } @data;
-				}
 				# $self->{'data'} = @data;
-				my $i = 0;
-				$self->{'data'} = ();
-				foreach my $d(@data) {
-					$self->{'data'}[$i++] = $d;
+				if($self->{'no_entry'}) {
+					# Not keyed, will need to scan each entry
+					my $i = 0;
+					$self->{'data'} = ();
+					foreach my $d(@data) {
+						$self->{'data'}[$i++] = $d;
+					}
+				} else {
+					# keyed on the "entry" column
+					# Ignore blank lines or lines starting with # in the CSV file
+					@data = grep { $_->{'entry'} !~ /^\s*#/ } grep { defined($_->{'entry'}) } @data;
+					foreach my $d(@data) {
+						$self->{'data'}->{$d->{'entry'}} = $d;
+					}
 				}
 			}
 			$self->{'type'} = 'CSV';
@@ -717,15 +726,34 @@ sub AUTOLOAD {
 			$query = "SELECT $column FROM $table";
 		}
 	} else {
-		if($self->{'data'} && ((scalar keys %params) == 1)) {
+		if(my $data = $self->{'data'}) {
 			# The data has been read in using Text::xSV::Slurp, and it's a simple query
 			#	so no need to do any SQL
-			my ($key, $value) = %params;
-			if(my $data = $self->{'data'}) {
+			if($self->{'no_entry'}) {
+				my ($key, $value) = %params;
 				foreach my $row(@{$data}) {
 					if(($row->{$key} eq $value) && (my $rc = $row->{$column})) {
 						if($self->{'logger'}) {
-							$self->{'logger'}->trace("AUTOLOAD return '$rc' from slurped data");
+							$self->{'logger'}->trace(__LINE__, ": AUTOLOAD return '$rc' from slurped data");
+						}
+						return $rc;
+					}
+				}
+			} elsif(((scalar keys %params) == 1) && (defined(my $key = $params{'entry'}))) {
+				# Look up the key
+				my $rc = $data->{$key}->{$column};
+				if($self->{'logger'}) {
+					$self->{'logger'}->trace(__LINE__, ": AUTOLOAD return '$rc' from slurped data");
+				}
+				return $rc
+			} else {
+				# It's keyed, but we're not querying off it
+				die;	# I don't think this code can be reached - let's verify that
+				my ($key, $value) = %params;
+				while(my $row = (values %{$data})) {
+					if(($row->{$key} eq $value) && (my $rc = $row->{$column})) {
+						if($self->{'logger'}) {
+							$self->{'logger'}->trace(__LINE__, ": AUTOLOAD return '$rc' from slurped data");
 						}
 						return $rc;
 					}
