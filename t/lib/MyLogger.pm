@@ -20,9 +20,8 @@ sub new {
 
 sub warn {
 	my $self = shift;
-	my $message = shift;
 
-	::diag($message);
+	::diag(@_);
 }
 
 # sub info {
