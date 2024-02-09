@@ -165,7 +165,7 @@ sub new {
 		# no_entry => $args{'no_entry'} || 0,
 	# }, $class;
 	# Reseen keys take precendence, so defaults come first
-	return bless { no_entry => 0, %defaults, %args }, $class;
+	return bless { no_entry => 0, cache_duration => '1 hour', %defaults, %args }, $class;
 }
 
 =head2	set_logger
@@ -604,6 +604,9 @@ sub fetchrow_hashref {
 	$sth->execute(@query_args) || croak("$query: @query_args");
 	if($c) {
 		my $rc = $sth->fetchrow_hashref();
+		if($self->{'logger'}) {
+			$logger->debug("Stash $key=>$rc in the cache for ", $self->{'cache_duration'});
+		}
 		$c->set($key, $rc, $self->{'cache_duration'});
 		return $rc;
 	}
