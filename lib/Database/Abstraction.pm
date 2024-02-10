@@ -734,16 +734,24 @@ sub AUTOLOAD {
 				foreach my $row(@{$data}) {
 					if(($row->{$key} eq $value) && (my $rc = $row->{$column})) {
 						if($self->{'logger'}) {
-							$self->{'logger'}->trace(__LINE__, ": AUTOLOAD return '$rc' from slurped data");
+							if(defined($rc)) {
+								$self->{'logger'}->trace(__LINE__, ": AUTOLOAD $key: return '$rc' from slurped data");
+							} else {
+								$self->{'logger'}->trace(__LINE__, ": AUTOLOAD $key: return undef from slurped data");
+							}
 						}
-						return $rc;
+						return $rc
 					}
 				}
 			} elsif(((scalar keys %params) == 1) && (defined(my $key = $params{'entry'}))) {
 				# Look up the key
 				my $rc = $data->{$key}->{$column};
 				if($self->{'logger'}) {
-					$self->{'logger'}->trace(__LINE__, ": AUTOLOAD return '$rc' from slurped data");
+					if(defined($rc)) {
+						$self->{'logger'}->trace(__LINE__, ": AUTOLOAD $key: return '$rc' from slurped data");
+					} else {
+						$self->{'logger'}->trace(__LINE__, ": AUTOLOAD $key: return undef from slurped data");
+					}
 				}
 				return $rc
 			} else {
@@ -753,12 +761,17 @@ sub AUTOLOAD {
 				while(my $row = (values %{$data})) {
 					if(($row->{$key} eq $value) && (my $rc = $row->{$column})) {
 						if($self->{'logger'}) {
-							$self->{'logger'}->trace(__LINE__, ": AUTOLOAD return '$rc' from slurped data");
+							if(defined($rc)) {
+								$self->{'logger'}->trace(__LINE__, ": AUTOLOAD $key: return '$rc' from slurped data");
+							} else {
+								$self->{'logger'}->trace(__LINE__, ": AUTOLOAD $key: return undef from slurped data");
+							}
 						}
-						return $rc;
+						return $rc
 					}
 				}
 			}
+			return
 		}
 		if(($self->{'type'} eq 'CSV') && !$self->{no_entry}) {
 			$query = "SELECT DISTINCT $column FROM $table WHERE entry IS NOT NULL AND entry NOT LIKE '#%'";
