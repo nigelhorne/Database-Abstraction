@@ -419,6 +419,8 @@ sub selectall_hash {
 	my $table = $self->{table} || ref($self);
 	$table =~ s/.*:://;
 
+	$self->_open() if(!$self->{$table});
+
 	if((scalar(keys %params) == 0) && $self->{'data'}) {
 		if($self->{'logger'}) {
 			$self->{'logger'}->trace("$table: selectall_hash fast track return");
@@ -431,8 +433,6 @@ sub selectall_hash {
 	}
 	# if((scalar(keys %params) == 1) && $self->{'data'} && defined($params{'entry'})) {
 	# }
-
-	$self->_open() if(!$self->{$table});
 
 	my $query;
 	my $done_where = 0;
@@ -553,6 +553,13 @@ sub fetchrow_hashref {
 	$table =~ s/.*:://;
 
 	$self->_open() if(!$self->{$table});
+
+	if($self->{'data'} && (!$self->{'no_entry'}) && (scalar keys(%params) == 1) && defined($params{'entry'})) {
+		if(my $logger = $self->{'logger'}) {
+			$logger->debug('Fast return from slurped data');
+		}
+		return $self->{'data'}->{$params{'entry'}};
+	}
 
 	my $query = 'SELECT * FROM ';
 	if(my $t = delete $params{'table'}) {
