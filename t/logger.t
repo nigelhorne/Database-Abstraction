@@ -15,3 +15,6 @@ my $test1 = new_ok('Database::test1' => [{ directory => "$Bin/../data", logger =
 
 cmp_ok($test1->number('two'), '==', 2, 'CSV AUTOLOAD works found');
 is($test1->number('four'), undef, 'CSV AUTOLOAD works not found');
+
+my $res = $test1->selectall_hashref(entry => 'one');
+$res = $test1->selectall_hashref(number => 1);
