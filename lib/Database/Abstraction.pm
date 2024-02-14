@@ -85,7 +85,7 @@ to make them more readable.
 
 Set some class level defaults.
 
-    MyPackageName::Database::init(directory => '../databases');
+    MyPackageName::Database::init(directory => '../data');
 
 See the documentation for new to see what variables can be set.
 
