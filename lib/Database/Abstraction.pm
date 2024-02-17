@@ -619,15 +619,18 @@ sub fetchrow_hashref {
 	my $sth = $self->{$table}->prepare($query) or die $self->{$table}->errstr();
 	# $sth->execute(@query_args) || throw Error::Simple("$query: @query_args");
 	$sth->execute(@query_args) || croak("$query: @query_args");
+	my $rc = $sth->fetchrow_hashref();
 	if($c) {
-		my $rc = $sth->fetchrow_hashref();
 		if(my $logger = $self->{'logger'}) {
-			$logger->debug("Stash $key=>$rc in the cache for ", $self->{'cache_duration'});
+			if($rc) {
+				$logger->debug("Stash $key=>$rc in the cache for ", $self->{'cache_duration'});
+			} else {
+				$logger->debug("Stash $key=>undef in the cache for ", $self->{'cache_duration'});
+			}
 		}
 		$c->set($key, $rc, $self->{'cache_duration'});
-		return $rc;
 	}
-	return $sth->fetchrow_hashref();
+	return $rc;
 }
 
 =head2	execute
