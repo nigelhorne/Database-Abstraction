@@ -624,8 +624,8 @@ sub fetchrow_hashref {
 	if($c) {
 		if(my $logger = $self->{'logger'}) {
 			if($rc) {
-				$logger->debug("$rc returns ", Data::Dumper->new([$rc])->Dump());
-				$logger->debug("Stash $key=>$rc in the cache for ", $self->{'cache_duration'});
+				$logger->debug("stash $key=>$rc in the cache for ", $self->{'cache_duration'});
+				$logger->debug("returns ", Data::Dumper->new([$rc])->Dump());
 			} else {
 				$logger->debug("Stash $key=>undef in the cache for ", $self->{'cache_duration'});
 			}
