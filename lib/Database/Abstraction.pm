@@ -29,6 +29,7 @@ Database::Abstraction - database abstraction layer
 use warnings;
 use strict;
 
+use Data::Dumper;
 use DBD::SQLite::Constants qw/:file_open/;	# For SQLITE_OPEN_READONLY
 use File::Basename;
 use File::Spec;
@@ -623,6 +624,7 @@ sub fetchrow_hashref {
 	if($c) {
 		if(my $logger = $self->{'logger'}) {
 			if($rc) {
+				$logger->debug("$rc returns ", Data::Dumper->new([$rc])->Dump());
 				$logger->debug("Stash $key=>$rc in the cache for ", $self->{'cache_duration'});
 			} else {
 				$logger->debug("Stash $key=>undef in the cache for ", $self->{'cache_duration'});
