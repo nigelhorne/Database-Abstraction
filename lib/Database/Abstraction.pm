@@ -796,7 +796,7 @@ sub AUTOLOAD {
 	my @args;
 	while(my ($key, $value) = each %params) {
 		if($self->{'logger'}) {
-			$self->{'logger'}->debug(__PACKAGE__, ": AUTOLOAD adding $key=>$value");
+			$self->{'logger'}->debug(__PACKAGE__, ": AUTOLOAD adding key/value pair $key=>$value");
 		}
 		if(defined($value)) {
 			if($done_where) {
