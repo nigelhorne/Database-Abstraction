@@ -24,7 +24,7 @@ Database::Abstraction - database abstraction layer
 #	use select() to select a database - use the table arg
 #	new(database => 'redis://servername');
 # TODO:	Add a "key" property, defaulting to "entry", which would be the name of the key
-# TODO:	The maximim number to return should be tuneable (as a LIMIT)
+# TODO:	The maximum number to return should be tuneable (as a LIMIT)
 
 use warnings;
 use strict;
@@ -655,7 +655,7 @@ sub execute {
 		$args{'query'} = shift;
 	}
 
-	Carp::croak('Usage: execute(query => $query)') unless(defined($args{'query'}));
+	Carp::croak(__PACKAGE__, ': Usage: execute(query => $query)') unless(defined($args{'query'}));
 
 	my $table = $self->{table} || ref($self);
 	$table =~ s/.*:://;
