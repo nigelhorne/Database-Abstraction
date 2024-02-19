@@ -726,6 +726,9 @@ sub AUTOLOAD {
 	} elsif((scalar(@_) % 2) == 0) {
 		%params = @_;
 	} elsif(scalar(@_) == 1) {
+		if($self->{'no_entry'}) {
+			Carp::croak(ref($self), "::($_[0]): entry is not a column");
+		}
 		$params{'entry'} = shift;
 	}
 
