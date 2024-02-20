@@ -6,6 +6,7 @@ Revision history for Database-Abstraction
 	fetchrow_hashref: fixed uninitialized variable in logger
 	fetchrow_hashref: more verbose debugging on match
 	AUTOLOAD: usage error if entry isn't a column
+	AUTOLOAD: fix problem when no args are given on slurped data
 
 0.05	Fri Feb  9 11:01:00 EST 2024
 	Fix https://www.cpantesters.org/cpan/report/f07e90f2-c264-11ee-bb2d-64236e8775ea

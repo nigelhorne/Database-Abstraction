@@ -770,6 +770,14 @@ sub AUTOLOAD {
 					}
 				}
 				return $rc
+			} elsif((scalar keys %params) == 0) {
+				# e.g. the only parameter is distinct => 0
+				my @rc;
+				foreach my $v (values %{$data}) {
+					push @rc, $v->{$column};
+					last if(!wantarray);
+				}
+				return @rc
 			} else {
 				# It's keyed, but we're not querying off it
 				die;	# I don't think this code can be reached - let's verify that
