@@ -734,7 +734,13 @@ sub AUTOLOAD {
 
 	my $query;
 	my $done_where = 0;
-	if(wantarray && !delete($params{'distinct'})) {
+	my $distinct = delete($params{'distinct'});
+
+	if(wantarray && !$distinct) {
+		if(((scalar keys %params) == 0) && (my $data = $self->{'data'})) {
+			# Return all the entries in the column
+			return map { $_->{$column} } values %{$data};
+		}
 		if(($self->{'type'} eq 'CSV') && !$self->{no_entry}) {
 			$query = "SELECT $column FROM $table WHERE entry IS NOT NULL AND entry NOT LIKE '#%'";
 			$done_where = 1;
@@ -759,9 +765,16 @@ sub AUTOLOAD {
 						return $rc
 					}
 				}
-			} elsif(((scalar keys %params) == 1) && (defined(my $key = $params{'entry'}))) {
+			} elsif(((scalar keys %params) == 1) && defined(my $key = $params{'entry'})) {
 				# Look up the key
-				my $rc = $data->{$key}->{$column};
+
+				# This weird code is to stop the data hash becoming polluted with empty
+				#	values as we look things up
+				# my $rc = $data->{$key}->{$column};
+				my $rc;
+				if(defined(my $hash = $data->{$key})) {
+					$rc = $hash->{$column};
+				}
 				if($self->{'logger'}) {
 					if(defined($rc)) {
 						$self->{'logger'}->trace(__LINE__, ": AUTOLOAD $key: return '$rc' from slurped data");
@@ -771,16 +784,20 @@ sub AUTOLOAD {
 				}
 				return $rc
 			} elsif((scalar keys %params) == 0) {
-				# e.g. the only parameter is distinct => 0
-				my @rc;
-				foreach my $v (values %{$data}) {
-					push @rc, $v->{$column};
-					last if(!wantarray);
+				if(wantarray) {
+					if($distinct) {
+						# https://stackoverflow.com/questions/7651/how-do-i-remove-duplicate-items-from-an-array-in-perl
+						my %h = map { $_, 1 } map { $_->{$column} } values %{$data};
+						return keys %h;
+					}
+					return map { $_->{$column} } values %{$data}
 				}
-				return @rc
+				foreach my $v (values %{$data}) {
+					return $v->{$column}
+				}
 			} else {
 				# It's keyed, but we're not querying off it
-				die;	# I don't think this code can be reached - let's verify that
+				die scalar keys %params;	# I don't think this code can be reached - let's verify that
 				my ($key, $value) = %params;
 				while(my $row = (values %{$data})) {
 					if(($row->{$key} eq $value) && (my $rc = $row->{$column})) {
