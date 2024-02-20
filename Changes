@@ -1,6 +1,6 @@
 Revision history for Database-Abstraction
 
-0.06
+0.06	Tue Feb 20 16:55:33 EST 2024
 	Slurped data - improve keying
 	fetchrow_hashref now uses slurped data on some optimised places
 	fetchrow_hashref: fixed uninitialized variable in logger

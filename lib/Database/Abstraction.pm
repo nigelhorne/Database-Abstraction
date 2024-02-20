@@ -43,11 +43,11 @@ use constant	MAX_SLURP_SIZE => 16 * 1024;	# CSV files <= than this size are read
 
 =head1 VERSION
 
-Version 0.05
+Version 0.06
 
 =cut
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 =head1 SYNOPSIS
 
@@ -166,7 +166,7 @@ sub new {
 		# table => $args{'table'},	# The name of the file containing the table, defaults to the class name
 		# no_entry => $args{'no_entry'} || 0,
 	# }, $class;
-	# Reseen keys take precendence, so defaults come first
+	# Reseen keys take precedence, so defaults come first
 	return bless { no_entry => 0, cache_duration => '1 hour', %defaults, %args }, $class;
 }
 
