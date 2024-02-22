@@ -427,11 +427,9 @@ sub selectall_hash {
 		if($self->{'logger'}) {
 			$self->{'logger'}->trace("$table: selectall_hash fast track return");
 		}
-		# This use of a temporary variable is to avoid
-		#	"Implicit scalar context for array in return"
-		# return @{$self->{'data'}};
-		my @rc = @{$self->{'data'}};
-		return @rc;
+		return values %{$self->{'data'}};
+		# my @rc = values %{$self->{'data'}};
+		# return @rc;
 	}
 	# if((scalar(keys %params) == 1) && $self->{'data'} && defined($params{'entry'})) {
 	# }

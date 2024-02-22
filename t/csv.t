@@ -4,7 +4,7 @@ use strict;
 use FindBin qw($Bin);
 
 use lib 't/lib';
-use Test::Most tests => 10;
+use Test::Most tests => 11;
 
 use_ok('Database::test1');
 
@@ -29,3 +29,11 @@ if($ENV{'TEST_VERBOSE'}) {
 	diag(Data::Dumper->new([\@rc])->Dump());
 }
 cmp_ok(scalar(@rc), '==', 3, 'getting all the entries works');
+
+@rc = $test1->selectall_hash();
+if($ENV{'TEST_VERBOSE'}) {
+	use Data::Dumper;
+	diag(Data::Dumper->new([\@rc])->Dump());
+}
+
+cmp_ok(scalar(@rc), '==', 3, 'selectall_hashref returns all entries');
