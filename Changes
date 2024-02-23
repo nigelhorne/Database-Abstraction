@@ -1,6 +1,6 @@
 Revision history for Database-Abstraction
 
-0.07
+0.07	Fri Feb 23 08:02:24 EST 2024
 	selectall_hash: Fixed "Not an ARRAY reference"
 
 0.06	Tue Feb 20 16:55:33 EST 2024
