@@ -382,7 +382,7 @@ sub _open {
 				$dbh->func($table, 'XML', $slurp_file, 'xmlsimple_import');
 			} else {
 				# throw Error(-file => "$dir/$table");
-				croak("Can't file a $table database in $dir");
+				croak("Can't find a $table database in $dir");
 			}
 			$self->{'type'} = 'XML';
 		}
