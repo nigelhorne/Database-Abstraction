@@ -25,6 +25,7 @@ Database::Abstraction - database abstraction layer
 #	new(database => 'redis://servername');
 # TODO:	Add a "key" property, defaulting to "entry", which would be the name of the key
 # TODO:	The maximum number to return should be tuneable (as a LIMIT)
+# TODO:	Investigate XML::Hash
 
 use warnings;
 use strict;
