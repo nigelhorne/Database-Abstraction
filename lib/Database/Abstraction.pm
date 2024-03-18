@@ -461,19 +461,18 @@ sub selectall_hash {
 			croak("$query: value for $c1 is not defined in call from ",
 				$call_details[2], ' of ', $call_details[1]);
 		}
+
+		my $keyword;
 		if($done_where) {
-			if($arg =~ /\@/) {
-				$query .= " AND $c1 LIKE ?";
-			} else {
-				$query .= " AND $c1 = ?";
-			}
+			$keyword = 'AND';
 		} else {
-			if($arg =~ /\@/) {
-				$query .= " WHERE $c1 LIKE ?";
-			} else {
-				$query .= " WHERE $c1 = ?";
-			}
+			$keyword = 'WHERE';
 			$done_where = 1;
+		}
+		if($arg =~ /\@/) {
+			$query .= " $keyword $c1 LIKE ?";
+		} else {
+			$query .= " $keyword $c1 = ?";
 		}
 		push @query_args, $arg;
 	}
@@ -576,19 +575,17 @@ sub fetchrow_hashref {
 	my @query_args;
 	foreach my $c1(sort keys(%params)) {	# sort so that the key is always the same
 		if(my $arg = $params{$c1}) {
+			my $keyword;
 			if($done_where) {
-				if($arg =~ /\@/) {
-					$query .= " AND $c1 LIKE ?";
-				} else {
-					$query .= " AND $c1 = ?";
-				}
+				$keyword = 'AND';
 			} else {
-				if($arg =~ /\@/) {
-					$query .= " WHERE $c1 LIKE ?";
-				} else {
-					$query .= " WHERE $c1 = ?";
-				}
+				$keyword = 'WHERE';
 				$done_where = 1;
+			}
+			if($arg =~ /\@/) {
+				$query .= " $keyword $c1 LIKE ?";
+			} else {
+				$query .= " $keyword $c1 = ?";
 			}
 			push @query_args, $arg;
 		}
