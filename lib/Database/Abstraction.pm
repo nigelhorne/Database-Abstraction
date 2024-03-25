@@ -549,7 +549,7 @@ sub fetchrow_hashref {
 	my $self = shift;
 	my %params = (ref($_[0]) eq 'HASH') ? %{$_[0]} : @_;
 
-	my $table = $self->{'table'} || ref($self);
+	my $table = $params{'table'} || $self->{'table'} || ref($self);
 	$table =~ s/.*:://;
 
 	$self->_open() if(!$self->{$table});
