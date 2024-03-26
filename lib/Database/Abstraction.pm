@@ -794,19 +794,19 @@ sub AUTOLOAD {
 			} else {
 				# It's keyed, but we're not querying off it
 				die scalar keys %params;	# I don't think this code can be reached - let's verify that
-				my ($key, $value) = %params;
-				while(my $row = (values %{$data})) {
-					if(($row->{$key} eq $value) && (my $rc = $row->{$column})) {
-						if($self->{'logger'}) {
-							if(defined($rc)) {
-								$self->{'logger'}->trace(__LINE__, ": AUTOLOAD $key: return '$rc' from slurped data");
-							} else {
-								$self->{'logger'}->trace(__LINE__, ": AUTOLOAD $key: return undef from slurped data");
-							}
-						}
-						return $rc
-					}
-				}
+				# my ($key, $value) = %params;
+				# while(my $row = (values %{$data})) {
+					# if(($row->{$key} eq $value) && (my $rc = $row->{$column})) {
+						# if($self->{'logger'}) {
+							# if(defined($rc)) {
+								# $self->{'logger'}->trace(__LINE__, ": AUTOLOAD $key: return '$rc' from slurped data");
+							# } else {
+								# $self->{'logger'}->trace(__LINE__, ": AUTOLOAD $key: return undef from slurped data");
+							# }
+						# }
+						# return $rc
+					# }
+				# }
 			}
 			return
 		}
