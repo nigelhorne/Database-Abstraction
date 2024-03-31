@@ -1,5 +1,8 @@
 Revision history for Database-Abstraction
 
+0.08
+	Add unique as a synomym of distinct
+
 0.07	Fri Feb 23 08:02:24 EST 2024
 	selectall_hash: Fixed "Not an ARRAY reference"
 

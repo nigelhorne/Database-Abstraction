@@ -697,7 +697,7 @@ If the database has a column called "entry" you can do a quick lookup with
 
     my $value = $foo->column('123');	# where "column" is the value you're after
 
-Set distinct to 1 if you're after a unique list.
+Set distinct or unique to 1 if you're after a unique list.
 
 =cut
 
@@ -730,7 +730,7 @@ sub AUTOLOAD {
 
 	my $query;
 	my $done_where = 0;
-	my $distinct = delete($params{'distinct'});
+	my $distinct = delete($params{'distinct'}) || delete($params{'unique'});
 
 	if(wantarray && !$distinct) {
 		if(((scalar keys %params) == 0) && (my $data = $self->{'data'})) {
