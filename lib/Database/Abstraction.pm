@@ -40,7 +40,7 @@ use File::Temp;
 use Carp;
 
 our %defaults;
-use constant	MAX_SLURP_SIZE => 16 * 1024;	# CSV files <= than this size are read into memory
+use constant	DEFAULT_MAX_SLURP_SIZE => 16 * 1024;	# CSV files <= than this size are read into memory
 
 =head1 VERSION
 
@@ -124,6 +124,7 @@ Arguments:
 cache => place to store results;
 cache_duration => how long to store results in the cache (default is 1 hour);
 directory => where the database file is held
+max_slurp_size => CSV/PSV files smaller than this are held in RAM (default is 16K)
 
 If the arguments are not set, tries to take from class level defaults.
 
@@ -168,7 +169,13 @@ sub new {
 		# no_entry => $args{'no_entry'} || 0,
 	# }, $class;
 	# Reseen keys take precedence, so defaults come first
-	return bless { no_entry => 0, cache_duration => '1 hour', %defaults, %args }, $class;
+	return bless {
+		no_entry => 0,
+		cache_duration => '1 hour',
+		max_slurp_size => DEFAULT_MAX_SLURP_SIZE,
+		%defaults,
+		%args
+	}, $class;
 }
 
 =head2	set_logger
@@ -333,7 +340,7 @@ sub _open {
 			# $self->{'data'} = Text::CSV::Slurp->load(file => $slurp_file, %options);
 
 			# FIXME: Text::xSV::Slurp can't cope well with quotes in field contents
-			if((-s $slurp_file) <= MAX_SLURP_SIZE) {
+			if((-s $slurp_file) <= $self->{'max_slurp_size'}) {
 				require Text::xSV::Slurp;
 				Text::xSV::Slurp->import();
 
