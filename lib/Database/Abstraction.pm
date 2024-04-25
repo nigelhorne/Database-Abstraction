@@ -406,12 +406,16 @@ sub _open {
 =head2	selectall_hashref
 
 Returns a reference to an array of hash references of all the data meeting
-the given criteria
+the given criteria.
+
+Note that since this returns an array ref,
+optimisations such as "LIMIT 1" will not be used.
 
 =cut
 
 sub selectall_hashref {
 	my $self = shift;
+
 	my @rc = $self->selectall_hash(@_);
 	return \@rc;
 }

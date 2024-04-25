@@ -33,4 +33,4 @@ if($ENV{'TEST_VERBOSE'}) {
 	diag(Data::Dumper->new([\@rc])->Dump());
 }
 
-cmp_ok(scalar(@rc), '==', 3, 'selectall_hashref returns all entries');
+cmp_ok(scalar(@rc), '==', 3, 'selectall_hash returns all entries');
