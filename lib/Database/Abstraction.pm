@@ -587,6 +587,14 @@ sub fetchrow_hashref {
 	foreach my $c1(sort keys(%params)) {	# sort so that the key is always the same
 		if(my $arg = $params{$c1}) {
 			my $keyword;
+
+				if(ref($arg)) {
+					if($self->{'logger'}) {
+						$self->{'logger'}->fatal("selectall_hash $query: argument is not a string");
+					}
+					# throw Error::Simple("$query: argument is not a string: " . ref($arg));
+					croak("$query: argument is not a string: ", ref($arg));
+				}
 			if($done_where) {
 				$keyword = 'AND';
 			} else {
@@ -599,6 +607,12 @@ sub fetchrow_hashref {
 				$query .= " $keyword $c1 = ?";
 			}
 			push @query_args, $arg;
+		} elsif(!defined($arg)) {
+			my @call_details = caller(0);
+			# throw Error::Simple("$query: value for $c1 is not defined in call from " .
+				# $call_details[2] . ' of ' . $call_details[1]);
+			Carp::croak("$query: value for $c1 is not defined in call from ",
+				$call_details[2], ' of ', $call_details[1]);
 		}
 	}
 	# $query .= ' ORDER BY entry LIMIT 1';
