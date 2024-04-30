@@ -469,7 +469,7 @@ sub selectall_hash {
 			my @call_details = caller(0);
 			# throw Error::Simple("$query: value for $c1 is not defined in call from " .
 				# $call_details[2] . ' of ' . $call_details[1]);
-			croak("$query: value for $c1 is not defined in call from ",
+			Carp::croak("$query: value for $c1 is not defined in call from ",
 				$call_details[2], ' of ', $call_details[1]);
 		}
 
