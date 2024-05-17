@@ -3,7 +3,12 @@ Revision history for Database-Abstraction
 0.08
 	Add unique as a synomym of distinct
 	Allow max_slurp_size to be tweaked
+<<<<<<< HEAD
 	Fix CSV search on a column other than the keyed column
+=======
+	Added t/error.t
+	Catch undefined arguments in fetchrow_hashref
+>>>>>>> 2ddbd1a235b7e3644c4cbca3f6484e1eb6199792
 
 0.07	Fri Feb 23 08:02:24 EST 2024
 	selectall_hash: Fixed "Not an ARRAY reference"
