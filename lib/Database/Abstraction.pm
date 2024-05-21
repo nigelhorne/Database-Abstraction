@@ -70,7 +70,7 @@ For example, you can access the files in /var/db/foo.csv via this class:
 You can then access the data using:
 
     my $foo = MyPackageName::Database::Foo->new(directory => '/var/db');
-    print 'Customer name ', $foo->name(customer_id => 'plugh');
+    print 'Customer name ', $foo->name(customer_id => 'plugh'), "\n";
     my $row = $foo->fetchrow_hashref(customer_id => 'xyzzy');
     print Data::Dumper->new([$row])->Dump();
 
