@@ -1,7 +1,7 @@
 Revision history for Database-Abstraction
 
 0.08	Mon May 20 08:43:08 EDT 2024
-	Add unique as a synomym of distinct
+	Add unique as a synonym of distinct
 	Allow max_slurp_size to be tweaked
 	Fix CSV search on a column other than the keyed column
 	Added t/error.t
