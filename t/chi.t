@@ -4,18 +4,15 @@ use strict;
 use warnings;
 use lib 't/lib';
 
-use Test::Most tests => 9;
+use Test::Most tests => 8;
 use FindBin qw($Bin);
-use Test::NoWarnings;
 use Test::Needs 'CHI';
 
-BEGIN {
+CHI: {
 	use_ok('MyLogger');
 	use_ok('Database::test1');
 	CHI->import();
-}
 
-CHI: {
 	my $cache = CHI->new(driver => 'RawMemory', global => 1);
 	$cache->on_set_error('die');
 	$cache->on_get_error('die');

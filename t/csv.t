@@ -4,7 +4,8 @@ use strict;
 use FindBin qw($Bin);
 
 use lib 't/lib';
-use Test::Most tests => 12;
+use Test::Most tests => 13;
+use Test::NoWarnings;
 
 use_ok('Database::test1');
 
