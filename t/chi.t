@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use lib 't/lib';
 
-use Test::Most tests => 8;
+use Test::Most tests => 14;
 use FindBin qw($Bin);
 use Test::Needs 'CHI';
 
@@ -33,9 +33,25 @@ CHI: {
 	# ok($cache->get('barney::betty') eq 'betty');
 
 	cmp_ok(scalar $cache->get_keys(), '==', 1, 'cache is populated');
+
 	if($ENV{'TEST_VERBOSE'}) {
 		foreach my $key($cache->get_keys()) {
-			diag($key);
+			diag(__LINE__, " $key");
+		}
+	}
+	$rc = $test1->fetchrow_hashref(entry => 'two');
+	cmp_ok(scalar $cache->get_keys(), '==', 1, 'cache hit');
+	cmp_ok(ref($rc), 'eq', 'HASH', 'fetchrow hashref returns a reference to a hash');
+	cmp_ok($rc->{'number'}, '==', 2, 'basic test works');
+
+	$rc = $test1->selectall_hashref();
+	cmp_ok(scalar $cache->get_keys(), '==', 2, 'cache miss');
+	cmp_ok(ref($rc), 'eq', 'ARRAY', 'selectall hashref returns a reference to an array');
+	cmp_ok(scalar @{$rc}, '==', 3, 'selectall_hashref returns all matches');
+
+	if($ENV{'TEST_VERBOSE'}) {
+		foreach my $key($cache->get_keys()) {
+			diag(__LINE__, " $key");
 		}
 	}
 }
