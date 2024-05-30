@@ -433,8 +433,6 @@ sub selectall_hash {
 	my $table = $self->{table} || ref($self);
 	$table =~ s/.*:://;
 
-	$self->_open() if(!$self->{$table});
-
 	if((scalar(keys %params) == 0) && $self->{'data'}) {
 		if($self->{'logger'}) {
 			$self->{'logger'}->trace("$table: selectall_hash fast track return");
@@ -448,6 +446,9 @@ sub selectall_hash {
 
 	my $query;
 	my $done_where = 0;
+
+	$self->_open() if(!$self->{$table});
+
 	if(($self->{'type'} eq 'CSV') && !$self->{no_entry}) {
 		$query = "SELECT * FROM $table WHERE entry IS NOT NULL AND entry NOT LIKE '#%'";
 		$done_where = 1;
@@ -563,8 +564,6 @@ sub fetchrow_hashref {
 	my $table = $params{'table'} || $self->{'table'} || ref($self);
 	$table =~ s/.*:://;
 
-	$self->_open() if(!$self->{$table});
-
 	if($self->{'data'} && (!$self->{'no_entry'}) && (scalar keys(%params) == 1) && defined($params{'entry'})) {
 		if(my $logger = $self->{'logger'}) {
 			$logger->debug('Fast return from slurped data');
@@ -579,6 +578,9 @@ sub fetchrow_hashref {
 		$query .= $table;
 	}
 	my $done_where = 0;
+
+	$self->_open() if(!$self->{$table});
+
 	if(($self->{'type'} eq 'CSV') && !$self->{no_entry}) {
 		$query .= " WHERE entry IS NOT NULL AND entry NOT LIKE '#%'";
 		$done_where = 1;
@@ -638,6 +640,7 @@ sub fetchrow_hashref {
 			return $rc;
 		}
 	}
+
 	my $sth = $self->{$table}->prepare($query) or die $self->{$table}->errstr();
 	# $sth->execute(@query_args) || throw Error::Simple("$query: @query_args");
 	$sth->execute(@query_args) || croak("$query: @query_args");
