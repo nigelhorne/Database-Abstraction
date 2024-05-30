@@ -426,23 +426,26 @@ Returns an array of hash references
 
 =cut
 
-sub selectall_hash {
+sub selectall_hash
+{
 	my $self = shift;
 	my %params = (ref($_[0]) eq 'HASH') ? %{$_[0]} : @_;
 
 	my $table = $self->{table} || ref($self);
 	$table =~ s/.*:://;
 
-	if((scalar(keys %params) == 0) && $self->{'data'}) {
-		if($self->{'logger'}) {
-			$self->{'logger'}->trace("$table: selectall_hash fast track return");
+	if($self->{'data'}) {
+		if(scalar(keys %params) == 0) {
+			if($self->{'logger'}) {
+				$self->{'logger'}->trace("$table: selectall_hash fast track return");
+			}
+			return values %{$self->{'data'}};
+			# my @rc = values %{$self->{'data'}};
+			# return @rc;
+		} elsif((scalar(keys %params) == 1) && defined($params{'entry'}) && !$self->{'no_entry'}) {
+			return $self->{'data'}->{$params{'entry'}};
 		}
-		return values %{$self->{'data'}};
-		# my @rc = values %{$self->{'data'}};
-		# return @rc;
 	}
-	# if((scalar(keys %params) == 1) && $self->{'data'} && defined($params{'entry'})) {
-	# }
 
 	my $query;
 	my $done_where = 0;
