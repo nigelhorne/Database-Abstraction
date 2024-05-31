@@ -745,8 +745,6 @@ sub AUTOLOAD {
 	my $table = $self->{table} || ref($self);
 	$table =~ s/.*:://;
 
-	$self->_open() if(!$self->{$table});
-
 	my %params;
 	if(ref($_[0]) eq 'HASH') {
 		%params = %{$_[0]};
@@ -758,6 +756,8 @@ sub AUTOLOAD {
 		}
 		$params{'entry'} = shift;
 	}
+
+	$self->_open() if(!$self->{$table});
 
 	my $query;
 	my $done_where = 0;
@@ -819,6 +819,7 @@ sub AUTOLOAD {
 					}
 					return map { $_->{$column} } values %{$data}
 				}
+				# FIXME - this works but really isn't the right way to do it
 				foreach my $v (values %{$data}) {
 					return $v->{$column}
 				}
