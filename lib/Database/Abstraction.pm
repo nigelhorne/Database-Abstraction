@@ -668,6 +668,10 @@ Execute the given SQL on the data.
 In an array context, returns an array of hash refs,
 in a scalar context returns a hash of the first row
 
+On CSV tables without no_entry, it may help to add
+"WHERE entry IS NOT NULL AND entry NOT LIKE '#%'"
+to the query.
+
 =cut
 
 sub execute {
@@ -690,6 +694,9 @@ sub execute {
 	$self->_open() if(!$self->{$table});
 
 	my $query = $args{'query'};
+	if($query !~ / FROM /i) {
+		$query .= " FROM $table";
+	}
 	if($self->{'logger'}) {
 		$self->{'logger'}->debug("execute $query");
 	}
