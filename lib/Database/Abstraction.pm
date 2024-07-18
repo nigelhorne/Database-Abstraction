@@ -168,7 +168,8 @@ sub new {
 		# table => $args{'table'},	# The name of the file containing the table, defaults to the class name
 		# no_entry => $args{'no_entry'} || 0,
 	# }, $class;
-	# Reseen keys take precedence, so defaults come first
+
+	# Re-seen keys take precedence, so defaults come first
 	return bless {
 		no_entry => 0,
 		cache_duration => '1 hour',
