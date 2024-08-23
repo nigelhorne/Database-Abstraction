@@ -131,7 +131,7 @@ If the arguments are not set, tries to take from class level defaults.
 =cut
 
 sub new {
-	my $proto = shift;
+	my $class = shift;
 	my %args;
 
 	if(ref($_[0]) eq 'HASH') {
@@ -141,8 +141,6 @@ sub new {
 	} elsif(scalar(@_) == 1) {
 		$args{'directory'} = shift;
 	}
-
-	my $class = ref($proto) || $proto;
 
 	if(!defined($class)) {
 		# Using Database::Abstraction->new(), not Database::Abstraction::new()
