@@ -17,6 +17,7 @@ t/csv.t
 t/eof.t
 t/eol.t
 t/error.t
+t/init.t
 t/lib/Database/test1.pm
 t/lib/Database/test2.pm
 t/lib/Database/test3.pm
