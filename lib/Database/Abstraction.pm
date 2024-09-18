@@ -56,7 +56,7 @@ Abstract class giving read-only access to CSV, XML and SQLite databases via Perl
 Look for databases in $directory in this order:
 1) SQLite (file ends with .sql)
 2) PSV (pipe separated file, file ends with .psv)
-3) CSV (file ends with .csv or .db, can be gzipped)
+3) CSV (file ends with .csv or .db, can be gzipped) (note the default sep_char is '!' not ',')
 4) XML (file ends with .xml)
 
 For example, you can access the files in /var/db/foo.csv via this class:
@@ -78,6 +78,15 @@ If the table has a column called "entry",
 entries are keyed on that and sorts are based on it.
 To turn that off, pass 'no_entry' to the constructor, for legacy
 reasons it's enabled by default.
+
+    # There is no entry column in the database
+    sub new
+    {
+	my $self = shift;
+	my %args = (ref($_[0]) eq 'HASH') ? %{$_[0]} : @_;
+
+	return $self->SUPER::new(no_entry => 1, %args);
+    }
 
 CSV files that are not no_entry can have empty lines or comment lines starting with '#',
 to make them more readable.
@@ -136,7 +145,7 @@ sub new {
 
 	if(ref($_[0]) eq 'HASH') {
 		%args = %{$_[0]};
-	} elsif(scalar(@_) % 2 == 0) {
+	} elsif((scalar(@_) % 2) == 0) {
 		%args = @_;
 	} elsif(scalar(@_) == 1) {
 		$args{'directory'} = shift;
@@ -206,12 +215,11 @@ sub set_logger
 
 # Open the database.
 
-# FIXME: The default separator character is (for my historical reasons) '!' not ','
-
 sub _open {
 	my $self = shift;
+	my $sep_char = ($self->{'sep_char'} ? $self->{'sep_char'} : '!');
 	my %args = (
-		sep_char => '!',
+		sep_char => $sep_char,
 		((ref($_[0]) eq 'HASH') ? %{$_[0]} : @_)
 	);
 
@@ -269,7 +277,7 @@ sub _open {
 		}
 		if(defined($slurp_file) && (-r $slurp_file)) {
 			close($fin);
-			my $sep_char = $args{'sep_char'};
+			$sep_char = $args{'sep_char'};
 			if($self->{'logger'}) {
 				$self->{'logger'}->debug(__LINE__, ' of ', __PACKAGE__, ": slurp_file = $slurp_file, sep_char = $sep_char");
 			}
