@@ -195,19 +195,10 @@ Pass a class that will be used for logging.
 sub set_logger
 {
 	my $self = shift;
+	my $args = $self->_get_params('logger', @_);
 
-	my %args;
-
-	if(ref($_[0]) eq 'HASH') {
-		%args = %{$_[0]};
-	} elsif(scalar(@_) % 2 == 0) {
-		%args = @_;
-	} elsif((scalar(@_) == 1) && ref($_[0])) {
-		$args{'logger'} = shift;
-	}
-
-	if(defined($args{'logger'})) {
-		$self->{'logger'} = $args{'logger'};
+	if(defined($args->{'logger'})) {
+		$self->{'logger'} = $args->{'logger'};
 		return $self;
 	}
 	Carp::croak('Usage: set_logger(logger => $logger)')
@@ -436,21 +427,21 @@ Returns an array of hash references
 sub selectall_hash
 {
 	my $self = shift;
-	my %params = (ref($_[0]) eq 'HASH') ? %{$_[0]} : @_;
+	my $params = $self->_get_params(undef, @_);
 
 	my $table = $self->{table} || ref($self);
 	$table =~ s/.*:://;
 
 	if($self->{'data'}) {
-		if(scalar(keys %params) == 0) {
+		if(scalar(keys %${params}) == 0) {
 			if($self->{'logger'}) {
 				$self->{'logger'}->trace("$table: selectall_hash fast track return");
 			}
 			return values %{$self->{'data'}};
 			# my @rc = values %{$self->{'data'}};
 			# return @rc;
-		} elsif((scalar(keys %params) == 1) && defined($params{'entry'}) && !$self->{'no_entry'}) {
-			return $self->{'data'}->{$params{'entry'}};
+		} elsif((scalar(keys %{$params}) == 1) && defined($params->{'entry'}) && !$self->{'no_entry'}) {
+			return $self->{'data'}->{$params->{'entry'}};
 		}
 	}
 
@@ -467,8 +458,8 @@ sub selectall_hash
 	}
 
 	my @query_args;
-	foreach my $c1(sort keys(%params)) {	# sort so that the key is always the same
-		my $arg = $params{$c1};
+	foreach my $c1(sort keys(%{$params})) {	# sort so that the key is always the same
+		my $arg = $params->{$c1};
 		if(ref($arg)) {
 			if($self->{'logger'}) {
 				$self->{'logger'}->fatal("selectall_hash $query: argument is not a string");
@@ -569,20 +560,20 @@ which is worked out from the class name
 
 sub fetchrow_hashref {
 	my $self = shift;
-	my %params = (ref($_[0]) eq 'HASH') ? %{$_[0]} : @_;
+	my $params = $self->_get_params(undef, @_);
 
-	my $table = $params{'table'} || $self->{'table'} || ref($self);
+	my $table = $params->{'table'} || $self->{'table'} || ref($self);
 	$table =~ s/.*:://;
 
-	if($self->{'data'} && (!$self->{'no_entry'}) && (scalar keys(%params) == 1) && defined($params{'entry'})) {
+	if($self->{'data'} && (!$self->{'no_entry'}) && (scalar keys(%{$params}) == 1) && defined($params->{'entry'})) {
 		if(my $logger = $self->{'logger'}) {
 			$logger->debug('Fast return from slurped data');
 		}
-		return $self->{'data'}->{$params{'entry'}};
+		return $self->{'data'}->{$params->{'entry'}};
 	}
 
 	my $query = 'SELECT * FROM ';
-	if(my $t = delete $params{'table'}) {
+	if(my $t = delete $params->{'table'}) {
 		$query .= $t;
 	} else {
 		$query .= $table;
@@ -596,8 +587,8 @@ sub fetchrow_hashref {
 		$done_where = 1;
 	}
 	my @query_args;
-	foreach my $c1(sort keys(%params)) {	# sort so that the key is always the same
-		if(my $arg = $params{$c1}) {
+	foreach my $c1(sort keys(%{$params})) {	# sort so that the key is always the same
+		if(my $arg = $params->{$c1}) {
 			my $keyword;
 
 				if(ref($arg)) {
@@ -683,24 +674,16 @@ to the query.
 
 sub execute {
 	my $self = shift;
-	my %args;
+	my $args = $self->_get_params('query', @_);
 
-	if(ref($_[0]) eq 'HASH') {
-		%args = %{$_[0]};
-	} elsif(scalar(@_) % 2 == 0) {
-		%args = @_;
-	} elsif((scalar(@_) == 1) && !ref($_[0])) {
-		$args{'query'} = shift;
-	}
-
-	Carp::croak(__PACKAGE__, ': Usage: execute(query => $query)') unless(defined($args{'query'}));
+	Carp::croak(__PACKAGE__, ': Usage: execute(query => $query)') unless(defined($args->{'query'}));
 
 	my $table = $self->{table} || ref($self);
 	$table =~ s/.*:://;
 
 	$self->_open() if(!$self->{$table});
 
-	my $query = $args{'query'};
+	my $query = $args->{'query'};
 	if($query !~ / FROM /i) {
 		$query .= " FROM $table";
 	}
@@ -922,6 +905,41 @@ sub DESTROY {
 	if(my $table = delete $self->{'table'}) {
 		$table->finish();
 	}
+}
+
+# Helper routine to parse the arguments given to a function,
+#	allowing the caller to call the function in anyway that they want
+#	e.g. foo('bar'), foo(arg => 'bar'), foo({ arg => 'bar' }) all mean the same
+#	when called _get_params('arg', @_);
+sub _get_params
+{
+	shift;
+	my $default = shift;
+
+	if(ref($_[0]) eq 'HASH') {
+		# %rc = %{$_[0]};
+		return $_[0];
+	}
+
+	my %rc;
+
+	if((scalar(@_) % 2) == 0) {
+		%rc = @_;
+	} elsif(scalar(@_) == 1) {
+		if(defined($default)) {
+			$rc{$default} = shift;
+		} else {
+			my @c = caller(1);
+			my $func = $c[3];	# calling function name
+			Carp::croak('Usage: ', __PACKAGE__, "->$func()");
+		}
+	} elsif((scalar(@_) == 0) && defined($default)) {
+		my @c = caller(1);
+		my $func = $c[3];	# calling function name
+		Carp::croak('Usage: ', __PACKAGE__, "->$func($default => " . '$val)');
+	}
+
+	return \%rc;
 }
 
 =head1 AUTHOR
