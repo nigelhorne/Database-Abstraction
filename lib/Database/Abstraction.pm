@@ -44,11 +44,11 @@ use constant	DEFAULT_MAX_SLURP_SIZE => 16 * 1024;	# CSV files <= than this size 
 
 =head1 VERSION
 
-Version 0.09
+Version 0.10
 
 =cut
 
-our $VERSION = '0.09';
+our $VERSION = '0.10';
 
 =head1 SYNOPSIS
 
@@ -79,13 +79,13 @@ entries are keyed on that and sorts are based on it.
 To turn that off, pass 'no_entry' to the constructor, for legacy
 reasons it's enabled by default.
 
-    # There is no entry column in the database
+    # Regular CSV: There is no entry column and the separators are commas
     sub new
     {
-	my $self = shift;
+	my $class = shift;
 	my %args = (ref($_[0]) eq 'HASH') ? %{$_[0]} : @_;
 
-	return $self->SUPER::new(no_entry => 1, %args);
+	return $class->SUPER::new(no_entry => 1, sep_char => ',', %args);
     }
 
 CSV files that are not no_entry can have empty lines or comment lines starting with '#',

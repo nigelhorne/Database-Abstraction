@@ -11,10 +11,10 @@ our @ISA = ('Database::Abstraction');
 
 sub new
 {
-	my $self = shift;
+	my $class = shift;
 	my %args = (ref($_[0]) eq 'HASH') ? %{$_[0]} : @_;
 
-	return $self->SUPER::new(no_entry => 1, sep_char => ',', %args);
+	return $class->SUPER::new(no_entry => 1, sep_char => ',', %args);
 }
 
 1;
