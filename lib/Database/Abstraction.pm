@@ -382,6 +382,28 @@ sub _open {
 			$self->{'type'} = 'CSV';
 		} else {
 			$slurp_file = File::Spec->catfile($dir, "$table.xml");
+			# if((-s $slurp_file) <= $self->{'max_slurp_size'}) {
+				# require XML::Hash;
+				# XML::Hash->import();
+				# require File::Slurp;
+				# File::Slurp->import();
+				# my $xml = read_file(File::Spec->catfile($dir, "$table.xml"));
+
+				# $xml = XML::Hash->new()->fromXMLStringtoHash($xml);
+				# my @keys = keys %{$xml};
+				# my $key = $keys[0];
+				# my @data = $xml->{$key};
+				# if($self->{'no_entry'}) {
+					# # Not keyed, will need to scan each entry
+					# my $i = 0;
+					# $self->{'data'} = ();
+					# foreach my $d(@data) {
+						# $self->{'data'}[$i++] = $d;
+					# }
+				# } else {
+					# $self->{'data'} = $xml->{$key};
+				# }
+			# } elsif(-r $slurp_file) {
 			if(-r $slurp_file) {
 				$dbh = DBI->connect('dbi:XMLSimple(RaiseError=>1):');
 				$dbh->{'RaiseError'} = 1;
