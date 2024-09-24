@@ -74,10 +74,11 @@ You can then access the data using:
     my $row = $foo->fetchrow_hashref(customer_id => 'xyzzy');
     print Data::Dumper->new([$row])->Dump();
 
-If the table has a column called "entry",
+If the table has a key column,
 entries are keyed on that and sorts are based on it.
 To turn that off, pass 'no_entry' to the constructor, for legacy
 reasons it's enabled by default.
+The key column's default name is 'entry', but it can be overridden by the 'id' parameter.
 
 CSV files that are not no_entry can have empty lines or comment lines starting with '#',
 to make them more readable.
@@ -176,9 +177,11 @@ sub new {
 		# no_entry => $args{'no_entry'} || 0,
 	# }, $class;
 
+
 	# Re-seen keys take precedence, so defaults come first
 	return bless {
 		no_entry => 0,
+		id => 'entry',
 		cache_duration => '1 hour',
 		max_slurp_size => DEFAULT_MAX_SLURP_SIZE,
 		%defaults,
@@ -368,11 +371,11 @@ sub _open {
 						$self->{'data'}[$i++] = $d;
 					}
 				} else {
-					# keyed on the "entry" column
+					# keyed on the $self->{'id'} (default: "entry") column
 					# Ignore blank lines or lines starting with # in the CSV file
-					@data = grep { $_->{'entry'} !~ /^\s*#/ } grep { defined($_->{'entry'}) } @data;
+					@data = grep { $_->{$self->{'id'}} !~ /^\s*#/ } grep { defined($_->{$self->{'id'}}) } @data;
 					foreach my $d(@data) {
-						$self->{'data'}->{$d->{'entry'}} = $d;
+						$self->{'data'}->{$d->{$self->{'id'}}} = $d;
 					}
 				}
 			}
@@ -490,7 +493,7 @@ sub selectall_hash
 		push @query_args, $arg;
 	}
 	if(!$self->{no_entry}) {
-		$query .= ' ORDER BY entry';
+		$query .= ' ORDER BY ' . $self->{'id'};
 	}
 	if(!wantarray) {
 		$query .= ' LIMIT 1';
@@ -583,7 +586,7 @@ sub fetchrow_hashref {
 	$self->_open() if(!$self->{$table});
 
 	if(($self->{'type'} eq 'CSV') && !$self->{no_entry}) {
-		$query .= " WHERE entry IS NOT NULL AND entry NOT LIKE '#%'";
+		$query .= ' WHERE ' . $self->{'id'} . ' IS NOT NULL AND ' . $self->{'id'} . " NOT LIKE '#%'";
 		$done_where = 1;
 	}
 	my @query_args;
@@ -749,7 +752,7 @@ sub AUTOLOAD {
 		%params = @_;
 	} elsif(scalar(@_) == 1) {
 		if($self->{'no_entry'}) {
-			Carp::croak(ref($self), "::($_[0]): entry is not a column");
+			Carp::croak(ref($self), "::($_[0]): ", $self->{'id'}, 'is not a column');
 		}
 		$params{'entry'} = shift;
 	}
@@ -766,7 +769,7 @@ sub AUTOLOAD {
 			return map { $_->{$column} } values %{$data};
 		}
 		if(($self->{'type'} eq 'CSV') && !$self->{no_entry}) {
-			$query = "SELECT $column FROM $table WHERE entry IS NOT NULL AND entry NOT LIKE '#%'";
+			$query = "SELECT $column FROM $table WHERE " . $self->{'id'} . "IS NOT NULL AND entry NOT LIKE '#%'";
 			$done_where = 1;
 		} else {
 			$query = "SELECT $column FROM $table";
@@ -839,7 +842,7 @@ sub AUTOLOAD {
 			return
 		}
 		if(($self->{'type'} eq 'CSV') && !$self->{no_entry}) {
-			$query = "SELECT DISTINCT $column FROM $table WHERE entry IS NOT NULL AND entry NOT LIKE '#%'";
+			$query = "SELECT DISTINCT $column FROM $table WHERE " . $self->{'id'} . "IS NOT NULL AND entry NOT LIKE '#%'";
 			$done_where = 1;
 		} else {
 			$query = "SELECT DISTINCT $column FROM $table";
@@ -953,6 +956,8 @@ I really ought to fix that.
 
 It would be nice for the key column to be called key, not entry,
 however key's a reserved word in SQL.
+
+The no_entry parameter should be no_id.
 
 =head1 LICENSE AND COPYRIGHT
 
