@@ -25,7 +25,8 @@ WriteMakefile(
 		'Test::Most' => 0,
 		'Test::Needs' => 0,
 		'Test::NoWarnings' => 0,
-		'Text::xSV::Slurp' => 0
+		'Text::xSV::Slurp' => 0,
+		'XML::Simple' => 0
 	}, PREREQ_PM => {
 		'autodie' => 0,
 		'strict' => 0,

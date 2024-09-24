@@ -12,7 +12,7 @@ sub new
 	my $class = shift;
 	my %args = (ref($_[0]) eq 'HASH') ? %{$_[0]} : @_;
 
-	return $class->SUPER::new(id => 'ID', no_entry => 1, %args);
+	return $class->SUPER::new(id => 'ID', %args);
 }
 
 1;

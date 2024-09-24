@@ -25,7 +25,7 @@ Database::Abstraction - database abstraction layer
 #	new(database => 'redis://servername');
 # TODO:	Add a "key" property, defaulting to "entry", which would be the name of the key
 # TODO:	The maximum number to return should be tuneable (as a LIMIT)
-# TODO:	Investigate XML::Hash
+# FIXME:	t/xml.t fails in slurping mode
 
 use warnings;
 use strict;
@@ -125,7 +125,7 @@ Arguments:
 cache => place to store results;
 cache_duration => how long to store results in the cache (default is 1 hour);
 directory => where the database file is held
-max_slurp_size => CSV/PSV files smaller than this are held in RAM (default is 16K)
+max_slurp_size => CSV/PSV/XML files smaller than this are held in RAM (default is 16K)
 
 If the arguments are not set, tries to take from class level defaults.
 
@@ -382,29 +382,33 @@ sub _open {
 			$self->{'type'} = 'CSV';
 		} else {
 			$slurp_file = File::Spec->catfile($dir, "$table.xml");
-			# if((-s $slurp_file) <= $self->{'max_slurp_size'}) {
-				# require XML::Hash;
-				# XML::Hash->import();
-				# require File::Slurp;
-				# File::Slurp->import();
-				# my $xml = read_file(File::Spec->catfile($dir, "$table.xml"));
+			if((-s $slurp_file) <= $self->{'max_slurp_size'}) {
+				require XML::Simple;
+				XML::Simple->import();
 
-				# $xml = XML::Hash->new()->fromXMLStringtoHash($xml);
-				# my @keys = keys %{$xml};
-				# my $key = $keys[0];
-				# my @data = $xml->{$key};
-				# if($self->{'no_entry'}) {
-					# # Not keyed, will need to scan each entry
-					# my $i = 0;
-					# $self->{'data'} = ();
-					# foreach my $d(@data) {
-						# $self->{'data'}[$i++] = $d;
-					# }
-				# } else {
-					# $self->{'data'} = $xml->{$key};
-				# }
-			# } elsif(-r $slurp_file) {
-			if(-r $slurp_file) {
+				my $xml = XMLin(File::Spec->catfile($dir, "$table.xml"));
+				my @keys = keys %{$xml};
+				my $key = $keys[0];
+				my @data;
+				if(ref($xml->{$key}) eq 'ARRAY') {
+					@data = @{$xml->{$key}};
+				} else {
+					@data = @{$xml};
+				}
+				$self->{'data'} = ();
+				if($self->{'no_entry'}) {
+					# Not keyed, will need to scan each entry
+					my $i = 0;
+					foreach my $d(@data) {
+						$self->{'data'}->{$i++} = $d;
+					}
+				} else {
+					# keyed on the $self->{'id'} (default: "entry") column
+					foreach my $d(@data) {
+						$self->{'data'}->{$d->{$self->{'id'}}} = $d;
+					}
+				}
+			} elsif(-r $slurp_file) {
 				$dbh = DBI->connect('dbi:XMLSimple(RaiseError=>1):');
 				$dbh->{'RaiseError'} = 1;
 				if($self->{'logger'}) {
@@ -457,8 +461,10 @@ sub selectall_hash
 	my $table = $self->{table} || ref($self);
 	$table =~ s/.*:://;
 
+	$self->_open() if((!$self->{$table}) && (!$self->{'data'}));
+
 	if($self->{'data'}) {
-		if(scalar(keys %${params}) == 0) {
+		if(scalar(keys %{$params}) == 0) {
 			if($self->{'logger'}) {
 				$self->{'logger'}->trace("$table: selectall_hash fast track return");
 			}
@@ -472,8 +478,6 @@ sub selectall_hash
 
 	my $query;
 	my $done_where = 0;
-
-	$self->_open() if(!$self->{$table});
 
 	if(($self->{'type'} eq 'CSV') && !$self->{no_entry}) {
 		$query = "SELECT * FROM $table WHERE entry IS NOT NULL AND entry NOT LIKE '#%'";
@@ -980,6 +984,14 @@ It would be nice for the key column to be called key, not entry,
 however key's a reserved word in SQL.
 
 The no_entry parameter should be no_id.
+
+XML slurping is hard,
+so if XML fails for you on a small file force non-slurping mode with
+
+    $foo = MyPackageName::Database::Foo->new({
+	directory => '/var/db',
+	# max_slurp_size => 1	# force to not use slurp and therefore to use SQL
+    });
 
 =head1 LICENSE AND COPYRIGHT
 
