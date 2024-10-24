@@ -69,7 +69,7 @@ For example, you can access the files in /var/db/foo.csv via this class:
 
 You can then access the data using:
 
-    my $foo = MyPackageName::Database::Foo->new(directory => '/var/db');
+    my $foo = MyPackageName::Database::Foo->new(directory => '/var/dat');
     print 'Customer name ', $foo->name(customer_id => 'plugh'), "\n";
     my $row = $foo->fetchrow_hashref(customer_id => 'xyzzy');
     print Data::Dumper->new([$row])->Dump();
@@ -753,6 +753,8 @@ or only the first when called in scalar context
 If the database has a column called "entry" you can do a quick lookup with
 
     my $value = $foo->column('123');	# where "column" is the value you're after
+    my @entries = $foo->entry();
+    print 'There are ', scalar(@entries), " entries in the database\n";
 
 Set distinct or unique to 1 if you're after a unique list.
 

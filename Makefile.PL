@@ -2,6 +2,15 @@ use strict;
 use warnings;
 use ExtUtils::MakeMaker 6.64;	# 6.64 for TEST_REQUIRES
 
+my $dist = {
+	COMPRESS => 'gzip -9f',
+	SUFFIX => 'gz'
+};
+
+if($^O eq 'darwin') {
+	$dist->{'TAR'} = 'gtar';
+}
+
 WriteMakefile(
 	NAME		=> 'Database::Abstraction',
 	AUTHOR		=> q{Nigel Horne <njh@bandsman.co.uk>},
@@ -39,8 +48,7 @@ WriteMakefile(
 		'File::Temp' => 0,
 		# 'Error' => 0,
 		'Carp' => 0
-	},
-	dist		=> { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
+	}, dist => $dist,
 	clean		=> { FILES => 'Database-Abstraction-*' },
 	# META_ADD => {
 		# provides => {}
