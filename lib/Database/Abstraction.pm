@@ -701,34 +701,44 @@ to the query.
 
 =cut
 
-sub execute {
+sub execute
+{
 	my $self = shift;
 	my $args = $self->_get_params('query', @_);
 
-	Carp::croak(__PACKAGE__, ': Usage: execute(query => $query)') unless(defined($args->{'query'}));
+	# Ensure the 'query' parameter is provided
+	Carp::croak(__PACKAGE__, ': Usage: execute(query => $query)') 
+		unless defined $args->{'query'};
 
+	# Get table name (remove package name prefix if present)
 	my $table = $self->{table} || ref($self);
 	$table =~ s/.*:://;
 
-	$self->_open() if(!$self->{$table});
+	# Open a connection if it's not already open
+	$self->_open() unless $self->{$table};
 
 	my $query = $args->{'query'};
-	if($query !~ / FROM /i) {
-		$query .= " FROM $table";
-	}
-	if($self->{'logger'}) {
-		$self->{'logger'}->debug("execute $query");
-	}
+
+	# Append "FROM <table>" if missing
+	$query .= " FROM $table" unless $query =~ /\sFROM\s/i;
+
+	# Log the query if a logger is available
+	$self->{'logger'}->debug("execute $query") if $self->{'logger'};
+
+	# Prepare and execute the query
 	my $sth = $self->{$table}->prepare($query);
-	# $sth->execute() || throw Error::Simple($query);
-	$sth->execute() || croak($query);
-	my @rc;
-	while(my $href = $sth->fetchrow_hashref()) {
-		return $href if(!wantarray);
-		push @rc, $href;
+	$sth->execute() or croak($query);  # Die with the query in case of error
+
+	# Fetch the results
+	my @results;
+	while (my $row = $sth->fetchrow_hashref()) {
+		# Return a single hashref if scalar context is expected
+		return $row unless wantarray;
+		push @results, $row;
 	}
 
-	return @rc;
+	# Return all rows as an array in list context
+	return @results;
 }
 
 =head2 updated
