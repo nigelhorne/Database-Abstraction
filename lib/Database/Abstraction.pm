@@ -382,39 +382,41 @@ sub _open {
 			$self->{'type'} = 'CSV';
 		} else {
 			$slurp_file = File::Spec->catfile($dir, "$table.xml");
-			if((-s $slurp_file) <= $self->{'max_slurp_size'}) {
-				require XML::Simple;
-				XML::Simple->import();
+			if(-r $slurp_file) {
+				if((-s $slurp_file) <= $self->{'max_slurp_size'}) {
+					require XML::Simple;
+					XML::Simple->import();
 
-				my $xml = XMLin(File::Spec->catfile($dir, "$table.xml"));
-				my @keys = keys %{$xml};
-				my $key = $keys[0];
-				my @data;
-				if(ref($xml->{$key}) eq 'ARRAY') {
-					@data = @{$xml->{$key}};
-				} else {
-					@data = @{$xml};
-				}
-				$self->{'data'} = ();
-				if($self->{'no_entry'}) {
-					# Not keyed, will need to scan each entry
-					my $i = 0;
-					foreach my $d(@data) {
-						$self->{'data'}->{$i++} = $d;
+					my $xml = XMLin(File::Spec->catfile($dir, "$table.xml"));
+					my @keys = keys %{$xml};
+					my $key = $keys[0];
+					my @data;
+					if(ref($xml->{$key}) eq 'ARRAY') {
+						@data = @{$xml->{$key}};
+					} else {
+						@data = @{$xml};
+					}
+					$self->{'data'} = ();
+					if($self->{'no_entry'}) {
+						# Not keyed, will need to scan each entry
+						my $i = 0;
+						foreach my $d(@data) {
+							$self->{'data'}->{$i++} = $d;
+						}
+					} else {
+						# keyed on the $self->{'id'} (default: "entry") column
+						foreach my $d(@data) {
+							$self->{'data'}->{$d->{$self->{'id'}}} = $d;
+						}
 					}
 				} else {
-					# keyed on the $self->{'id'} (default: "entry") column
-					foreach my $d(@data) {
-						$self->{'data'}->{$d->{$self->{'id'}}} = $d;
+					$dbh = DBI->connect('dbi:XMLSimple(RaiseError=>1):');
+					$dbh->{'RaiseError'} = 1;
+					if($self->{'logger'}) {
+						$self->{'logger'}->debug("read in $table from XML $slurp_file");
 					}
+					$dbh->func($table, 'XML', $slurp_file, 'xmlsimple_import');
 				}
-			} elsif(-r $slurp_file) {
-				$dbh = DBI->connect('dbi:XMLSimple(RaiseError=>1):');
-				$dbh->{'RaiseError'} = 1;
-				if($self->{'logger'}) {
-					$self->{'logger'}->debug("read in $table from XML $slurp_file");
-				}
-				$dbh->func($table, 'XML', $slurp_file, 'xmlsimple_import');
 			} else {
 				# throw Error(-file => "$dir/$table");
 				croak("Can't find a $table database in $dir");
