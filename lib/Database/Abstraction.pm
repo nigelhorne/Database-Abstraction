@@ -34,7 +34,7 @@ use Data::Dumper;
 use DBD::SQLite::Constants qw/:file_open/;	# For SQLITE_OPEN_READONLY
 use File::Basename;
 use File::Spec;
-use File::pfopen 0.02;
+use File::pfopen 0.03;	# For $mode and list context
 use File::Temp;
 # use Error::Simple;	# A nice idea to use this but it doesn't play well with "use lib"
 use Carp;
@@ -101,6 +101,7 @@ Therefore when given with no arguments you can get the current default values:
 
 =cut
 
+# Subroutine to initialize with args
 sub init
 {
 	if(scalar(@_)) {
@@ -154,8 +155,11 @@ sub new {
 
 	if(!defined($class)) {
 		# Using Database::Abstraction->new(), not Database::Abstraction::new()
-		carp(__PACKAGE__, ' use ->new() not ::new() to instantiate');
-		return;
+		# carp(__PACKAGE__, ' use ->new() not ::new() to instantiate');
+		# return;
+
+		# FIXME: this only works when no arguments are given
+		$class = __PACKAGE__;
 	} elsif($class eq __PACKAGE__) {
 		croak("$class: abstract class");
 	} elsif(ref($class)) {
@@ -250,7 +254,7 @@ sub _open {
 		$self->{'type'} = 'DBI';
 	} else {
 		my $fin;
-		($fin, $slurp_file) = File::pfopen::pfopen($dir, $table, 'csv.gz:db.gz');
+		($fin, $slurp_file) = File::pfopen::pfopen($dir, $table, 'csv.gz:db.gz', '<');
 		if(defined($slurp_file) && (-r $slurp_file)) {
 			require Gzip::Faster;
 			Gzip::Faster->import();
@@ -261,12 +265,12 @@ sub _open {
 			$slurp_file = $fin->filename();
 			$self->{'temp'} = $slurp_file;
 		} else {
-			($fin, $slurp_file) = File::pfopen::pfopen($dir, $table, 'psv');
+			($fin, $slurp_file) = File::pfopen::pfopen($dir, $table, 'psv', '<');
 			if(defined($fin)) {
 				# Pipe separated file
 				$args{'sep_char'} = '|';
 			} else {
-				($fin, $slurp_file) = File::pfopen::pfopen($dir, $table, 'csv:db');
+				($fin, $slurp_file) = File::pfopen::pfopen($dir, $table, 'csv:db', '<');
 			}
 		}
 		if(defined($slurp_file) && (-r $slurp_file)) {
@@ -774,9 +778,7 @@ Set distinct or unique to 1 if you're after a unique list.
 
 sub AUTOLOAD {
 	our $AUTOLOAD;
-	my $column = $AUTOLOAD;
-
-	$column =~ s/.*:://;
+	my ($column) = $AUTOLOAD =~ /::(\w+)$/;
 
 	return if($column eq 'DESTROY');
 
@@ -956,30 +958,25 @@ sub DESTROY {
 #	when called _get_params('arg', @_);
 sub _get_params
 {
-	shift;
+	shift;  # Discard the first argument (typically $self)
 	my $default = shift;
 
-	if(ref($_[0]) eq 'HASH') {
-		# %rc = %{$_[0]};
-		return $_[0];
-	}
+	# Directly return hash reference if the first parameter is a hash reference
+	return $_[0] if ref $_[0] eq 'HASH';
 
 	my %rc;
+	my $num_args = scalar @_;
 
-	if((scalar(@_) % 2) == 0) {
+	# Populate %rc based on the number and type of arguments
+	if(($num_args == 1) && (defined $default)) {
+		# %rc = ($default => shift);
+		return { $default => shift };
+	} elsif($num_args == 1) {
+		Carp::croak('Usage: ', __PACKAGE__, '->', (caller(1))[3], '()');
+	} elsif($num_args == 0 && defined $default) {
+		Carp::croak('Usage: ', __PACKAGE__, '->', (caller(1))[3], '($default => \$val)');
+	} elsif(($num_args % 2) == 0) {
 		%rc = @_;
-	} elsif(scalar(@_) == 1) {
-		if(defined($default)) {
-			$rc{$default} = shift;
-		} else {
-			my @c = caller(1);
-			my $func = $c[3];	# calling function name
-			Carp::croak('Usage: ', __PACKAGE__, "->$func()");
-		}
-	} elsif((scalar(@_) == 0) && defined($default)) {
-		my @c = caller(1);
-		my $func = $c[3];	# calling function name
-		Carp::croak('Usage: ', __PACKAGE__, "->$func($default => " . '$val)');
 	}
 
 	return \%rc;
