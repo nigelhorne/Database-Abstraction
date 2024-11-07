@@ -6,7 +6,7 @@ use strict;
 use FindBin qw($Bin);
 
 use lib 't/lib';
-use Test::Most tests => 12;
+use Test::Most tests => 13;
 
 use_ok('MyLogger');
 use_ok('Database::test1');
@@ -25,3 +25,9 @@ cmp_ok($test2->set_logger(new_ok('MyLogger')), 'eq', $test2, 'set_logger returns
 
 cmp_ok($test2->number('third'), 'eq', '3rd', 'PSV AUTOLOAD works found');
 is($test2->number('four'), undef, 'PSV AUTOLOAD works not found');
+
+# Attempt to set without logger (should croak)
+eval {
+	$test2->set_logger();
+};
+like($@, qr/^Usage: /, 'set_logger with no args should croak');
