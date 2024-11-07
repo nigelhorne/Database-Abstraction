@@ -34,7 +34,7 @@ use Data::Dumper;
 use DBD::SQLite::Constants qw/:file_open/;	# For SQLITE_OPEN_READONLY
 use File::Basename;
 use File::Spec;
-use File::pfopen 0.02;	# For $mode and list context
+use File::pfopen 0.03;	# For $mode and list context
 use File::Temp;
 # use Error::Simple;	# A nice idea to use this but it doesn't play well with "use lib"
 use Carp;
