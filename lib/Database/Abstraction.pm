@@ -44,11 +44,11 @@ use constant	DEFAULT_MAX_SLURP_SIZE => 16 * 1024;	# CSV files <= than this size 
 
 =head1 VERSION
 
-Version 0.10
+Version 0.11
 
 =cut
 
-our $VERSION = '0.10';
+our $VERSION = '0.11';
 
 =head1 SYNOPSIS
 
@@ -705,6 +705,9 @@ On CSV tables without no_entry, it may help to add
 "WHERE entry IS NOT NULL AND entry NOT LIKE '#%'"
 to the query.
 
+Note, this won't work on databases slurped in to memory.
+To stop that from happening, reduce max_slurp_size
+
 =cut
 
 sub execute
@@ -715,6 +718,11 @@ sub execute
 	# Ensure the 'query' parameter is provided
 	Carp::croak(__PACKAGE__, ': Usage: execute(query => $query)') 
 		unless defined $args->{'query'};
+
+	# Check if data was slurped
+	if($self->{'data'}) {
+		Carp::croak(__PACKAGE__, "Can't run exeucute on slurped data - reduce max_slurp_size");
+	}
 
 	# Get table name (remove package name prefix if present)
 	my $table = $self->{table} || ref($self);

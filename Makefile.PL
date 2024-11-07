@@ -44,7 +44,7 @@ WriteMakefile(
 		'DBD::SQLite::Constants' => 0,
 		'File::Basename' => 0,
 		'File::Spec' => 0,
-		'File::pfopen' => 0.02,
+		'File::pfopen' => 0.03,
 		'File::Temp' => 0,
 		# 'Error' => 0,
 		'Carp' => 0

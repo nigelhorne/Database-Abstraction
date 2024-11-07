@@ -1,6 +1,6 @@
 Revision history for Database-Abstraction
 
-0.11
+0.11	Thu Nov  7 10:44:24 EST 2024
 	Added id parameter
 	Slurp small XML files using XML::Simple
 	Fix uninitialised error when slurp_file doesn't exist
