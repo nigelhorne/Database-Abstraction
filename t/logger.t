@@ -41,4 +41,3 @@ is($test2->number('four'), undef, 'PSV AUTOLOAD works not found');
 	};
 	like($@, qr/Usage: /, 'set_logger dies with correct error message if logger is missing');
 }
-

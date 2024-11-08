@@ -59,21 +59,6 @@ Look for databases in $directory in this order:
 3) CSV (file ends with .csv or .db, can be gzipped) (note the default sep_char is '!' not ',')
 4) XML (file ends with .xml)
 
-For example, you can access the files in /var/db/foo.csv via this class:
-
-    package MyPackageName::Database::Foo;
-
-    use Database::Abstraction;
-
-    our @ISA = ('Database::Abstraction');
-
-You can then access the data using:
-
-    my $foo = MyPackageName::Database::Foo->new(directory => '/var/dat');
-    print 'Customer name ', $foo->name(customer_id => 'plugh'), "\n";
-    my $row = $foo->fetchrow_hashref(customer_id => 'xyzzy');
-    print Data::Dumper->new([$row])->Dump();
-
 If the table has a key column,
 entries are keyed on that and sorts are based on it.
 To turn that off, pass 'no_entry' to the constructor, for legacy
@@ -82,6 +67,30 @@ The key column's default name is 'entry', but it can be overridden by the 'id' p
 
 CSV files that are not no_entry can have empty lines or comment lines starting with '#',
 to make them more readable.
+
+For example, you can access the files in /var/db/foo.csv via this class:
+
+    package MyPackageName::Database::Foo;
+
+    use Database::Abstraction;
+
+    our @ISA = ('Database::Abstraction');
+
+    # Regular CSV: There is no entry column and the separators are commas
+    sub new
+    {
+	my $class = shift;
+	my %args = (ref($_[0]) eq 'HASH') ? %{$_[0]} : @_;
+
+	return $class->SUPER::new(no_entry => 1, sep_char => ',', %args);
+    }
+
+You can then access the data using:
+
+    my $foo = MyPackageName::Database::Foo->new(directory => '/var/dat');
+    print 'Customer name ', $foo->name(customer_id => 'plugh'), "\n";
+    my $row = $foo->fetchrow_hashref(customer_id => 'xyzzy');
+    print Data::Dumper->new([$row])->Dump();
 
 =head1 SUBROUTINES/METHODS
 
@@ -129,15 +138,6 @@ directory => where the database file is held
 max_slurp_size => CSV/PSV/XML files smaller than this are held in RAM (default is 16K)
 
 If the arguments are not set, tries to take from class level defaults.
-
-    # Regular CSV: There is no entry column and the separators are commas
-    sub new
-    {
-	my $class = shift;
-	my %args = (ref($_[0]) eq 'HASH') ? %{$_[0]} : @_;
-
-	return $class->SUPER::new(no_entry => 1, sep_char => ',', %args);
-    }
 
 =cut
 
