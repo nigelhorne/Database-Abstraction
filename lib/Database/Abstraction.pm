@@ -195,7 +195,7 @@ sub new {
 
 =head2	set_logger
 
-Pass a class that will be used for logging.
+Sets class or code reference that will be used for logging.
 
 =cut
 
@@ -224,9 +224,8 @@ sub _open {
 	my $table = $self->{'table'} || ref($self);
 	$table =~ s/.*:://;
 
-	if($self->{'logger'}) {
-		$self->{'logger'}->trace("_open $table");
-	}
+	$self->_trace("_open $table");
+
 	return if($self->{$table});
 
 	# Read in the database
@@ -234,9 +233,8 @@ sub _open {
 
 	my $dir = $self->{'directory'} || $defaults{'directory'};
 	my $slurp_file = File::Spec->catfile($dir, "$table.sql");
-	if($self->{'logger'}) {
-		$self->{'logger'}->debug("_open: try to open $slurp_file");
-	}
+
+	$self->_debug("_open: try to open $slurp_file");
 
 	if(-r $slurp_file) {
 		require DBI;
@@ -248,9 +246,7 @@ sub _open {
 		});
 		$dbh->do('PRAGMA synchronous = OFF');
 		$dbh->do('PRAGMA cache_size = 65536');
-		if($self->{'logger'}) {
-			$self->{'logger'}->debug("read in $table from SQLite $slurp_file");
-		}
+		$self->_debug("read in $table from SQLite $slurp_file");
 		$self->{'type'} = 'DBI';
 	} else {
 		my $fin;
@@ -276,9 +272,9 @@ sub _open {
 		if(defined($slurp_file) && (-r $slurp_file)) {
 			close($fin);
 			$sep_char = $args{'sep_char'};
-			if($self->{'logger'}) {
-				$self->{'logger'}->debug(__LINE__, ' of ', __PACKAGE__, ": slurp_file = $slurp_file, sep_char = $sep_char");
-			}
+
+			$self->_debug(__LINE__, ' of ', __PACKAGE__, ": slurp_file = $slurp_file, sep_char = $sep_char");
+
 			if($args{'column_names'}) {
 				$dbh = DBI->connect("dbi:CSV:db_name=$slurp_file", undef, undef,
 					{
@@ -295,9 +291,7 @@ sub _open {
 			}
 			$dbh->{'RaiseError'} = 1;
 
-			if($self->{'logger'}) {
-				$self->{'logger'}->debug("read in $table from CSV $slurp_file");
-			}
+			$self->_debug("read in $table from CSV $slurp_file");
 
 			$dbh->{csv_tables}->{$table} = {
 				allow_loose_quotes => 1,
@@ -349,9 +343,8 @@ sub _open {
 				require Text::xSV::Slurp;
 				Text::xSV::Slurp->import();
 
-				if($self->{'logger'}) {
-					$self->{'logger'}->trace('slurp in');
-				}
+				$self->_trace('slurp in');
+
 				my @data = @{xsv_slurp(
 					shape => 'aoh',
 					text_csv => {
@@ -416,9 +409,7 @@ sub _open {
 				} else {
 					$dbh = DBI->connect('dbi:XMLSimple(RaiseError=>1):');
 					$dbh->{'RaiseError'} = 1;
-					if($self->{'logger'}) {
-						$self->{'logger'}->debug("read in $table from XML $slurp_file");
-					}
+					$self->_debug("read in $table from XML $slurp_file");
 					$dbh->func($table, 'XML', $slurp_file, 'xmlsimple_import');
 				}
 			} else {
@@ -471,9 +462,7 @@ sub selectall_hash
 
 	if($self->{'data'}) {
 		if(scalar(keys %{$params}) == 0) {
-			if($self->{'logger'}) {
-				$self->{'logger'}->trace("$table: selectall_hash fast track return");
-			}
+			$self->_trace("$table: selectall_hash fast track return");
 			return values %{$self->{'data'}};
 			# my @rc = values %{$self->{'data'}};
 			# return @rc;
@@ -496,9 +485,7 @@ sub selectall_hash
 	foreach my $c1(sort keys(%{$params})) {	# sort so that the key is always the same
 		my $arg = $params->{$c1};
 		if(ref($arg)) {
-			if($self->{'logger'}) {
-				$self->{'logger'}->fatal("selectall_hash $query: argument is not a string");
-			}
+			$self->_fatal("selectall_hash $query: argument is not a string");
 			# throw Error::Simple("$query: argument is not a string: " . ref($arg));
 			croak("$query: argument is not a string: ", ref($arg));
 		}
@@ -530,13 +517,13 @@ sub selectall_hash
 	if(!wantarray) {
 		$query .= ' LIMIT 1';
 	}
-	if($self->{'logger'}) {
-		if(defined($query_args[0])) {
-			$self->{'logger'}->debug("selectall_hash $query: ", join(', ', @query_args));
-		} else {
-			$self->{'logger'}->debug("selectall_hash $query");
-		}
+
+	if(defined($query_args[0])) {
+		$self->_debug("selectall_hash $query: ", join(', ', @query_args));
+	} else {
+		$self->_debug("selectall_hash $query");
 	}
+
 	my $key;
 	my $c;
 	if($c = $self->{cache}) {
@@ -545,20 +532,16 @@ sub selectall_hash
 			$key .= ' ' . join(', ', @query_args);
 		}
 		if(my $rc = $c->get($key)) {
-			if($self->{'logger'}) {
-				$self->{'logger'}->debug('cache HIT');
-			}
+			$self->_debug('cache HIT');
 			# This use of a temporary variable is to avoid
 			#	"Implicit scalar context for array in return"
 			# return @{$rc};
 			my @rc = @{$rc};
 			return @rc;
 		}
-		if($self->{'logger'}) {
-			$self->{'logger'}->debug('cache MISS');
-		}
-	} elsif($self->{'logger'}) {
-		$self->{'logger'}->debug('cache not used');
+		$self->_debug('cache MISS');
+	} else {
+		$self->_debug('cache not used');
 	}
 
 	if(my $sth = $self->{$table}->prepare($query)) {
@@ -578,9 +561,7 @@ sub selectall_hash
 
 		return @rc;
 	}
-	if($self->{'logger'}) {
-		$self->{'logger'}->warn("selectall_hash failure on $query: @query_args");
-	}
+	$self->_warn("selectall_hash failure on $query: @query_args");
 	# throw Error::Simple("$query: @query_args");
 	croak("$query: @query_args");
 }
@@ -601,9 +582,7 @@ sub fetchrow_hashref {
 	$table =~ s/.*:://;
 
 	if($self->{'data'} && (!$self->{'no_entry'}) && (scalar keys(%{$params}) == 1) && defined($params->{'entry'})) {
-		if(my $logger = $self->{'logger'}) {
-			$logger->debug('Fast return from slurped data');
-		}
+		$self->_debug('Fast return from slurped data');
 		return $self->{'data'}->{$params->{'entry'}};
 	}
 
@@ -627,9 +606,7 @@ sub fetchrow_hashref {
 			my $keyword;
 
 				if(ref($arg)) {
-					if($self->{'logger'}) {
-						$self->{'logger'}->fatal("selectall_hash $query: argument is not a string");
-					}
+					$self->_fatal("selectall_hash $query: argument is not a string");
 					# throw Error::Simple("$query: argument is not a string: " . ref($arg));
 					croak("$query: argument is not a string: ", ref($arg));
 				}
@@ -655,14 +632,12 @@ sub fetchrow_hashref {
 	}
 	# $query .= ' ORDER BY entry LIMIT 1';
 	$query .= ' LIMIT 1';
-	if($self->{'logger'}) {
-		if(defined($query_args[0])) {
-			my @call_details = caller(0);
-			$self->{'logger'}->debug("fetchrow_hashref $query: ", join(', ', @query_args),
-				' called from ', $call_details[2], ' of ', $call_details[1]);
-		} else {
-			$self->{'logger'}->debug("fetchrow_hashref $query");
-		}
+	if(defined($query_args[0])) {
+		my @call_details = caller(0);
+		$self->_debug("fetchrow_hashref $query: ", join(', ', @query_args),
+			' called from ', $call_details[2], ' of ', $call_details[1]);
+	} else {
+		$self->_debug("fetchrow_hashref $query");
 	}
 	my $key;
 	if(defined($query_args[0])) {
@@ -682,13 +657,11 @@ sub fetchrow_hashref {
 	$sth->execute(@query_args) || croak("$query: @query_args");
 	my $rc = $sth->fetchrow_hashref();
 	if($c) {
-		if(my $logger = $self->{'logger'}) {
-			if($rc) {
-				$logger->debug("stash $key=>$rc in the cache for ", $self->{'cache_duration'});
-				$logger->debug("returns ", Data::Dumper->new([$rc])->Dump());
-			} else {
-				$logger->debug("Stash $key=>undef in the cache for ", $self->{'cache_duration'});
-			}
+		if($rc) {
+			$self->_debug("stash $key=>$rc in the cache for ", $self->{'cache_duration'});
+			$self->_debug("returns ", Data::Dumper->new([$rc])->Dump());
+		} else {
+			$self->_debug("Stash $key=>undef in the cache for ", $self->{'cache_duration'});
 		}
 		$c->set($key, $rc, $self->{'cache_duration'});
 	}
@@ -732,7 +705,7 @@ sub execute
 	$query .= " FROM $table" unless $query =~ /\sFROM\s/i;
 
 	# Log the query if a logger is available
-	$self->{'logger'}->debug("execute $query") if $self->{'logger'};
+	$self->_debug("execute $query");
 
 	# Prepare and execute the query
 	my $sth = $self->{$table}->prepare($query);
@@ -797,7 +770,7 @@ sub AUTOLOAD {
 		%params = @_;
 	} elsif(scalar(@_) == 1) {
 		if($self->{'no_entry'}) {
-			Carp::croak(ref($self), "::($_[0]): ", $self->{'id'}, 'is not a column');
+			Carp::croak(ref($self), "::($_[0]): ", $self->{'id'}, ' is not a column');
 		}
 		$params{'entry'} = shift;
 	}
@@ -827,12 +800,10 @@ sub AUTOLOAD {
 				my ($key, $value) = %params;
 				foreach my $row(@{$data}) {
 					if(($row->{$key} eq $value) && (my $rc = $row->{$column})) {
-						if($self->{'logger'}) {
-							if(defined($rc)) {
-								$self->{'logger'}->trace(__LINE__, ": AUTOLOAD $key: return '$rc' from slurped data");
-							} else {
-								$self->{'logger'}->trace(__LINE__, ": AUTOLOAD $key: return undef from slurped data");
-							}
+						if(defined($rc)) {
+							$self->_trace(__LINE__, ": AUTOLOAD $key: return '$rc' from slurped data");
+						} else {
+							$self->_trace(__LINE__, ": AUTOLOAD $key: return undef from slurped data");
 						}
 						return $rc
 					}
@@ -847,12 +818,10 @@ sub AUTOLOAD {
 				if(defined(my $hash = $data->{$key})) {
 					$rc = $hash->{$column};
 				}
-				if($self->{'logger'}) {
-					if(defined($rc)) {
-						$self->{'logger'}->trace(__LINE__, ": AUTOLOAD $key: return '$rc' from slurped data");
-					} else {
-						$self->{'logger'}->trace(__LINE__, ": AUTOLOAD $key: return undef from slurped data");
-					}
+				if(defined($rc)) {
+					$self->_trace(__LINE__, ": AUTOLOAD $key: return '$rc' from slurped data");
+				} else {
+					$self->_trace(__LINE__, ": AUTOLOAD $key: return undef from slurped data");
 				}
 				return $rc
 			} elsif((scalar keys %params) == 0) {
@@ -873,12 +842,10 @@ sub AUTOLOAD {
 				my ($key, $value) = %params;
 				foreach my $row (values %{$data}) {
 					if(($row->{$key} eq $value) && (my $rc = $row->{$column})) {
-						if($self->{'logger'}) {
-							if(defined($rc)) {
-								$self->{'logger'}->trace(__LINE__, ": AUTOLOAD $key: return '$rc' from slurped data");
-							} else {
-								$self->{'logger'}->trace(__LINE__, ": AUTOLOAD $key: return undef from slurped data");
-							}
+						if(defined($rc)) {
+							$self->_trace(__LINE__, ": AUTOLOAD $key: return '$rc' from slurped data");
+						} else {
+							$self->_trace(__LINE__, ": AUTOLOAD $key: return undef from slurped data");
 						}
 						return $rc
 					}
@@ -895,9 +862,7 @@ sub AUTOLOAD {
 	}
 	my @args;
 	while(my ($key, $value) = each %params) {
-		if($self->{'logger'}) {
-			$self->{'logger'}->debug(__PACKAGE__, ": AUTOLOAD adding key/value pair $key=>$value");
-		}
+		$self->_debug(__PACKAGE__, ": AUTOLOAD adding key/value pair $key=>$value");
 		if(defined($value)) {
 			if($done_where) {
 				$query .= " AND $key = ?";
@@ -907,9 +872,7 @@ sub AUTOLOAD {
 			}
 			push @args, $value;
 		} else {
-			if($self->{'logger'}) {
-				$self->{'logger'}->debug("AUTOLOAD params $key isn't defined");
-			}
+			$self->_debug("AUTOLOAD params $key isn't defined");
 			if($done_where) {
 				$query .= " AND $key IS NULL";
 			} else {
@@ -923,12 +886,10 @@ sub AUTOLOAD {
 	} else {
 		$query .= ' LIMIT 1';
 	}
-	if($self->{'logger'}) {
-		if(scalar(@args) && $args[0]) {
-			$self->{'logger'}->debug("AUTOLOAD $query: ", join(', ', @args));
-		} else {
-			$self->{'logger'}->debug("AUTOLOAD $query");
-		}
+	if(scalar(@args) && $args[0]) {
+		$self->_debug("AUTOLOAD $query: ", join(', ', @args));
+	} else {
+		$self->_debug("AUTOLOAD $query");
 	}
 	# my $sth = $self->{$table}->prepare($query) || throw Error::Simple($query);
 	my $sth = $self->{$table}->prepare($query) || croak($query);
@@ -952,6 +913,46 @@ sub DESTROY {
 	}
 	if(my $table = delete $self->{'table'}) {
 		$table->finish();
+	}
+}
+
+# Helper routines for logger()
+sub _fatal
+{
+	my $self = shift;
+
+	return unless($self->{'logger'});
+
+	if(ref($self->{'logger'}) eq 'CODE') {
+		$self->{'logger'}->({ level => 'fatal', message => \@_ });
+	} else {
+		$self->{'logger'}->fatal(@_);
+	}
+}
+
+sub _trace
+{
+	my $self = shift;
+
+	return unless($self->{'logger'});
+
+	if(ref($self->{'logger'}) eq 'CODE') {
+		$self->{'logger'}->({ level => 'trace', message => \@_ });
+	} else {
+		$self->{'logger'}->trace(@_);
+	}
+}
+
+sub _debug
+{
+	my $self = shift;
+
+	return unless($self->{'logger'});
+
+	if(ref($self->{'logger'}) eq 'CODE') {
+		$self->{'logger'}->({ level => 'debug', message => \@_ });
+	} else {
+		$self->{'logger'}->debug(@_);
 	}
 }
 

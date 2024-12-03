@@ -2,6 +2,7 @@ Revision history for Database-Abstraction
 
 0.12
 	Move the synopsis document around for clarity
+	Allow the logger to be a ref to code
 
 0.11	Thu Nov  7 10:44:24 EST 2024
 	Added id parameter
