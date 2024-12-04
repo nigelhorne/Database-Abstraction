@@ -79,16 +79,17 @@ For example, you can access the files in /var/db/foo.csv via this class:
     # Regular CSV: There is no entry column and the separators are commas
     sub new
     {
-	my $class = shift;
-	my %args = (ref($_[0]) eq 'HASH') ? %{$_[0]} : @_;
+        my $class = shift;
+        my %args = (ref($_[0]) eq 'HASH') ? %{$_[0]} : @_;
 
-	return $class->SUPER::new(no_entry => 1, sep_char => ',', %args);
+        return $class->SUPER::new(no_entry => 1, sep_char => ',', %args);
     }
 
 You can then access the data using:
 
     my $foo = MyPackageName::Database::Foo->new(directory => '/var/dat');
     print 'Customer name ', $foo->name(customer_id => 'plugh'), "\n";
+
     my $row = $foo->fetchrow_hashref(customer_id => 'xyzzy');
     print Data::Dumper->new([$row])->Dump();
 
@@ -745,6 +746,7 @@ or only the first when called in scalar context
 If the database has a column called "entry" you can do a quick lookup with
 
     my $value = $foo->column('123');	# where "column" is the value you're after
+
     my @entries = $foo->entry();
     print 'There are ', scalar(@entries), " entries in the database\n";
 
@@ -917,43 +919,31 @@ sub DESTROY {
 }
 
 # Helper routines for logger()
-sub _fatal
-{
-	my $self = shift;
+sub _log {
+	my ($self, $level, @messages) = @_;
 
-	return unless($self->{'logger'});
-
-	if(ref($self->{'logger'}) eq 'CODE') {
-		$self->{'logger'}->({ level => 'fatal', message => \@_ });
-	} else {
-		$self->{'logger'}->fatal(@_);
+	if(my $logger = $self->{'logger'}) {
+		if(ref($logger) eq 'CODE') {
+			$logger->({ level => $level, message => \@messages });
+		} else {
+			$logger->$level(@messages);
+		}
 	}
 }
 
-sub _trace
-{
+sub _fatal {
 	my $self = shift;
-
-	return unless($self->{'logger'});
-
-	if(ref($self->{'logger'}) eq 'CODE') {
-		$self->{'logger'}->({ level => 'trace', message => \@_ });
-	} else {
-		$self->{'logger'}->trace(@_);
-	}
+	$self->_log('fatal', @_);
 }
 
-sub _debug
-{
+sub _trace {
 	my $self = shift;
+	$self->_log('trace', @_);
+}
 
-	return unless($self->{'logger'});
-
-	if(ref($self->{'logger'}) eq 'CODE') {
-		$self->{'logger'}->({ level => 'debug', message => \@_ });
-	} else {
-		$self->{'logger'}->debug(@_);
-	}
+sub _debug {
+	my $self = shift;
+	$self->_log('debug', @_);
 }
 
 # Helper routine to parse the arguments given to a function,
@@ -1004,8 +994,8 @@ XML slurping is hard,
 so if XML fails for you on a small file force non-slurping mode with
 
     $foo = MyPackageName::Database::Foo->new({
-	directory => '/var/db',
-	# max_slurp_size => 1	# force to not use slurp and therefore to use SQL
+        directory => '/var/db',
+        max_slurp_size => 1	# force to not use slurp and therefore to use SQL
     });
 
 =head1 LICENSE AND COPYRIGHT
