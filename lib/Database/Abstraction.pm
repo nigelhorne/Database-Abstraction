@@ -44,11 +44,11 @@ use constant	DEFAULT_MAX_SLURP_SIZE => 16 * 1024;	# CSV files <= than this size 
 
 =head1 VERSION
 
-Version 0.11
+Version 0.12
 
 =cut
 
-our $VERSION = '0.11';
+our $VERSION = '0.12';
 
 =head1 SYNOPSIS
 
@@ -689,7 +689,7 @@ sub execute
 	my $args = $self->_get_params('query', @_);
 
 	# Ensure the 'query' parameter is provided
-	Carp::croak(__PACKAGE__, ': Usage: execute(query => $query)') 
+	Carp::croak(__PACKAGE__, ': Usage: execute(query => $query)')
 		unless defined $args->{'query'};
 
 	# Get table name (remove package name prefix if present)
