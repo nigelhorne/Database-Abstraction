@@ -38,6 +38,7 @@ use File::pfopen 0.03;	# For $mode and list context
 use File::Temp;
 # use Error::Simple;	# A nice idea to use this but it doesn't play well with "use lib"
 use Carp;
+use Scalar::Util;
 
 our %defaults;
 use constant	DEFAULT_MAX_SLURP_SIZE => 16 * 1024;	# CSV files <= than this size are read into memory
@@ -146,6 +147,7 @@ sub new {
 	my $class = shift;
 	my %args;
 
+	# Handle hash or hashref arguments
 	if(ref($_[0]) eq 'HASH') {
 		%args = %{$_[0]};
 	} elsif((scalar(@_) % 2) == 0) {
@@ -155,16 +157,17 @@ sub new {
 	}
 
 	if(!defined($class)) {
-		# Using Database::Abstraction->new(), not Database::Abstraction::new()
-		# carp(__PACKAGE__, ' use ->new() not ::new() to instantiate');
-		# return;
-
+		if((scalar keys %args) > 0) {
+			# Using Database::Abstraction->new(), not Database::Abstraction::new()
+			carp(__PACKAGE__, ' use ->new() not ::new() to instantiate');
+			return;
+		}
 		# FIXME: this only works when no arguments are given
 		$class = __PACKAGE__;
 	} elsif($class eq __PACKAGE__) {
 		croak("$class: abstract class");
-	} elsif(ref($class)) {
-		# clone the given object
+	} elsif(Scalar::Util::blessed($class)) {
+		# If $class is an object, clone it with new arguments
 		return bless { %{$class}, %args }, ref($class);
 	}
 
@@ -789,7 +792,7 @@ sub AUTOLOAD {
 			return map { $_->{$column} } values %{$data};
 		}
 		if(($self->{'type'} eq 'CSV') && !$self->{no_entry}) {
-			$query = "SELECT $column FROM $table WHERE " . $self->{'id'} . "IS NOT NULL AND entry NOT LIKE '#%'";
+			$query = "SELECT $column FROM $table WHERE " . $self->{'id'} . " IS NOT NULL AND entry NOT LIKE '#%'";
 			$done_where = 1;
 		} else {
 			$query = "SELECT $column FROM $table";
@@ -856,7 +859,7 @@ sub AUTOLOAD {
 			return
 		}
 		if(($self->{'type'} eq 'CSV') && !$self->{no_entry}) {
-			$query = "SELECT DISTINCT $column FROM $table WHERE " . $self->{'id'} . "IS NOT NULL AND entry NOT LIKE '#%'";
+			$query = "SELECT DISTINCT $column FROM $table WHERE " . $self->{'id'} . " IS NOT NULL AND entry NOT LIKE '#%'";
 			$done_where = 1;
 		} else {
 			$query = "SELECT DISTINCT $column FROM $table";
