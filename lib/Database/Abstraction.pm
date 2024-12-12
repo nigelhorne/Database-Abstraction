@@ -103,9 +103,9 @@ You can then access the data using:
 
 =head2 init
 
-Initializes the class with optional arguments for configuration.
+Initializes the abstraction class and its subclasses with optional arguments for configuration.
 
-    MyPackageName::Database::init(directory => '../data');
+    Database::Abstraction::init(directory => '../data');
 
 See the documentation for new to see what variables can be set.
 
