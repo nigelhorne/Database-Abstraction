@@ -2,7 +2,7 @@ package Database::Abstraction;
 
 =head1 NAME
 
-Database::Abstraction - database abstraction layer
+Database::Abstraction - read-only database abstraction layer
 
 =cut
 
@@ -53,12 +53,17 @@ our $VERSION = '0.12';
 
 =head1 SYNOPSIS
 
-Abstract class giving read-only access to CSV, XML and SQLite databases via Perl without writing any SQL.
+Abstract class giving read-only access to CSV, XML and SQLite databases via Perl without writing any SQL,
+using caching for performance optimization.
+It offers functionalities like opening the database and fetching data based on various criteria,
+
 Look for databases in $directory in this order:
 1) SQLite (file ends with .sql)
 2) PSV (pipe separated file, file ends with .psv)
 3) CSV (file ends with .csv or .db, can be gzipped) (note the default sep_char is '!' not ',')
 4) XML (file ends with .xml)
+
+The AUTOLOAD feature allows for convenient access to database columns using method calls.
 
 If the table has a key column,
 entries are keyed on that and sorts are based on it.
@@ -98,7 +103,7 @@ You can then access the data using:
 
 =head2 init
 
-Set some class level defaults.
+Initializes the class with optional arguments for configuration.
 
     MyPackageName::Database::init(directory => '../data');
 
@@ -134,12 +139,16 @@ Create an object to point to a read-only database.
 
 Arguments:
 
+Takes different argument formats (hash or positional)
+
 cache => place to store results;
 cache_duration => how long to store results in the cache (default is 1 hour);
 directory => where the database file is held
 max_slurp_size => CSV/PSV/XML files smaller than this are held in RAM (default is 16K)
 
 If the arguments are not set, tries to take from class level defaults.
+
+Checks for abstract class usage.
 
 =cut
 
@@ -215,7 +224,8 @@ sub set_logger
 	Carp::croak('Usage: set_logger(logger => $logger)')
 }
 
-# Open the database.
+# Open the database connection based on the specified type (e.g., SQLite, CSV).
+# Read the data into memory or establish a connection to the database file.
 
 sub _open {
 	my $self = shift;
@@ -439,6 +449,8 @@ the given criteria.
 Note that since this returns an array ref,
 optimisations such as "LIMIT 1" will not be used.
 
+Use caching if that is available.
+
 =cut
 
 sub selectall_hashref {
@@ -450,7 +462,7 @@ sub selectall_hashref {
 
 =head2	selectall_hash
 
-Returns an array of hash references
+Similar to selectall_hashref but returns an array of hash references.
 
 =cut
 
@@ -572,7 +584,8 @@ sub selectall_hash
 
 =head2	fetchrow_hashref
 
-Returns a hash reference for one row in a table.
+Returns a hash reference for a single row in a table.
+
 Special argument: table: determines the table to read from if not the default,
 which is worked out from the class name
 
@@ -674,7 +687,7 @@ sub fetchrow_hashref {
 
 =head2	execute
 
-Execute the given SQL on the data.
+Execute the given SQL query on the database.
 In an array context, returns an array of hash refs,
 in a scalar context returns a hash of the first row
 
@@ -729,7 +742,7 @@ sub execute
 
 =head2 updated
 
-Time that the database was last updated
+Returns the timestamp of the last database update.
 
 =cut
 
@@ -741,8 +754,11 @@ sub updated {
 
 =head2 AUTOLOAD
 
-Return the contents of an arbitrary column in the database which match the
-given criteria
+Directly access a database column.
+
+Returns all entries in a column, a single entry based on criteria.
+Uses cached data if available.
+
 Returns an array of the matches,
 or only the first when called in scalar context
 
@@ -949,7 +965,8 @@ sub _debug {
 	$self->_log('debug', @_);
 }
 
-# Helper routine to parse the arguments given to a function,
+# Helper routine to parse the arguments given to a function.
+# Processes arguments passed to methods and ensures they are in a usable format,
 #	allowing the caller to call the function in anyway that they want
 #	e.g. foo('bar'), foo(arg => 'bar'), foo({ arg => 'bar' }) all mean the same
 #	when called _get_params('arg', @_);
