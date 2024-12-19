@@ -150,6 +150,11 @@ If the arguments are not set, tries to take from class level defaults.
 
 Checks for abstract class usage.
 
+Slurp mode assumes that the key column (entry) is unique.
+If it isn't, searches will be incomplete.
+Turn off slurp mode on those databases,
+by setting a low value for max_slurp_size.
+
 =cut
 
 sub new {
