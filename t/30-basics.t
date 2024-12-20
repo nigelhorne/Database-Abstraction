@@ -57,9 +57,11 @@ use_ok('Database::test1');
 
 # Test defaults
 {
-	Database::Abstraction::init(directory => '/tmp');
+	my $tmpdir = File::Spec->tmpdir();
+
+	Database::Abstraction::init(directory => $tmpdir);
 	my $obj = Database::test1->new();
-	is($obj->{directory}, '/tmp', 'Default directory used when no argument is given');
+	cmp_ok($obj->{directory}, 'eq', $tmpdir, 'Default directory used when no argument is given');
 	is($obj->{no_entry}, 0, 'Default no_entry is set');
 	is($obj->{cache_duration}, '1 hour', 'Default cache_duration is set');
 	is($obj->{max_slurp_size}, DEFAULT_MAX_SLURP_SIZE, 'Default max_slurp_size is set');
