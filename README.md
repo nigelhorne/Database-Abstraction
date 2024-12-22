@@ -4,7 +4,7 @@ Database::Abstraction - read-only database abstraction layer
 
 # VERSION
 
-Version 0.12
+Version 0.13
 
 # SYNOPSIS
 
