@@ -1,6 +1,6 @@
 Revision history for Database-Abstraction
 
-0.13
+0.13	Sun Dec 22 13:30:13 EST 2024
 	Refactor logger helper routines
 	Fix "Bad table or column name: 'entryIS NOT NULL' has chars not alphanumeric or underscore"
 	Added t/30-basics.t

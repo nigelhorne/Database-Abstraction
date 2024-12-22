@@ -155,6 +155,9 @@ If it isn't, searches will be incomplete.
 Turn off slurp mode on those databases,
 by setting a low value for max_slurp_size.
 
+Clones existing objects with or without modifications.
+Uses Carp::carp to log warnings for incorrect usage or potential mistakes.
+
 =cut
 
 sub new {
