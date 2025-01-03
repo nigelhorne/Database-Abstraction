@@ -7,7 +7,7 @@ Database::Abstraction - read-only database abstraction layer
 =cut
 
 # Author Nigel Horne: njh@bandsman.co.uk
-# Copyright (C) 2015-2024, Nigel Horne
+# Copyright (C) 2015-2025, Nigel Horne
 
 # Usage is subject to licence terms.
 # The licence terms of this software are as follows:
@@ -127,6 +127,7 @@ sub init
 		# $defaults->{'logger'} ||= $args{'logger'};
 		# $defaults->{'cache'} ||= $args{'cache'};
 		# $defaults->{'cache_duration'} ||= $args{'cache_duration'};
+		# $defaults->{'dbname'} ||= $args{'dbname'};
 		%defaults = (%defaults, %args)
 	}
 
@@ -144,6 +145,8 @@ Takes different argument formats (hash or positional)
 cache => place to store results;
 cache_duration => how long to store results in the cache (default is 1 hour);
 directory => where the database file is held
+dbname => the prefix of name of the database file (default is name of the table).
+	The database will be held in a file such as $dbname.csv.
 max_slurp_size => CSV/PSV/XML files smaller than this are held in RAM (default is 16K)
 
 If the arguments are not set, tries to take from class level defaults.
@@ -202,7 +205,6 @@ sub new {
 		# no_entry => $args{'no_entry'} || 0,
 	# }, $class;
 
-
 	# Re-seen keys take precedence, so defaults come first
 	return bless {
 		no_entry => 0,
@@ -254,7 +256,8 @@ sub _open {
 	my $dbh;
 
 	my $dir = $self->{'directory'} || $defaults{'directory'};
-	my $slurp_file = File::Spec->catfile($dir, "$table.sql");
+	my $dbname = $self->{'dbname'} || $defaults{'dbname'} || $table;
+	my $slurp_file = File::Spec->catfile($dir, "$dbname.sql");
 
 	$self->_debug("_open: try to open $slurp_file");
 
@@ -272,7 +275,7 @@ sub _open {
 		$self->{'type'} = 'DBI';
 	} else {
 		my $fin;
-		($fin, $slurp_file) = File::pfopen::pfopen($dir, $table, 'csv.gz:db.gz', '<');
+		($fin, $slurp_file) = File::pfopen::pfopen($dir, $dbname, 'csv.gz:db.gz', '<');
 		if(defined($slurp_file) && (-r $slurp_file)) {
 			require Gzip::Faster;
 			Gzip::Faster->import();
@@ -283,12 +286,12 @@ sub _open {
 			$slurp_file = $fin->filename();
 			$self->{'temp'} = $slurp_file;
 		} else {
-			($fin, $slurp_file) = File::pfopen::pfopen($dir, $table, 'psv', '<');
+			($fin, $slurp_file) = File::pfopen::pfopen($dir, $dbname, 'psv', '<');
 			if(defined($fin)) {
 				# Pipe separated file
 				$args{'sep_char'} = '|';
 			} else {
-				($fin, $slurp_file) = File::pfopen::pfopen($dir, $table, 'csv:db', '<');
+				($fin, $slurp_file) = File::pfopen::pfopen($dir, $dbname, 'csv:db', '<');
 			}
 		}
 		if(defined($slurp_file) && (-r $slurp_file)) {
@@ -400,13 +403,13 @@ sub _open {
 			}
 			$self->{'type'} = 'CSV';
 		} else {
-			$slurp_file = File::Spec->catfile($dir, "$table.xml");
+			$slurp_file = File::Spec->catfile($dir, "$dbname.xml");
 			if(-r $slurp_file) {
 				if((-s $slurp_file) <= $self->{'max_slurp_size'}) {
 					require XML::Simple;
 					XML::Simple->import();
 
-					my $xml = XMLin(File::Spec->catfile($dir, "$table.xml"));
+					my $xml = XMLin($slurp_file);
 					my @keys = keys %{$xml};
 					my $key = $keys[0];
 					my @data;
@@ -436,7 +439,7 @@ sub _open {
 				}
 			} else {
 				# throw Error(-file => "$dir/$table");
-				croak("Can't find a $table database in $dir");
+				Carp::croak("Can't find a $dbname file for the table $table in $dir");
 			}
 			$self->{'type'} = 'XML';
 		}
@@ -1028,7 +1031,7 @@ so if XML fails for you on a small file force non-slurping mode with
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2015-2024 Nigel Horne.
+Copyright 2015-2025 Nigel Horne.
 
 This program is released under the following licence: GPL2.
 Usage is subject to licence terms.
