@@ -81,6 +81,8 @@ Takes different argument formats (hash or positional)
 cache => place to store results;
 cache\_duration => how long to store results in the cache (default is 1 hour);
 directory => where the database file is held
+dbname => the prefix of name of the database file (default is name of the table).
+	The database will be held in a file such as $dbname.csv.
 max\_slurp\_size => CSV/PSV/XML files smaller than this are held in RAM (default is 16K)
 
 If the arguments are not set, tries to take from class level defaults.
@@ -180,7 +182,7 @@ so if XML fails for you on a small file force non-slurping mode with
 
 # LICENSE AND COPYRIGHT
 
-Copyright 2015-2024 Nigel Horne.
+Copyright 2015-2025 Nigel Horne.
 
 This program is released under the following licence: GPL2.
 Usage is subject to licence terms.
