@@ -107,7 +107,7 @@ Takes different argument formats (hash or positional)
     The prefix of name of the database file (default is name of the table).
     The database will be held in a file such as $dbname.csv.
 
-- &lt;max\_slurp\_size>
+- `max_slurp_size`
 
     CSV/PSV/XML files smaller than this are held in RAM (default is 16K).
     Setting this value to 0 will turn this feature off,
@@ -205,7 +205,7 @@ so if XML fails for you on a small file force non-slurping mode with
 
     $foo = MyPackageName::Database::Foo->new({
         directory => '/var/db',
-        max_slurp_size => 1     # force to not use slurp and therefore to use SQL
+        max_slurp_size => 0     # force to not use slurp and therefore to use SQL
     });
 
 # LICENSE AND COPYRIGHT
