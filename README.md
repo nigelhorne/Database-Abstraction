@@ -4,7 +4,7 @@ Database::Abstraction - read-only database abstraction layer
 
 # VERSION
 
-Version 0.13
+Version 0.14
 
 # SYNOPSIS
 
@@ -98,14 +98,14 @@ Takes different argument formats (hash or positional)
 
     How long to store results in the cache (default is 1 hour)
 
-- `directory`
-
-    Where the database file is held
-
 - `dbname`
 
     The prefix of name of the database file (default is name of the table).
     The database will be held in a file such as $dbname.csv.
+
+- `directory`
+
+    Where the database file is held
 
 - `max_slurp_size`
 

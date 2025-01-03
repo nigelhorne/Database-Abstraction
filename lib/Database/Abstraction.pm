@@ -45,11 +45,11 @@ use constant	DEFAULT_MAX_SLURP_SIZE => 16 * 1024;	# CSV files <= than this size 
 
 =head1 VERSION
 
-Version 0.13
+Version 0.14
 
 =cut
 
-our $VERSION = '0.13';
+our $VERSION = '0.14';
 
 =head1 SYNOPSIS
 
@@ -139,11 +139,11 @@ sub init
 	if(scalar(@_)) {
 		my %args = (ref($_[0]) eq 'HASH') ? %{$_[0]} : @_;
 
-		# $defaults->{'directory'} ||= $args{'directory'};
-		# $defaults->{'logger'} ||= $args{'logger'};
+		# $defaults->{'dbname'} ||= $args{'dbname'};
 		# $defaults->{'cache'} ||= $args{'cache'};
 		# $defaults->{'cache_duration'} ||= $args{'cache_duration'};
-		# $defaults->{'dbname'} ||= $args{'dbname'};
+		# $defaults->{'directory'} ||= $args{'directory'};
+		# $defaults->{'logger'} ||= $args{'logger'};
 		%defaults = (%defaults, %args)
 	}
 
@@ -168,14 +168,14 @@ Place to store results
 
 How long to store results in the cache (default is 1 hour)
 
-=item * C<directory>
-
-Where the database file is held
-
 =item * C<dbname>
 
 The prefix of name of the database file (default is name of the table).
 The database will be held in a file such as $dbname.csv.
+
+=item * C<directory>
+
+Where the database file is held
 
 =item * C<max_slurp_size>
 
