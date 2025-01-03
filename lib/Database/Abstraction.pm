@@ -58,10 +58,26 @@ using caching for performance optimization.
 It offers functionalities like opening the database and fetching data based on various criteria,
 
 Look for databases in $directory in this order:
-1) SQLite (file ends with .sql)
-2) PSV (pipe separated file, file ends with .psv)
-3) CSV (file ends with .csv or .db, can be gzipped) (note the default sep_char is '!' not ',')
-4) XML (file ends with .xml)
+
+=over 4
+
+=item 1 C<SQLite>
+
+File ends with .sql
+
+=item 2 C<PSV>
+
+Pipe separated file, file ends with .psv
+
+=item 3 C<CSV>
+
+File ends with .csv or .db, can be gzipped. Note the default sep_char is '!' not ','
+
+=item 4 C<XML>
+
+File ends with .xml
+
+=back
 
 The AUTOLOAD feature allows for convenient access to database columns using method calls.
 
@@ -142,12 +158,32 @@ Arguments:
 
 Takes different argument formats (hash or positional)
 
-cache => place to store results;
-cache_duration => how long to store results in the cache (default is 1 hour);
-directory => where the database file is held
-dbname => the prefix of name of the database file (default is name of the table).
-	The database will be held in a file such as $dbname.csv.
-max_slurp_size => CSV/PSV/XML files smaller than this are held in RAM (default is 16K)
+=over 4
+
+=item * C<cache>
+
+Place to store results
+
+=item * C<cache_duration>
+
+How long to store results in the cache (default is 1 hour)
+
+=item * C<directory>
+
+Where the database file is held
+
+=item * C<dbname>
+
+The prefix of name of the database file (default is name of the table).
+The database will be held in a file such as $dbname.csv.
+
+=item * <max_slurp_size>
+
+CSV/PSV/XML files smaller than this are held in RAM (default is 16K).
+Setting this value to 0 will turn this feature off,
+thus forcing SQL to be used to access the database
+
+=back
 
 If the arguments are not set, tries to take from class level defaults.
 
