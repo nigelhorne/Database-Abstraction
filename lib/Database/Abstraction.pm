@@ -53,9 +53,10 @@ our $VERSION = '0.14';
 
 =head1 SYNOPSIS
 
-Abstract class giving read-only access to CSV, XML and SQLite databases via Perl without writing any SQL,
+Abstract class giving read-only access to CSV,
+XML and SQLite databases via Perl without writing any SQL,
 using caching for performance optimization.
-It offers functionalities like opening the database and fetching data based on various criteria,
+It offers functionalities like opening the database and fetching data based on various criteria.
 
 Look for databases in $directory in this order:
 
