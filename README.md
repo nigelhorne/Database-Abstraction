@@ -1,6 +1,6 @@
 # NAME
 
-Database::Abstraction - read-only database abstraction layer
+Database::Abstraction - read-only database abstraction layer (ORM)
 
 # VERSION
 
@@ -8,9 +8,13 @@ Version 0.14
 
 # SYNOPSIS
 
-Abstract class giving read-only access to CSV, XML and SQLite databases via Perl without writing any SQL,
+Abstract class giving read-only access to CSV,
+XML and SQLite databases via Perl without writing any SQL,
 using caching for performance optimization.
-It offers functionalities like opening the database and fetching data based on various criteria,
+It's a simple ORM like interface which,
+for all of its simplicity,
+allows you to do a lot of the heavy lifting of simple database operations without any SQL.
+It offers functionalities like opening the database and fetching data based on various criteria.
 
 Look for databases in $directory in this order:
 
