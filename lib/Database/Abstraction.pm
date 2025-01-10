@@ -106,9 +106,17 @@ The key column's default name is 'entry', but it can be overridden by the 'id' p
 CSV files that are not no_entry can have empty lines or comment lines starting with '#',
 to make them more readable.
 
-For example, you can access the files in /var/dat/foo.csv via this class:
+=head1 EXAMPLE
 
-    package MyPackageName::Database::Foo;
+If the file /var/dat/foo.csv contains something like:
+
+    "customer_id","name"
+    "plugh","John"
+    "xyzzy","Jane"
+
+Create a driver for the file in .../Database/foo.pm:
+
+    package Database::foo;
 
     use Database::Abstraction;
 
@@ -123,11 +131,18 @@ For example, you can access the files in /var/dat/foo.csv via this class:
         return $class->SUPER::new(no_entry => 1, sep_char => ',', %args);
     }
 
-You can then access the data using:
+You can then use this code to access the data via the driver:
 
-    my $foo = MyPackageName::Database::Foo->new(directory => '/var/dat');
+    # Opens the file, e.g. /var/dat/foo.csv
+    my $foo = Database::foo->new(directory => '/var/dat');
+    # Prints "John"
     print 'Customer name ', $foo->name(customer_id => 'plugh'), "\n";
 
+    # Prints:
+    #  $VAR1 = {
+    #     'plugh' => 'John',
+    #     'xyzzy' => 'Jane'
+    #  };
     my $row = $foo->fetchrow_hashref(customer_id => 'xyzzy');
     print Data::Dumper->new([$row])->Dump();
 
