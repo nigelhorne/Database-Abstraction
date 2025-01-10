@@ -106,7 +106,7 @@ The key column's default name is 'entry', but it can be overridden by the 'id' p
 CSV files that are not no_entry can have empty lines or comment lines starting with '#',
 to make them more readable.
 
-For example, you can access the files in /var/db/foo.csv via this class:
+For example, you can access the files in /var/dat/foo.csv via this class:
 
     package MyPackageName::Database::Foo;
 
@@ -1091,7 +1091,7 @@ XML slurping is hard,
 so if XML fails for you on a small file force non-slurping mode with
 
     $foo = MyPackageName::Database::Foo->new({
-        directory => '/var/db',
+        directory => '/var/dat',
         max_slurp_size => 0	# force to not use slurp and therefore to use SQL
     });
 
