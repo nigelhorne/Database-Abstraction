@@ -135,13 +135,14 @@ You can then use this code to access the data via the driver:
 
     # Opens the file, e.g. /var/dat/foo.csv
     my $foo = Database::foo->new(directory => '/var/dat');
+
     # Prints "John"
     print 'Customer name ', $foo->name(customer_id => 'plugh'), "\n";
 
     # Prints:
     #  $VAR1 = {
-    #     'plugh' => 'John',
-    #     'xyzzy' => 'Jane'
+    #     'customer_id' => 'xyzzy',
+    #     'name' => 'Jane'
     #  };
     my $row = $foo->fetchrow_hashref(customer_id => 'xyzzy');
     print Data::Dumper->new([$row])->Dump();
