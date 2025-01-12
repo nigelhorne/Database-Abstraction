@@ -674,11 +674,19 @@ Returns a hash reference for a single row in a table.
 Special argument: table: determines the table to read from if not the default,
 which is worked out from the class name
 
+When no_entry is not set allow just one argument to be given: the entry value.
+
 =cut
 
 sub fetchrow_hashref {
 	my $self = shift;
-	my $params = $self->_get_params(undef, @_);
+	my $params;
+
+	if(!$self->{'no_entry'}) {
+		$params = $self->_get_params('entry', @_);
+	} else {
+		$params = $self->_get_params(undef, @_);
+	}
 
 	my $table = $params->{'table'} || $self->{'table'} || ref($self);
 	$table =~ s/.*:://;
@@ -1069,7 +1077,7 @@ sub _get_params
 	my $default = shift;
 
 	# Directly return hash reference if the first parameter is a hash reference
-	return $_[0] if ref $_[0] eq 'HASH';
+	return $_[0] if(ref $_[0] eq 'HASH');
 
 	my %rc;
 	my $num_args = scalar @_;
@@ -1080,10 +1088,14 @@ sub _get_params
 		return { $default => shift };
 	} elsif($num_args == 1) {
 		Carp::croak('Usage: ', __PACKAGE__, '->', (caller(1))[3], '()');
-	} elsif($num_args == 0 && defined $default) {
-		Carp::croak('Usage: ', __PACKAGE__, '->', (caller(1))[3], '($default => \$val)');
+	} elsif(($num_args == 0) && (defined($default))) {
+		Carp::croak('Usage: ', __PACKAGE__, '->', (caller(1))[3], "($default => \$val)");
 	} elsif(($num_args % 2) == 0) {
 		%rc = @_;
+	} elsif($num_args == 0) {
+		return;
+	} else {
+		Carp::croak('Usage: ', __PACKAGE__, '->', (caller(1))[3], '()');
 	}
 
 	return \%rc;
