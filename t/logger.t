@@ -6,7 +6,7 @@ use strict;
 use FindBin qw($Bin);
 
 use File::Temp;
-use Test::Most tests => 29;
+use Test::Most tests => 33;
 
 use lib 't/lib';
 

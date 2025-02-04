@@ -177,11 +177,6 @@ sub init
 			$args{'cache_duration'} = $args{'expires_in'};
 		}
 
-		# $defaults->{'dbname'} ||= $args{'dbname'};
-		# $defaults->{'cache'} ||= $args{'cache'};
-		# $defaults->{'cache_duration'} ||= $args{'cache_duration'};
-		# $defaults->{'directory'} ||= $args{'directory'};
-		# $defaults->{'logger'} ||= $args{'logger'};
 		%defaults = (%defaults, %args);
 		$defaults{'cache_duration'} ||= '1 hour';
 	}
@@ -219,6 +214,13 @@ The database will be held in a file such as $dbname.csv.
 =item * C<directory>
 
 Where the database file is held
+
+=item * C<filename>
+
+Filename containing the data.
+When not given,
+the filename is derived from the tablename
+which in turn comes from the class name.
 
 =item * C<logger>
 
@@ -324,6 +326,7 @@ sub set_logger
 
 # Open the database connection based on the specified type (e.g., SQLite, CSV).
 # Read the data into memory or establish a connection to the database file.
+# column_names allows the column names to be overridden on CSV files
 
 sub _open {
 	my $self = shift;
@@ -382,8 +385,11 @@ sub _open {
 				($fin, $slurp_file) = File::pfopen::pfopen($dir, $dbname, 'csv:db', '<');
 			}
 		}
+		if(my $filename = $self->{'filename'} || $defaults{'filename'}) {
+			$slurp_file = File::Spec->catfile($dir, $filename);
+		}
 		if(defined($slurp_file) && (-r $slurp_file)) {
-			close($fin);
+			close($fin) if(defined($fin));
 			$sep_char = $args{'sep_char'};
 
 			$self->_debug(__LINE__, ' of ', __PACKAGE__, ": slurp_file = $slurp_file, sep_char = $sep_char");
@@ -451,8 +457,9 @@ sub _open {
 			# Text::CSV::Slurp->import();
 			# $self->{'data'} = Text::CSV::Slurp->load(file => $slurp_file, %options);
 
+			# Can't slurp when we want to use our own column names as Text::xSV::Slurp has no way to override the names
 			# FIXME: Text::xSV::Slurp can't cope well with quotes in field contents
-			if((-s $slurp_file) <= $self->{'max_slurp_size'}) {
+			if(((-s $slurp_file) <= $self->{'max_slurp_size'}) && !$args{'column_names'}) {
 				if((-s $slurp_file) == 0) {
 					# Empty file
 					$self->{'data'} = {};
@@ -937,9 +944,12 @@ sub AUTOLOAD {
 		if(my $data = $self->{'data'}) {
 			# The data has been read in using Text::xSV::Slurp,
 			#	so no need to do any SQL
+			$self->_debug('AUTOLOAD using slurped data');
 			if($self->{'no_entry'}) {
+				$self->_debug('no_entry is set');
 				my ($key, $value) = %params;
 				if(defined($key)) {
+					$self->_debug("key = $key, value = $value, column = $column");
 					foreach my $row(@{$data}) {
 						if(defined($row->{$key}) && ($row->{$key} eq $value) && (my $rc = $row->{$column})) {
 							if(defined($rc)) {
@@ -950,6 +960,7 @@ sub AUTOLOAD {
 							return $rc
 						}
 					}
+					$self->_debug('not found in slurped data');
 				}
 			} elsif(((scalar keys %params) == 1) && defined(my $key = $params{'entry'})) {
 				# Look up the key
