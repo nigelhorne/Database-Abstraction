@@ -173,7 +173,7 @@ sub init
 		my %args = (ref($_[0]) eq 'HASH') ? %{$_[0]} : @_;
 
 		if(($args{'expires_in'} && !$args{'cache_duration'})) {
-			# Compatability with CHI
+			# Compatibility with CHI
 			$args{'cache_duration'} = $args{'expires_in'};
 		}
 
@@ -209,7 +209,7 @@ How long to store results in the cache (default is 1 hour).
 
 =item * C<expires_in>
 
-Synonym of C<cache_duration>, for compatability with C<CHI>.
+Synonym of C<cache_duration>, for compatibility with C<CHI>.
 
 =item * C<dbname>
 
