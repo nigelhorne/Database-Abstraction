@@ -220,6 +220,14 @@ The database will be held in a file such as $dbname.csv.
 
 Where the database file is held
 
+=item * C<logger>
+
+Takes an optional parameter logger, which is used for warnings and traces.
+Can be an object that understands warn() and trace() messages,
+such as a L<Log::Log4perl> or L<Log::Any> object,
+a reference to code,
+or a filename.
+
 =item * C<max_slurp_size>
 
 CSV/PSV/XML files smaller than this are held in RAM (default is 16K),
@@ -298,7 +306,7 @@ sub new {
 
 =head2	set_logger
 
-Sets class or code reference that will be used for logging.
+Sets the class, code reference, or file that will be used for logging.
 
 =cut
 
@@ -640,6 +648,9 @@ sub selectall_hash
 	my $c;
 	if($c = $self->{cache}) {
 		$key = $query;
+		if(wantarray) {
+			$key .= ' array';
+		}
 		if(defined($query_args[0])) {
 			$key .= ' ' . join(', ', @query_args);
 		}
@@ -762,6 +773,9 @@ sub fetchrow_hashref {
 	}
 	my $key;
 	if(defined($query_args[0])) {
+		if(wantarray) {
+			$key = 'array ';
+		}
 		$key = "fetchrow $query " . join(', ', @query_args);
 	} else {
 		$key = "fetchrow $query";
@@ -921,7 +935,7 @@ sub AUTOLOAD {
 		}
 	} else {
 		if(my $data = $self->{'data'}) {
-			# The data has been read in using Text::xSV::Slurp, and it's a simple query
+			# The data has been read in using Text::xSV::Slurp,
 			#	so no need to do any SQL
 			if($self->{'no_entry'}) {
 				my ($key, $value) = %params;
@@ -986,6 +1000,7 @@ sub AUTOLOAD {
 			}
 			return
 		}
+		# Data has not been slurped in
 		if(($self->{'type'} eq 'CSV') && !$self->{no_entry}) {
 			$query = "SELECT DISTINCT $column FROM $table WHERE " . $self->{'id'} . " IS NOT NULL AND entry NOT LIKE '#%'";
 			$done_where = 1;
@@ -1024,15 +1039,42 @@ sub AUTOLOAD {
 	} else {
 		$self->_debug("AUTOLOAD $query");
 	}
+	my $cache;
+	my $key;
+	if($cache = $self->{cache}) {
+		if(wantarray) {
+			$key = 'array ';
+		}
+		if(defined($args[0])) {
+			$key = "fetchrow $query " . join(', ', @args);
+		} else {
+			$key = "fetchrow $query";
+		}
+		if(my $rc = $cache->get($key)) {
+			$self->_debug('cache HIT');
+			return $rc;
+		}
+		$self->_debug('cache MISS');
+	} else {
+		$self->_debug('cache not used');
+	}
 	# my $sth = $self->{$table}->prepare($query) || throw Error::Simple($query);
 	my $sth = $self->{$table}->prepare($query) || croak($query);
 	# $sth->execute(@args) || throw Error::Simple($query);
 	$sth->execute(@args) || croak($query);
 
 	if(wantarray) {
-		return map { $_->[0] } @{$sth->fetchall_arrayref()};
+		my @rc = map { $_->[0] } @{$sth->fetchall_arrayref()};
+		if($cache) {
+			$cache->set($key, \@rc, $self->{'cache_duration'});
+		}
+		return @rc;
 	}
-	return $sth->fetchrow_array();	# Return the first match only
+	my $rc = $sth->fetchrow_array();	# Return the first match only
+	if($cache) {
+		return $cache->set($key, $rc, $self->{'cache_duration'});
+	}
+	return $rc;
 }
 
 sub DESTROY {
@@ -1050,13 +1092,28 @@ sub DESTROY {
 }
 
 # Helper routines for logger()
-sub _log {
+sub _log
+{
 	my ($self, $level, @messages) = @_;
 
 	if(my $logger = $self->{'logger'}) {
 		if(ref($logger) eq 'CODE') {
-			$logger->({ level => $level, message => \@messages });
+			# Code reference
+			$logger->({
+				class => ref($self) // __PACKAGE__,
+				function => (caller(2))[3],
+				line => (caller(1))[2],
+				level => $level,
+				message => \@messages
+			});
+		} elsif(!ref($logger)) {
+			# File
+			if(open(my $fout, '>>', $logger)) {
+				print $fout uc($level), ': ', ref($self) // __PACKAGE__, ' ', (caller(2))[3], (caller(1))[2], join(' ', @messages), "\n";
+				close $fout;
+			}
 		} else {
+			# Object
 			$logger->$level(@messages);
 		}
 	}
