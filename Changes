@@ -1,6 +1,6 @@
 Revision history for Database-Abstraction
 
-0.17
+0.17	Tue Feb  4 15:32:43 EST 2025
 	Support expires_in for compatability with CHI
 	Added cache support to AUTOLOAD
 	Allow the logger to be a filename
