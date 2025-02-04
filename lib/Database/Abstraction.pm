@@ -172,12 +172,18 @@ sub init
 	if(scalar(@_)) {
 		my %args = (ref($_[0]) eq 'HASH') ? %{$_[0]} : @_;
 
+		if(($args{'expires_in'} && !$args{'cache_duration'})) {
+			# Compatability with CHI
+			$args{'cache_duration'} = $args{'expires_in'};
+		}
+
 		# $defaults->{'dbname'} ||= $args{'dbname'};
 		# $defaults->{'cache'} ||= $args{'cache'};
 		# $defaults->{'cache_duration'} ||= $args{'cache_duration'};
 		# $defaults->{'directory'} ||= $args{'directory'};
 		# $defaults->{'logger'} ||= $args{'logger'};
-		%defaults = (%defaults, %args)
+		%defaults = (%defaults, %args);
+		$defaults{'cache_duration'} ||= '1 hour';
 	}
 
 	return \%defaults
@@ -199,7 +205,11 @@ Place to store results
 
 =item * C<cache_duration>
 
-How long to store results in the cache (default is 1 hour)
+How long to store results in the cache (default is 1 hour).
+
+=item * C<expires_in>
+
+Synonym of C<cache_duration>, for compatability with C<CHI>.
 
 =item * C<dbname>
 

@@ -1,5 +1,8 @@
 Revision history for Database-Abstraction
 
+0.17
+	Support expires_in for compatability with CHI
+
 0.16	Sun Jan 12 12:15:01 EST 2025
 	fetchrow_hashref() - when no_entry is not set allow just one argument to be given: the entry value
 
