@@ -664,11 +664,12 @@ sub selectall_hash
 		}
 		if(my $rc = $c->get($key)) {
 			$self->_debug('cache HIT');
+			return @{$rc};	# We stored a ref to the array
+
 			# This use of a temporary variable is to avoid
 			#	"Implicit scalar context for array in return"
-			# return @{$rc};
-			my @rc = @{$rc};
-			return @rc;
+			# my @rc = @{$rc};
+			# return @rc;
 		}
 		$self->_debug('cache MISS');
 	} else {
@@ -687,7 +688,7 @@ sub selectall_hash
 			push @rc, $href;
 		}
 		if($c && wantarray) {
-			$c->set($key, \@rc, $self->{'cache_duration'});
+			$c->set($key, \@rc, $self->{'cache_duration'});	# Store a ref to the array
 		}
 
 		return @rc;
