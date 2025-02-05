@@ -386,6 +386,7 @@ sub _open {
 			}
 		}
 		if(my $filename = $self->{'filename'} || $defaults{'filename'}) {
+			$self->_debug("Looking for $filename in $dir");
 			$slurp_file = File::Spec->catfile($dir, $filename);
 		}
 		if(defined($slurp_file) && (-r $slurp_file)) {
@@ -790,6 +791,9 @@ sub fetchrow_hashref {
 	my $c;
 	if($c = $self->{cache}) {
 		if(my $rc = $c->get($key)) {
+			if(wantarray) {
+				return @{$rc};	# We stored a ref to the array
+			}
 			return $rc;
 		}
 	}
@@ -1063,6 +1067,9 @@ sub AUTOLOAD {
 		}
 		if(my $rc = $cache->get($key)) {
 			$self->_debug('cache HIT');
+			if(wantarray) {
+				return @{$rc};	# We stored a ref to the array
+			}
 			return $rc;
 		}
 		$self->_debug('cache MISS');
@@ -1077,7 +1084,7 @@ sub AUTOLOAD {
 	if(wantarray) {
 		my @rc = map { $_->[0] } @{$sth->fetchall_arrayref()};
 		if($cache) {
-			$cache->set($key, \@rc, $self->{'cache_duration'});
+			$cache->set($key, \@rc, $self->{'cache_duration'});	# Store a ref to the array
 		}
 		return @rc;
 	}
