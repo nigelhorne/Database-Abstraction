@@ -591,7 +591,10 @@ sub selectall_hash
 	if($self->{'data'}) {
 		if(scalar(keys %{$params}) == 0) {
 			$self->_trace("$table: selectall_hash fast track return");
-			return values %{$self->{'data'}};
+			if(ref($self->{'data'}) eq 'HASH') {
+				return values %{$self->{'data'}};
+			}
+			return @{$self->{'data'}};
 			# my @rc = values %{$self->{'data'}};
 			# return @rc;
 		} elsif((scalar(keys %{$params}) == 1) && defined($params->{'entry'}) && !$self->{'no_entry'}) {
