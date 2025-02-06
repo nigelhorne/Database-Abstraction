@@ -1,6 +1,6 @@
 Revision history for Database-Abstraction
 
-0.18
+0.18	Thu Feb  6 07:26:02 EST 2025
 	Cache hits in list context returns a ref to the array, rather than the array itself
 
 0.17	Tue Feb  4 15:32:43 EST 2025
