@@ -1,7 +1,7 @@
 Revision history for Database-Abstraction
 
-0.19
-	Fix selectall_hashref() when no_entry is set in slurp mode
+0.19	Thu Feb  6 20:19:07 EST 2025
+	Fix selectall_hashref() in slurp mode when no_entry is set
 
 0.18	Thu Feb  6 07:26:02 EST 2025
 	Cache hits in list context returns a ref to the array, rather than the array itself
