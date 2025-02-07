@@ -1,5 +1,8 @@
 Revision history for Database-Abstraction
 
+0.20	Thu Feb  6 20:29:09 EST 2025
+	Fix the manifest
+
 0.19	Thu Feb  6 20:19:07 EST 2025
 	Fix selectall_hashref() in slurp mode when no_entry is set
 
