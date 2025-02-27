@@ -326,7 +326,12 @@ sub set_logger
 # Read the data into memory or establish a connection to the database file.
 # column_names allows the column names to be overridden on CSV files
 
-sub _open {
+sub _open
+{
+	if(!UNIVERSAL::isa((caller)[0], __PACKAGE__)) {
+		Carp::croak('Illegal Operation: This method can only be called by a subclass');
+	}
+
 	my $self = shift;
 	my $sep_char = ($self->{'sep_char'} ? $self->{'sep_char'} : '!');
 	my %args = (

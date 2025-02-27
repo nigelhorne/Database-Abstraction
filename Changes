@@ -1,5 +1,8 @@
 Revision history for Database-Abstraction
 
+0.22
+	Force _open to be a private/protected method
+
 0.21	Tue Feb 11 07:45:15 EST 2025
 	Fix "Not an ARRAY reference"
 
