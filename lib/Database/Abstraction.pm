@@ -27,14 +27,15 @@ package Database::Abstraction;
 use warnings;
 use strict;
 
+use Carp;
 use Data::Dumper;
 use DBD::SQLite::Constants qw/:file_open/;	# For SQLITE_OPEN_READONLY
 use File::Basename;
 use File::Spec;
 use File::pfopen 0.03;	# For $mode and list context
 use File::Temp;
+use Params::Get;
 # use Error::Simple;	# A nice idea to use this but it doesn't play well with "use lib"
-use Carp;
 use Scalar::Util;
 
 our %defaults;
@@ -313,7 +314,7 @@ Sets the class, code reference, or file that will be used for logging.
 sub set_logger
 {
 	my $self = shift;
-	my $args = $self->_get_params('logger', @_);
+	my $args = Params::Get::get_params('logger', @_);
 
 	if(defined($args->{'logger'})) {
 		$self->{'logger'} = $args->{'logger'};
@@ -584,7 +585,7 @@ Similar to selectall_hashref but returns an array of hash references.
 sub selectall_hash
 {
 	my $self = shift;
-	my $params = $self->_get_params(undef, @_);
+	my $params = Params::Get::get_params(undef, @_);
 
 	my $table = $self->{table} || ref($self);
 	$table =~ s/.*:://;
@@ -720,9 +721,9 @@ sub fetchrow_hashref {
 	my $params;
 
 	if(!$self->{'no_entry'}) {
-		$params = $self->_get_params('entry', @_);
+		$params = Params::Get::get_params('entry', @_);
 	} else {
-		$params = $self->_get_params(undef, @_);
+		$params = Params::Get::get_params(undef, @_);
 	}
 
 	my $table = $params->{'table'} || $self->{'table'} || ref($self);
@@ -842,7 +843,7 @@ this will still work by accessing that actual database.
 sub execute
 {
 	my $self = shift;
-	my $args = $self->_get_params('query', @_);
+	my $args = Params::Get::get_params('query', @_);
 
 	# Ensure the 'query' parameter is provided
 	Carp::croak(__PACKAGE__, ': Usage: execute(query => $query)')
@@ -1122,6 +1123,9 @@ sub DESTROY {
 # Helper routines for logger()
 sub _log
 {
+	if(!UNIVERSAL::isa((caller)[0], __PACKAGE__)) {
+		Carp::croak('Illegal Operation: This method can only be called by a subclass');
+	}
 	my ($self, $level, @messages) = @_;
 
 	if(my $logger = $self->{'logger'}) {
@@ -1160,41 +1164,6 @@ sub _trace {
 sub _debug {
 	my $self = shift;
 	$self->_log('debug', @_);
-}
-
-# Helper routine to parse the arguments given to a function.
-# Processes arguments passed to methods and ensures they are in a usable format,
-#	allowing the caller to call the function in anyway that they want
-#	e.g. foo('bar'), foo(arg => 'bar'), foo({ arg => 'bar' }) all mean the same
-#	when called _get_params('arg', @_);
-sub _get_params
-{
-	shift;  # Discard the first argument (typically $self)
-	my $default = shift;
-
-	# Directly return hash reference if the first parameter is a hash reference
-	return $_[0] if(ref $_[0] eq 'HASH');
-
-	my %rc;
-	my $num_args = scalar @_;
-
-	# Populate %rc based on the number and type of arguments
-	if(($num_args == 1) && (defined $default)) {
-		# %rc = ($default => shift);
-		return { $default => shift };
-	} elsif($num_args == 1) {
-		Carp::croak('Usage: ', __PACKAGE__, '->', (caller(1))[3], '()');
-	} elsif(($num_args == 0) && (defined($default))) {
-		Carp::croak('Usage: ', __PACKAGE__, '->', (caller(1))[3], "($default => \$val)");
-	} elsif(($num_args % 2) == 0) {
-		%rc = @_;
-	} elsif($num_args == 0) {
-		return;
-	} else {
-		Carp::croak('Usage: ', __PACKAGE__, '->', (caller(1))[3], '()');
-	}
-
-	return \%rc;
 }
 
 =head1 AUTHOR
