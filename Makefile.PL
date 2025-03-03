@@ -50,6 +50,7 @@ WriteMakefile(
 		'File::Spec' => 0,
 		'File::pfopen' => 0.03,
 		'File::Temp' => 0,
+		'Params::Get' => 0,
 		'Scalar::Util' => 0
 	}, dist => $dist,
 	clean		=> { FILES => 'Database-Abstraction-*' },
