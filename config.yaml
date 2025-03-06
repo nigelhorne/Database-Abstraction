@@ -1,7 +1,7 @@
 # Configuration for Database::Abstraction
 
 # Directory where the database files are stored
-directory: /var/db
+directory: /
 
 # Cache settings
 cache:

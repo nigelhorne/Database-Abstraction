@@ -86,5 +86,5 @@ use_ok('Database::test1');
 
 	my $obj = Database::test1->new(config_file => $config_file);
 
-	cmp_ok($obj->{'directory'}, 'eq', '/var/db', 'Can read configuration in from a file');
+	cmp_ok($obj->{'directory'}, 'eq', '/', 'Can read configuration in from a file');
 }
