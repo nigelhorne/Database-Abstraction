@@ -39,9 +39,11 @@ WriteMakefile(
 		'XML::Simple' => 0
 	}, PREREQ_PM => {
 		'autodie' => 0,
+		'boolean' => 0,
 		'strict' => 0,
 		'warnings' => 0,
 		'Carp' => 0,
+		'Config::Auto' => 0,
 		'Data::Dumper' => 0,
 		# 'Error' => 0,
 		'DBD::SQLite::Constants' => 0,
@@ -52,7 +54,6 @@ WriteMakefile(
 		'File::Temp' => 0,
 		'Params::Get' => 0,
 		'Scalar::Util' => 0,
-		'YAML::XS' => 0,
 	}, dist => $dist,
 	clean		=> { FILES => 'Database-Abstraction-*' },
 	# META_ADD => {

@@ -27,7 +27,9 @@ package Database::Abstraction;
 use warnings;
 use strict;
 
+use boolean;
 use Carp;
+use Config::Auto;
 use Data::Dumper;
 use DBD::SQLite::Constants qw/:file_open/;	# For SQLITE_OPEN_READONLY
 use File::Basename;
@@ -37,7 +39,6 @@ use File::Temp;
 use Params::Get;
 # use Error::Simple;	# A nice idea to use this but it doesn't play well with "use lib"
 use Scalar::Util;
-use YAML::XS;
 
 our %defaults;
 use constant	DEFAULT_MAX_SLURP_SIZE => 16 * 1024;	# CSV files <= than this size are read into memory
@@ -206,6 +207,11 @@ Takes different argument formats (hash or positional)
 
 =over 4
 
+=item * C<auto_load>
+
+Enable/disable the AUTOLOAD feature.
+The default is to have it enabled.
+
 =item * C<cache>
 
 Place to store results
@@ -216,7 +222,8 @@ How long to store results in the cache (default is 1 hour).
 
 =item * C<config_file>
 
-Points to a YAML formatted configuration file which contains the parameters to C<new()>.
+Points to a configuration file which contains the parameters to C<new()>.
+The file can be in any common format including C<YAML>, C<XML>, and C<INI>.
 This allows the parameters to be set at run time.
 
 =item * C<expires_in>
@@ -285,7 +292,8 @@ sub new {
 
 	# Load the configuration from a config file, if provided
 	if(exists($args{'config_file'})) {
-		my $config = YAML::XS::LoadFile($args{'config_file'});
+		my $config = Config::Auto::parse($args{'config_file'});
+		# my $config = YAML::XS::LoadFile($args{'config_file'});
 		%args = (%{$config}, %args);
 	}
 
@@ -954,6 +962,9 @@ sub AUTOLOAD {
 	if(!ref($self)) {
 		Carp::croak(__PACKAGE__, ": Unknown table $self");
 	}
+
+	# Allow the AUTOLOAD feature to be disabled
+	return if(exists($self->{'auto_load'}) && ($self->{'auto_load'}->isFalse()));
 
 	my $table = $self->{table} || ref($self);
 	$table =~ s/.*:://;
