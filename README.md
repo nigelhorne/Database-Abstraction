@@ -253,7 +253,7 @@ Throws an error in slurp mode when an invalid column name is given.
 
 # AUTHOR
 
-Nigel Horne, `<njh at bandsman.co.uk>`
+Nigel Horne, `<njh at nigelhorne.com>`
 
 # BUGS
 

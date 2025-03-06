@@ -1,0 +1,40 @@
+# Configuration for Database::Abstraction
+
+# Directory where the database files are stored
+directory: /var/db
+
+# Cache settings
+cache:
+  enabled: true
+  duration: 3600 # Cache duration in seconds (default is 1 hour)
+  max_slurp_size: 16384 # Maximum size in bytes for in-memory CSV/PSV/XML files (default is 16K)
+
+# Logging options
+logger:
+  level: INFO # Log level: DEBUG, INFO, WARN, ERROR
+  file: /tmp/file.log # Log file path
+
+# Database-specific settings
+databases:
+  - name: example_sqlite
+    type: SQLite
+    filename: example.sql
+  - name: example_csv
+    type: CSV
+    filename: example.csv
+    no_entry: true # Disable entry column for this CSV
+    sep_char: ',' # Separator character for CSV (default is '!')
+  - name: example_xml
+    type: XML
+    filename: example.xml
+
+# Advanced settings
+advanced:
+  use_slurp_mode: true # Enable or disable slurp mode for small files
+  key_column: entry # Default key column name (can be overridden by 'id' parameter)
+  auto_load: true # Enable AUTOLOAD feature for convenient access to database columns
+
+# License and copyright information
+license:
+  type: GPL2
+  contact: njh@nigelhorne.com

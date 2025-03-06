@@ -1,6 +1,6 @@
 package Database::Abstraction;
 
-# Author Nigel Horne: njh@bandsman.co.uk
+# Author Nigel Horne: njh@nigelhorne.com
 # Copyright (C) 2015-2025, Nigel Horne
 
 # Usage is subject to licence terms.
@@ -37,6 +37,7 @@ use File::Temp;
 use Params::Get;
 # use Error::Simple;	# A nice idea to use this but it doesn't play well with "use lib"
 use Scalar::Util;
+use YAML::XS;
 
 our %defaults;
 use constant	DEFAULT_MAX_SLURP_SIZE => 16 * 1024;	# CSV files <= than this size are read into memory
@@ -201,6 +202,11 @@ Place to store results
 
 How long to store results in the cache (default is 1 hour).
 
+=item * C<config_file>
+
+Points to a YAML formatted configuration file which contains the parameters to C<new()>.
+This allows the parameters to be set at run time.
+
 =item * C<expires_in>
 
 Synonym of C<cache_duration>, for compatibility with C<CHI>.
@@ -263,6 +269,12 @@ sub new {
 		%args = @_;
 	} elsif(scalar(@_) == 1) {
 		$args{'directory'} = shift;
+	}
+
+	# Load configuration from a config file
+	if(exists($args{'config_file'})) {
+		my $config = YAML::XS::LoadFile($args{'config_file'});
+		%args = (%{$config}, %args);
 	}
 
 	if(!defined($class)) {
@@ -923,6 +935,10 @@ sub AUTOLOAD {
 
 	my $self = shift or return;
 
+	if(!ref($self)) {
+		Carp::croak(__PACKAGE__, ": Unknown table $self");
+	}
+
 	my $table = $self->{table} || ref($self);
 	$table =~ s/.*:://;
 
@@ -1123,10 +1139,12 @@ sub DESTROY {
 # Helper routines for logger()
 sub _log
 {
-	if(!UNIVERSAL::isa((caller)[0], __PACKAGE__)) {
-		Carp::croak('Illegal Operation: This method can only be called by a subclass');
-	}
 	my ($self, $level, @messages) = @_;
+
+	# FIXME: add caller's function
+	# if(($level eq 'warn') || ($level eq 'notice')) {
+		push @{$self->{'messages'}}, { level => $level, message => join(' ', grep defined, @messages) };
+	# }
 
 	if(my $logger = $self->{'logger'}) {
 		if(ref($logger) eq 'CODE') {
@@ -1138,6 +1156,8 @@ sub _log
 				level => $level,
 				message => \@messages
 			});
+		} elsif(ref($logger) eq 'ARRAY') {
+			push @{$logger}, { level => $level, message => join(' ', grep defined, @messages) };
 		} elsif(!ref($logger)) {
 			# File
 			if(open(my $fout, '>>', $logger)) {
@@ -1151,9 +1171,19 @@ sub _log
 	}
 }
 
-sub _fatal {
+sub _debug {
 	my $self = shift;
-	$self->_log('fatal', @_);
+	$self->_log('debug', @_);
+}
+
+sub _info {
+	my $self = shift;
+	$self->_log('info', @_);
+}
+
+sub _notice {
+	my $self = shift;
+	$self->_log('notice', @_);
 }
 
 sub _trace {
@@ -1161,14 +1191,48 @@ sub _trace {
 	$self->_log('trace', @_);
 }
 
-sub _debug {
+# Emit a warning message somewhere
+sub _warn {
 	my $self = shift;
-	$self->_log('debug', @_);
+
+	my $params = Params::Get::get_params('warning', @_);
+
+	# Validate input parameters
+	return unless($params && (ref($params) eq 'HASH'));
+	my $warning = $params->{'warning'};
+	return unless($warning);
+
+	if($self eq __PACKAGE__) {
+		# Called from class method
+		Carp::carp($warning);
+		return;
+	}
+	# return if($self eq __PACKAGE__);  # Called from class method
+
+	# Handle syslog-based logging
+	if($self->{syslog}) {
+		require Sys::Syslog;
+
+		Sys::Syslog->import();
+		if(ref($self->{syslog} eq 'HASH')) {
+			Sys::Syslog::setlogsock($self->{syslog});
+		}
+		openlog($self->script_name(), 'cons,pid', 'user');
+		syslog('warning|local0', $warning);
+		closelog();
+	}
+
+	# Handle logger-based logging
+	$self->_log('warn', $warning);
+	if((!defined($self->{logger})) && (!defined($self->{syslog}))) {
+		# Fallback to Carp
+		Carp::carp($warning);
+	}
 }
 
 =head1 AUTHOR
 
-Nigel Horne, C<< <njh at bandsman.co.uk> >>
+Nigel Horne, C<< <njh at nigelhorne.com> >>
 
 =head1 BUGS
 
