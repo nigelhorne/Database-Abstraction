@@ -2,6 +2,7 @@ Revision history for Database-Abstraction
 
 0.22
 	Allow the AUTOLOAD feature to be disabled
+	Added the auto_load parameter to disable AUTOLOAD
 	Force _open/_log to be a private/protected method
 	Use Params::Get
 	Added config_file argument to new()
