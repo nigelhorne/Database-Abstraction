@@ -959,12 +959,10 @@ sub AUTOLOAD {
 
 	my $self = shift or return;
 
-	if(!ref($self)) {
-		Carp::croak(__PACKAGE__, ": Unknown table $self");
-	}
+	Carp::croak(__PACKAGE__, ": Unknown table $self") if(!ref($self));
 
 	# Allow the AUTOLOAD feature to be disabled
-	return if(exists($self->{'auto_load'}) && ($self->{'auto_load'}->isFalse()));
+	Carp::croak(__PACKAGE__, ": Unknown method $self") if(exists($self->{'auto_load'}) && ($self->{'auto_load'}->isFalse()));
 
 	my $table = $self->{table} || ref($self);
 	$table =~ s/.*:://;
