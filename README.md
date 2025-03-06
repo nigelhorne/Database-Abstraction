@@ -17,6 +17,18 @@ Database::Abstraction - read-only database abstraction layer (ORM)
 
 Version 0.21
 
+# DESCRIPTION
+
+`Database::Abstraction` is a read-only database abstraction layer (ORM) for Perl,
+designed to provide a simple interface for accessing and querying various types of databases such as CSV, XML, and SQLite without the need to write SQL queries.
+It promotes code maintainability by abstracting database access logic into a single interface,
+allowing users to switch between different storage formats seamlessly.
+The module supports caching for performance optimization,
+flexible logging for debugging and monitoring,
+and includes features like the AUTOLOAD method for convenient access to database columns.
+By handling numerous database and file formats,
+`Database::Abstraction` adds versatility and simplifies the management of read-intensive applications.
+
 # SYNOPSIS
 
 Abstract class giving read-only access to CSV,
@@ -138,6 +150,11 @@ Takes different argument formats (hash or positional)
 - `cache_duration`
 
     How long to store results in the cache (default is 1 hour).
+
+- `config_file`
+
+    Points to a YAML formatted configuration file which contains the parameters to `new()`.
+    This allows the parameters to be set at run time.
 
 - `expires_in`
 

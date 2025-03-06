@@ -54,6 +54,18 @@ Version 0.21
 
 our $VERSION = '0.21';
 
+=head1 DESCRIPTION
+
+C<Database::Abstraction> is a read-only database abstraction layer (ORM) for Perl,
+designed to provide a simple interface for accessing and querying various types of databases such as CSV, XML, and SQLite without the need to write SQL queries.
+It promotes code maintainability by abstracting database access logic into a single interface,
+allowing users to switch between different storage formats seamlessly.
+The module supports caching for performance optimization,
+flexible logging for debugging and monitoring,
+and includes features like the AUTOLOAD method for convenient access to database columns.
+By handling numerous database and file formats,
+C<Database::Abstraction> adds versatility and simplifies the management of read-intensive applications.
+
 =head1 SYNOPSIS
 
 Abstract class giving read-only access to CSV,
@@ -271,7 +283,7 @@ sub new {
 		$args{'directory'} = shift;
 	}
 
-	# Load configuration from a config file
+	# Load the configuration from a config file, if provided
 	if(exists($args{'config_file'})) {
 		my $config = YAML::XS::LoadFile($args{'config_file'});
 		%args = (%{$config}, %args);
@@ -295,6 +307,7 @@ sub new {
 	croak("$class: where are the files?") unless($args{'directory'} || $defaults{'directory'});
 
 	croak("$class: ", $args{'directory'} || $defaults{'directory'}, ' is not a directory') unless(-d ($args{'directory'} || $defaults{'directory'}));
+
 	# init(\%args);
 
 	# return bless {
@@ -730,6 +743,9 @@ When no_entry is not set allow just one argument to be given: the entry value.
 
 sub fetchrow_hashref {
 	my $self = shift;
+
+	$self->_trace('Entering fetchrow_hashref');
+
 	my $params;
 
 	if(!$self->{'no_entry'}) {
