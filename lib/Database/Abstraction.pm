@@ -36,6 +36,7 @@ use File::Basename;
 use File::Spec;
 use File::pfopen 0.03;	# For $mode and list context
 use File::Temp;
+use Log::Abstraction;
 use Params::Get;
 # use Error::Simple;	# A nice idea to use this but it doesn't play well with "use lib"
 use Scalar::Util;
@@ -328,13 +329,16 @@ sub new {
 	# }, $class;
 
 	# Re-seen keys take precedence, so defaults come first
+	my $logger = Log::Abstraction->new($args{'logger'});
+
 	return bless {
 		no_entry => 0,
 		id => 'entry',
 		cache_duration => '1 hour',
 		max_slurp_size => DEFAULT_MAX_SLURP_SIZE,
 		%defaults,
-		%args
+		%args,
+		logger => $logger
 	}, $class;
 }
 
@@ -347,10 +351,10 @@ Sets the class, code reference, or file that will be used for logging.
 sub set_logger
 {
 	my $self = shift;
-	my $args = Params::Get::get_params('logger', @_);
+	my $params = Params::Get::get_params('logger', @_);
 
-	if(defined($args->{'logger'})) {
-		$self->{'logger'} = $args->{'logger'};
+	if(defined($params->{'logger'})) {
+		$self->{'logger'} = Log::Abstraction->new($params->{'logger'});
 		return $self;
 	}
 	Carp::croak('Usage: set_logger(logger => $logger)')
@@ -376,7 +380,7 @@ sub _open
 	my $table = $self->{'table'} || ref($self);
 	$table =~ s/.*:://;
 
-	$self->_trace("_open $table");
+	$self->_trace(ref($self), ": _open $table");
 
 	return if($self->{$table});
 
@@ -505,7 +509,7 @@ sub _open
 					require Text::xSV::Slurp;
 					Text::xSV::Slurp->import();
 
-					$self->_trace('slurp in');
+					$self->_debug('slurp in');
 
 					my @data = @{xsv_slurp(
 						shape => 'aoh',
@@ -1161,38 +1165,18 @@ sub DESTROY {
 	}
 }
 
-# Helper routines for logger()
+# Log and remember a message
 sub _log
 {
 	my ($self, $level, @messages) = @_;
 
 	# FIXME: add caller's function
 	# if(($level eq 'warn') || ($level eq 'notice')) {
-		push @{$self->{'messages'}}, { level => $level, message => join(' ', grep defined, @messages) };
+		push @{$self->{'messages'}}, { level => $level, message => join('', grep defined, @messages) };
 	# }
 
 	if(my $logger = $self->{'logger'}) {
-		if(ref($logger) eq 'CODE') {
-			# Code reference
-			$logger->({
-				class => ref($self) // __PACKAGE__,
-				function => (caller(2))[3],
-				line => (caller(1))[2],
-				level => $level,
-				message => \@messages
-			});
-		} elsif(ref($logger) eq 'ARRAY') {
-			push @{$logger}, { level => $level, message => join(' ', grep defined, @messages) };
-		} elsif(!ref($logger)) {
-			# File
-			if(open(my $fout, '>>', $logger)) {
-				print $fout uc($level), ': ', ref($self) // __PACKAGE__, ' ', (caller(2))[3], (caller(1))[2], join(' ', @messages), "\n";
-				close $fout;
-			}
-		} else {
-			# Object
-			$logger->$level(@messages);
-		}
+		$self->{'logger'}->$level(\@messages);
 	}
 }
 
@@ -1219,40 +1203,9 @@ sub _trace {
 # Emit a warning message somewhere
 sub _warn {
 	my $self = shift;
-
 	my $params = Params::Get::get_params('warning', @_);
 
-	# Validate input parameters
-	return unless($params && (ref($params) eq 'HASH'));
-	my $warning = $params->{'warning'};
-	return unless($warning);
-
-	if($self eq __PACKAGE__) {
-		# Called from class method
-		Carp::carp($warning);
-		return;
-	}
-	# return if($self eq __PACKAGE__);  # Called from class method
-
-	# Handle syslog-based logging
-	if($self->{syslog}) {
-		require Sys::Syslog;
-
-		Sys::Syslog->import();
-		if(ref($self->{syslog} eq 'HASH')) {
-			Sys::Syslog::setlogsock($self->{syslog});
-		}
-		openlog($self->script_name(), 'cons,pid', 'user');
-		syslog('warning|local0', $warning);
-		closelog();
-	}
-
-	# Handle logger-based logging
-	$self->_log('warn', $warning);
-	if((!defined($self->{logger})) && (!defined($self->{syslog}))) {
-		# Fallback to Carp
-		Carp::carp($warning);
-	}
+	$self->_log('warn', $params->{'warning'});
 }
 
 =head1 AUTHOR
