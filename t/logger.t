@@ -6,7 +6,7 @@ use strict;
 use FindBin qw($Bin);
 
 use File::Temp;
-use Test::Most tests => 34;
+use Test::Most tests => 35;
 
 use lib 't/lib';
 
@@ -34,7 +34,8 @@ is($test2->number('four'), undef, 'PSV AUTOLOAD works not found');
 	my $logger = new_ok('MyLogger');
 	my $result = $test2->set_logger(logger => $logger);
 	is($result, $test2, 'set_logger returns $self when logger is set');
-	can_ok($test2->{'logger'}, 'debug', 'trace', 'warn', 'notice');
+	is($test2->{'logger'}, $logger, 'sets the logger correctly');
+	# can_ok($test2->{'logger'}, 'debug', 'trace', 'warn', 'notice');
 }
 
 # set_logger without a logger argument, should croak
@@ -47,13 +48,16 @@ is($test2->number('four'), undef, 'PSV AUTOLOAD works not found');
 
 # set_logger with subroutine ref
 {
+	my $code_called;
 	my $logger = sub {
 		unlike($_[0]->{'line'}, qr/\D/, 'Line numbers are valid');
 		diag($_[0]->{'level'}, ': ', @{$_[0]->{'message'}}) if($ENV{'TEST_VERBOSE'});
+		$code_called++;
 		# diag(Data::Dumper->new([\@_])->Dump());
 	};
 	my $test4 = new_ok('Database::test4' => [{ directory => "$Bin/../data", logger => $logger }] );
 	ok(!defined($test4->ordinal(cardinal => 'four')), 'CSV AUTOLOAD works');
+	cmp_ok($code_called, '==', 9, 'Setting the logger as a ref to code works');
 }
 
 # set_logger with file

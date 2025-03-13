@@ -328,9 +328,16 @@ sub new {
 		# no_entry => $args{'no_entry'} || 0,
 	# }, $class;
 
-	# Re-seen keys take precedence, so defaults come first
-	my $logger = Log::Abstraction->new($args{'logger'});
+	my $logger;
+	if($logger = $args{'logger'}) {
+		if(!Scalar::Util::blessed($logger)) {
+			$logger = Log::Abstraction->new($logger);
+		}
+	} else {
+		$logger = Log::Abstraction->new();
+	}
 
+	# Re-seen keys take precedence, so defaults come first
 	return bless {
 		no_entry => 0,
 		id => 'entry',
@@ -354,7 +361,15 @@ sub set_logger
 	my $params = Params::Get::get_params('logger', @_);
 
 	if(defined($params->{'logger'})) {
-		$self->{'logger'} = Log::Abstraction->new($params->{'logger'});
+		if(my $logger = $params->{'logger'}) {
+			if(Scalar::Util::blessed($logger)) {
+				$self->{'logger'} = $logger;
+			} else {
+				$self->{'logger'} = Log::Abstraction->new($logger);
+			}
+		} else {
+			$self->{'logger'} = Log::Abstraction->new();
+		}
 		return $self;
 	}
 	Carp::croak('Usage: set_logger(logger => $logger)')
