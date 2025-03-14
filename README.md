@@ -15,7 +15,7 @@ Database::Abstraction - read-only database abstraction layer (ORM)
 
 # VERSION
 
-Version 0.21
+Version 0.22
 
 # DESCRIPTION
 
@@ -143,6 +143,11 @@ Arguments:
 
 Takes different argument formats (hash or positional)
 
+- `auto_load`
+
+    Enable/disable the AUTOLOAD feature.
+    The default is to have it enabled.
+
 - `cache`
 
     Place to store results
@@ -153,7 +158,8 @@ Takes different argument formats (hash or positional)
 
 - `config_file`
 
-    Points to a YAML formatted configuration file which contains the parameters to `new()`.
+    Points to a configuration file which contains the parameters to `new()`.
+    The file can be in any common format including `YAML`, `XML`, and `INI`.
     This allows the parameters to be set at run time.
 
 - `expires_in`
