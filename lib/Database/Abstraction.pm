@@ -31,7 +31,9 @@ use boolean;
 use Carp;
 use Config::Auto;
 use Data::Dumper;
+use DB_File;	# For Berkeley database file checking
 use DBD::SQLite::Constants qw/:file_open/;	# For SQLITE_OPEN_READONLY
+use Fcntl;	# For O_RDONLY
 use File::Basename;
 use File::Spec;
 use File::pfopen 0.03;	# For $mode and list context
@@ -422,6 +424,8 @@ sub _open
 		$dbh->do('PRAGMA cache_size = 65536');
 		$self->_debug("read in $table from SQLite $slurp_file");
 		$self->{'type'} = 'DBI';
+	} elsif($self->_is_berkeley_db(File::Spec->catfile($dir, "$dbname.db"))) {
+		die 'TODO: Add support for Berkeley DB files';
 	} else {
 		my $fin;
 		($fin, $slurp_file) = File::pfopen::pfopen($dir, $dbname, 'csv.gz:db.gz', '<');
@@ -924,7 +928,7 @@ sub execute
 
 	# Prepare and execute the query
 	my $sth = $self->{$table}->prepare($query);
-	$sth->execute() or croak($query);  # Die with the query in case of error
+	$sth->execute() or croak($query);	# Die with the query in case of error
 
 	# Fetch the results
 	my @results;
@@ -1181,6 +1185,33 @@ sub DESTROY {
 	if(my $table = delete $self->{'table'}) {
 		$table->finish();
 	}
+}
+
+sub _is_berkeley_db {
+	my ($self, $file) = @_;
+	my $header;
+
+	# Step 1: Check magic number
+	if(open(my $fh, '<', $file)) {
+		read $fh, $header, 4;
+		close $fh;
+	} else {
+		return 0;
+	}
+
+	$header = substr(unpack('H*', $header), 0, 4);
+
+	# Berkeley DB magic numbers
+	if($header eq '6000' || $header eq '0006') {
+		# Step 2: Attempt to open as Berkeley DB
+		my %db;
+		if (tie %db, 'DB_File', $file, O_RDONLY, 0666, $DB_HASH) {
+			untie %db;
+			return 1;	# Successfully identified as a Berkeley DB file
+		}
+	}
+
+	return 0;
 }
 
 # Log and remember a message
