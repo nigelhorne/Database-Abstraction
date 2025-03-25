@@ -79,7 +79,6 @@ use_ok('Database::test1');
 	is($obj->{max_slurp_size}, DEFAULT_MAX_SLURP_SIZE, 'Default max_slurp_size is set');
 }
 
-
 # Test loading configuration from a file
 {
 	my $config_file = File::Spec->catfile($Bin, File::Spec->updir(), 'config.yaml');
