@@ -31,7 +31,6 @@ use boolean;
 use Carp;
 use Config::Auto;
 use Data::Dumper;
-use DB_File;	# For Berkeley database file checking
 use DBD::SQLite::Constants qw/:file_open/;	# For SQLITE_OPEN_READONLY
 use Fcntl;	# For O_RDONLY
 use File::Basename;
@@ -1246,8 +1245,11 @@ sub _is_berkeley_db
 	# Berkeley DB magic numbers
 	if($header eq '6000' || $header eq '0006') {
 		# Step 2: Attempt to open as Berkeley DB
+
+		require DB_File && DB_File->import();
+
 		my %bdb;
-		if(tie %bdb, 'DB_File', $file, O_RDONLY, 0644, $DB_HASH) {
+		if(tie %bdb, 'DB_File', $file, O_RDONLY, 0644, $DB_File::DB_HASH) {
 			# untie %db;
 			$self->{'berkeley'} = \%bdb;
 			return 1;	# Successfully identified as a Berkeley DB file
