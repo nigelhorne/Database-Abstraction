@@ -298,13 +298,6 @@ sub new {
 		$args{'directory'} = shift;
 	}
 
-	# Load the configuration from a config file, if provided
-	if(exists($args{'config_file'})) {
-		my $config = Config::Auto::parse($args{'config_file'});
-		# my $config = YAML::XS::LoadFile($args{'config_file'});
-		%args = (%{$config}, %args);
-	}
-
 	if(!defined($class)) {
 		if((scalar keys %args) > 0) {
 			# Using Database::Abstraction->new(), not Database::Abstraction::new()
@@ -318,6 +311,15 @@ sub new {
 	} elsif(Scalar::Util::blessed($class)) {
 		# If $class is an object, clone it with new arguments
 		return bless { %{$class}, %args }, ref($class);
+	}
+
+	# Load the configuration from a config file, if provided
+	if(exists($args{'config_file'}) && (my $config = Config::Auto::parse($args{'config_file'}))) {
+		# my $config = YAML::XS::LoadFile($args{'config_file'});
+		if($config->{$class}) {
+			$config = $config->{$class};
+		}
+		%args = (%{$config}, %args);
 	}
 
 	croak("$class: where are the files?") unless($args{'directory'} || $defaults{'directory'});
