@@ -73,7 +73,8 @@ C<Database::Abstraction> adds versatility and simplifies the management of read-
 =head1 SYNOPSIS
 
 Abstract class giving read-only access to CSV,
-XML and SQLite databases via Perl without writing any SQL,
+XML,
+BerkeleyDB and SQLite databases via Perl without writing any SQL,
 using caching for performance optimization.
 
 The module promotes code maintainability by abstracting database access logic into a single interface.
@@ -108,6 +109,10 @@ File ends with .csv or .db, can be gzipped. Note the default sep_char is '!' not
 =item 4 C<XML>
 
 File ends with .xml
+
+=item 5 C<BerkeleyDB>
+
+File ends with .db
 
 =back
 
@@ -425,7 +430,7 @@ sub _open
 		$self->_debug("read in $table from SQLite $slurp_file");
 		$self->{'type'} = 'DBI';
 	} elsif($self->_is_berkeley_db(File::Spec->catfile($dir, "$dbname.db"))) {
-		die 'TODO: Add support for Berkeley DB files';
+		$self->_debug("$table is a BerkeleyDB file");
 	} else {
 		my $fin;
 		($fin, $slurp_file) = File::pfopen::pfopen($dir, $dbname, 'csv.gz:db.gz', '<');
@@ -646,6 +651,10 @@ sub selectall_hash
 	my $self = shift;
 	my $params = Params::Get::get_params(undef, @_);
 
+	if($self->{'berkeley'}) {
+		Carp::croak(ref($self), ': selectall_hash is meaningless on a NoSQL database');
+	}
+
 	my $table = $self->{table} || ref($self);
 	$table =~ s/.*:://;
 
@@ -791,9 +800,22 @@ sub fetchrow_hashref {
 	my $table = $params->{'table'} || $self->{'table'} || ref($self);
 	$table =~ s/.*:://;
 
+	$self->_open() if(!$self->{$table});
+
 	if($self->{'data'} && (!$self->{'no_entry'}) && (scalar keys(%{$params}) == 1) && defined($params->{'entry'})) {
 		$self->_debug('Fast return from slurped data');
 		return $self->{'data'}->{$params->{'entry'}};
+	}
+
+	if($self->{'berkeley'}) {
+		if((!$self->{'no_entry'}) && (scalar keys(%{$params}) == 1) && defined($params->{'entry'})) {
+			return { entry => $self->{'berkeley'}->{$params->{'entry'}} };
+		}
+		my $id = $self->{'id'};
+		if($self->{'no_entry'} && (scalar keys(%{$params}) == 1) && defined($id) && defined($params->{$id})) {
+			return { $id => $self->{'berkeley'}->{$params->{$id}} };
+		}
+		Carp::croak(ref($self), ': fetchrow_hashref is meaningless on a NoSQL database');
 	}
 
 	my $query = 'SELECT * FROM ';
@@ -804,8 +826,6 @@ sub fetchrow_hashref {
 	}
 	my $done_where = 0;
 
-	$self->_open() if(!$self->{$table});
-
 	if(($self->{'type'} eq 'CSV') && !$self->{no_entry}) {
 		$query .= ' WHERE ' . $self->{'id'} . ' IS NOT NULL AND ' . $self->{'id'} . " NOT LIKE '#%'";
 		$done_where = 1;
@@ -815,11 +835,12 @@ sub fetchrow_hashref {
 		if(my $arg = $params->{$c1}) {
 			my $keyword;
 
-				if(ref($arg)) {
-					$self->_fatal("selectall_hash $query: argument is not a string");
-					# throw Error::Simple("$query: argument is not a string: " . ref($arg));
-					croak("$query: argument is not a string: ", ref($arg));
-				}
+			if(ref($arg)) {
+				$self->_fatal("selectall_hash $query: argument is not a string");
+				# throw Error::Simple("$query: argument is not a string: " . ref($arg));
+				croak("$query: argument is not a string: ", ref($arg));
+			}
+
 			if($done_where) {
 				$keyword = 'AND';
 			} else {
@@ -906,6 +927,10 @@ sub execute
 {
 	my $self = shift;
 	my $args = Params::Get::get_params('query', @_);
+
+	if($self->{'berkeley'}) {
+		Carp::croak(ref($self), ': execute is meaningless on a NoSQL database');
+	}
 
 	# Ensure the 'query' parameter is provided
 	Carp::croak(__PACKAGE__, ': Usage: execute(query => $query)')
@@ -1006,6 +1031,10 @@ sub AUTOLOAD {
 	}
 
 	$self->_open() if(!$self->{$table});
+
+	if($self->{'berkeley'}) {
+		return $self->{'berkeley'}->{$params{'entry'}};
+	}
 
 	my $query;
 	my $done_where = 0;
@@ -1185,15 +1214,22 @@ sub DESTROY {
 	if(my $table = delete $self->{'table'}) {
 		$table->finish();
 	}
+	if($self->{'berkeley'}) {
+		untie %{$self->{'berkeley'}};
+		delete $self->{'berkeley'};
+	}
 }
 
-sub _is_berkeley_db {
+# Determine whether a given file is a valid Berkeley DB file.
+# It combines a fast preliminary check with a more thorough validation step for accuracy.
+sub _is_berkeley_db
+{
 	my ($self, $file) = @_;
 	my $header;
 
 	# Step 1: Check magic number
 	if(open(my $fh, '<', $file)) {
-		read $fh, $header, 4;
+		read($fh, $header, 4);
 		close $fh;
 	} else {
 		return 0;
@@ -1204,9 +1240,10 @@ sub _is_berkeley_db {
 	# Berkeley DB magic numbers
 	if($header eq '6000' || $header eq '0006') {
 		# Step 2: Attempt to open as Berkeley DB
-		my %db;
-		if (tie %db, 'DB_File', $file, O_RDONLY, 0666, $DB_HASH) {
-			untie %db;
+		my %bdb;
+		if(tie %bdb, 'DB_File', $file, O_RDONLY, 0644, $DB_HASH) {
+			# untie %db;
+			$self->{'berkeley'} = \%bdb;
 			return 1;	# Successfully identified as a Berkeley DB file
 		}
 	}
