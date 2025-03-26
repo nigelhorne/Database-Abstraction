@@ -1,6 +1,6 @@
 Revision history for Database-Abstraction
 
-0.24
+0.24	Wed Mar 26 11:46:57 EDT 2025
 	Added basic support for BerkeleyDBs (files ending in .db)
 	If config_file has a section for this class, use that
 
