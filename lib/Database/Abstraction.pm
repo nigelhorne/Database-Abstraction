@@ -1018,19 +1018,20 @@ sub AUTOLOAD {
 	my $table = $self->{table} || ref($self);
 	$table =~ s/.*:://;
 
+	$self->_open() if(!$self->{$table});	# Open early to set $self->{'berkeley'}
+
 	my %params;
 	if(ref($_[0]) eq 'HASH') {
 		%params = %{$_[0]};
 	} elsif((scalar(@_) % 2) == 0) {
 		%params = @_;
 	} elsif(scalar(@_) == 1) {
-		if($self->{'no_entry'}) {
+		# Don't error on key-value databases, since there's no idea of columns
+		if($self->{'no_entry'} && !$self->{'berkeley'}) {
 			Carp::croak(ref($self), "::($_[0]): ", $self->{'id'}, ' is not a column');
 		}
 		$params{'entry'} = shift;
 	}
-
-	$self->_open() if(!$self->{$table});
 
 	if($self->{'berkeley'}) {
 		return $self->{'berkeley'}->{$params{'entry'}};
