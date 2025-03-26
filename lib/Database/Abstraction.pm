@@ -1034,6 +1034,9 @@ sub AUTOLOAD {
 	}
 
 	if($self->{'berkeley'}) {
+		if(my $id = $self->{'id'}) {
+			return $self->{'berkeley'}->{$params{$id}};
+		}
 		return $self->{'berkeley'}->{$params{'entry'}};
 	}
 
