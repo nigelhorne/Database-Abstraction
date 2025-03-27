@@ -244,7 +244,8 @@ The database will be held in a file such as $dbname.csv.
 
 =item * C<directory>
 
-Where the database file is held
+Where the database file is held.
+If only one argument is given to C<new()>, it is taken to be C<directory>.
 
 =item * C<filename>
 
