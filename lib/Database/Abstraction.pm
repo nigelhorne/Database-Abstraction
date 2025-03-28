@@ -23,6 +23,8 @@ package Database::Abstraction;
 # TODO:	It would be better for the default sep_char to be ',' rather than '!'
 # FIXME:	t/xml.t fails in slurping mode
 # TODO:	Other databases e.g. Redis, noSQL, remote databases such as MySQL, PostgresSQL
+# TODO: The no_entry/entry terminology is confusing.  Replace with no_id/id_column
+# TODO: Add support for DBM::Deep
 
 use warnings;
 use strict;
@@ -33,7 +35,6 @@ use Config::Auto;
 use Data::Dumper;
 use DBD::SQLite::Constants qw/:file_open/;	# For SQLITE_OPEN_READONLY
 use Fcntl;	# For O_RDONLY
-use File::Basename;
 use File::Spec;
 use File::pfopen 0.03;	# For $mode and list context
 use File::Temp;
@@ -416,13 +417,13 @@ sub _open
 	# Look at various places to find the file and derive the file type from the file's name
 	if(-r $slurp_file) {
 		# SQLite file
-		require DBI;
-
-		DBI->import();
+		require DBI && DBI->import() unless DBI->can('connect');
 
 		$dbh = DBI->connect("dbi:SQLite:dbname=$slurp_file", undef, undef, {
 			sqlite_open_flags => SQLITE_OPEN_READONLY,
 		});
+	}
+	if($dbh) {
 		$dbh->do('PRAGMA synchronous = OFF');
 		$dbh->do('PRAGMA cache_size = 65536');
 		$self->_debug("read in $table from SQLite $slurp_file");

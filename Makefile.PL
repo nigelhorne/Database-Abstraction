@@ -48,7 +48,6 @@ WriteMakefile(
 		# 'Error' => 0,
 		'DBD::SQLite::Constants' => 0,
 		'ExtUtils::MakeMaker' => 6.64,	# 6.64 for TEST_REQUIRES
-		'File::Basename' => 0,
 		'File::Spec' => 0,
 		'File::pfopen' => 0.03,
 		'File::Temp' => 0,
