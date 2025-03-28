@@ -189,15 +189,13 @@ Therefore when given with no arguments you can get the current default values:
 # Subroutine to initialize with args
 sub init
 {
-	if(scalar(@_)) {
-		my %args = (ref($_[0]) eq 'HASH') ? %{$_[0]} : @_;
-
-		if(($args{'expires_in'} && !$args{'cache_duration'})) {
+	if(my $params = Params::Get::get_params(undef, @_)) {
+		if(($params->{'expires_in'} && !$params->{'cache_duration'})) {
 			# Compatibility with CHI
-			$args{'cache_duration'} = $args{'expires_in'};
+			$params->{'cache_duration'} = $params->{'expires_in'};
 		}
 
-		%defaults = (%defaults, %args);
+		%defaults = (%defaults, %{$params});
 		$defaults{'cache_duration'} ||= '1 hour';
 	}
 
@@ -395,11 +393,9 @@ sub _open
 	}
 
 	my $self = shift;
-	my $sep_char = ($self->{'sep_char'} ? $self->{'sep_char'} : '!');
-	my %args = (
-		sep_char => $sep_char,
-		((ref($_[0]) eq 'HASH') ? %{$_[0]} : @_)
-	);
+	my $params = Params::Get::get_params(undef, @_);
+
+	$params->{'sep_char'} ||= $self->{'sep_char'} ? $self->{'sep_char'} : '!';
 
 	my $table = $self->{'table'} || ref($self);
 	$table =~ s/.*:://;
@@ -449,7 +445,7 @@ sub _open
 			($fin, $slurp_file) = File::pfopen::pfopen($dir, $dbname, 'psv', '<');
 			if(defined($fin)) {
 				# Pipe separated file
-				$args{'sep_char'} = '|';
+				$params->{'sep_char'} = '|';
 			} else {
 				# CSV file
 				($fin, $slurp_file) = File::pfopen::pfopen($dir, $dbname, 'csv:db', '<');
@@ -461,17 +457,17 @@ sub _open
 		}
 		if(defined($slurp_file) && (-r $slurp_file)) {
 			close($fin) if(defined($fin));
-			$sep_char = $args{'sep_char'};
+			my $sep_char = $params->{'sep_char'};
 
 			$self->_debug(__LINE__, ' of ', __PACKAGE__, ": slurp_file = $slurp_file, sep_char = $sep_char");
 
-			if($args{'column_names'}) {
+			if($params->{'column_names'}) {
 				$dbh = DBI->connect("dbi:CSV:db_name=$slurp_file", undef, undef,
 					{
 						csv_sep_char => $sep_char,
 						csv_tables => {
 							$table => {
-								col_names => $args{'column_names'},
+								col_names => $params->{'column_names'},
 							},
 						},
 					}
@@ -530,7 +526,7 @@ sub _open
 
 			# Can't slurp when we want to use our own column names as Text::xSV::Slurp has no way to override the names
 			# FIXME: Text::xSV::Slurp can't cope well with quotes in field contents
-			if(((-s $slurp_file) <= $self->{'max_slurp_size'}) && !$args{'column_names'}) {
+			if(((-s $slurp_file) <= $self->{'max_slurp_size'}) && !$params->{'column_names'}) {
 				if((-s $slurp_file) == 0) {
 					# Empty file
 					$self->{'data'} = ();

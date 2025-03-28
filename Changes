@@ -3,6 +3,7 @@ Revision history for Database-Abstraction
 0.25
 	Fix auto_load calling unknown routine isFalse
 	Removed _info and _notice as they're not used
+	More extensive use of Params::Get to clean the code
 
 0.24	Wed Mar 26 11:46:57 EDT 2025
 	Added basic support for BerkeleyDBs (files ending in .db)
