@@ -6,7 +6,7 @@ package Database::Abstraction;
 # Usage is subject to licence terms.
 # The licence terms of this software are as follows:
 # Personal single user, single computer use: GPL2
-# All other users (for example Commercial, Charity, Educational, Government)
+# All other users (for example, Commercial, Charity, Educational, Government)
 #	must apply in writing for a licence for use from Nigel Horne at the
 #	above e-mail.
 
@@ -1278,16 +1278,6 @@ sub _log
 sub _debug {
 	my $self = shift;
 	$self->_log('debug', @_);
-}
-
-sub _info {
-	my $self = shift;
-	$self->_log('info', @_);
-}
-
-sub _notice {
-	my $self = shift;
-	$self->_log('notice', @_);
 }
 
 sub _trace {
