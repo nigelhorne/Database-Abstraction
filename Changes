@@ -5,6 +5,8 @@ Revision history for Database-Abstraction
 	Removed _info and _notice as they're not used
 	More extensive use of Params::Get to clean the code
 	Added sanity test
+	Allow subclasses to set max_slurp_size on open()
+	Improved slurping of XML files - still needs more work
 
 0.24	Wed Mar 26 11:46:57 EDT 2025
 	Added basic support for BerkeleyDBs (files ending in .db)

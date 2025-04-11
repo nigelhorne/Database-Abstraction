@@ -397,6 +397,7 @@ sub _open
 	my $params = Params::Get::get_params(undef, @_);
 
 	$params->{'sep_char'} ||= $self->{'sep_char'} ? $self->{'sep_char'} : '!';
+	my $max_slurp_size = $params->{'max_slurp_size'} || $self->{'max_slurp_size'};
 
 	my $table = $self->{'table'} || ref($self);
 	$table =~ s/.*:://;
@@ -527,7 +528,7 @@ sub _open
 
 			# Can't slurp when we want to use our own column names as Text::xSV::Slurp has no way to override the names
 			# FIXME: Text::xSV::Slurp can't cope well with quotes in field contents
-			if(((-s $slurp_file) <= $self->{'max_slurp_size'}) && !$params->{'column_names'}) {
+			if(((-s $slurp_file) <= $max_slurp_size) && !$params->{'column_names'}) {
 				if((-s $slurp_file) == 0) {
 					# Empty file
 					$self->{'data'} = ();
@@ -573,7 +574,7 @@ sub _open
 		} else {
 			$slurp_file = File::Spec->catfile($dir, "$dbname.xml");
 			if(-r $slurp_file) {
-				if((-s $slurp_file) <= $self->{'max_slurp_size'}) {
+				if((-s $slurp_file) <= $max_slurp_size) {
 					require XML::Simple;
 					XML::Simple->import();
 
@@ -583,8 +584,16 @@ sub _open
 					my @data;
 					if(ref($xml->{$key}) eq 'ARRAY') {
 						@data = @{$xml->{$key}};
-					} else {
+					} elsif(ref($xml) eq 'ARRAY') {
 						@data = @{$xml};
+					} elsif((ref($xml) eq 'HASH') && !$self->{'no_entry'}) {
+						if((scalar(keys %{$xml}) == 1) && $xml->{$table}) {
+							@data = $xml->{$table};
+						} else {
+							die 'TODO: import arbitrary XML with no "entry" field';
+						}
+					} else {
+						die 'TODO: import arbitrary XML';
 					}
 					$self->{'data'} = ();
 					if($self->{'no_entry'}) {
