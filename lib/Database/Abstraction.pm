@@ -48,7 +48,7 @@ use constant	DEFAULT_MAX_SLURP_SIZE => 16 * 1024;	# CSV files <= than this size 
 
 =head1 NAME
 
-Database::Abstraction - read-only database abstraction layer (ORM)
+Database::Abstraction - Read-only Database Abstraction Layer (ORM)
 
 =head1 VERSION
 
@@ -1126,6 +1126,7 @@ sub AUTOLOAD {
 			return
 		}
 		# Data has not been slurped in
+		croak('Where did the data come from?') if(!defined($self->{'type'}));
 		if(($self->{'type'} eq 'CSV') && !$self->{no_entry}) {
 			$query = "SELECT DISTINCT $column FROM $table WHERE " . $self->{'id'} . " IS NOT NULL AND entry NOT LIKE '#%'";
 			$done_where = 1;
