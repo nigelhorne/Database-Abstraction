@@ -1017,7 +1017,7 @@ sub AUTOLOAD {
 	my $table = $self->{table} || ref($self);
 	$table =~ s/.*:://;
 
-	$self->_open() if(!$self->{$table});	# Open early to set $self->{'berkeley'}
+	$self->_open() if((!$self->{$table}) && (!$self->{'data'}));	# Open early to set $self->{'berkeley'}
 
 	my %params;
 	if(ref($_[0]) eq 'HASH') {
@@ -1039,6 +1039,7 @@ sub AUTOLOAD {
 		return $self->{'berkeley'}->{$params{'entry'}};
 	}
 
+	croak('Where did the data come from?') if(!defined($self->{'type'}));
 	my $query;
 	my $done_where = 0;
 	my $distinct = delete($params{'distinct'}) || delete($params{'unique'});
@@ -1126,7 +1127,6 @@ sub AUTOLOAD {
 			return
 		}
 		# Data has not been slurped in
-		croak('Where did the data come from?') if(!defined($self->{'type'}));
 		if(($self->{'type'} eq 'CSV') && !$self->{no_entry}) {
 			$query = "SELECT DISTINCT $column FROM $table WHERE " . $self->{'id'} . " IS NOT NULL AND entry NOT LIKE '#%'";
 			$done_where = 1;
