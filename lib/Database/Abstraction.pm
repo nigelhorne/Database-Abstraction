@@ -33,6 +33,7 @@ use boolean;
 use Carp;
 use Config::Auto;
 use Data::Dumper;
+use Data::Reuse;
 use DBD::SQLite::Constants qw/:file_open/;	# For SQLITE_OPEN_READONLY
 use Fcntl;	# For O_RDONLY
 use File::Spec;
@@ -622,6 +623,8 @@ sub _open
 		}
 	}
 
+	# TODO: fixate $self->{'data'} if $self->{'data'}
+
 	$self->{$table} = $dbh;
 	my @statb = stat($slurp_file);
 	$self->{'_updated'} = $statb[9];
@@ -645,6 +648,7 @@ sub selectall_hashref {
 	my $self = shift;
 
 	my @rc = $self->selectall_hash(@_);
+	Data::Reuse::fixate(@rc);
 	return \@rc;
 }
 
@@ -1206,6 +1210,7 @@ sub AUTOLOAD {
 		if($cache) {
 			$cache->set($key, \@rc, $self->{'cache_duration'});	# Store a ref to the array
 		}
+		Data::Reuse::fixate(@rc);
 		return @rc;
 	}
 	my $rc = $sth->fetchrow_array();	# Return the first match only

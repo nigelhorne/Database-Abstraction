@@ -45,6 +45,7 @@ WriteMakefile(
 		'Carp' => 0,
 		'Config::Auto' => 0,
 		'Data::Dumper' => 0,
+		'Data::Reuse' => 0,
 		# 'Error' => 0,
 		'DBD::SQLite::Constants' => 0,
 		'ExtUtils::MakeMaker' => 6.64,	# 6.64 for TEST_REQUIRES
