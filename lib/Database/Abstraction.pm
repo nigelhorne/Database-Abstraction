@@ -627,7 +627,7 @@ sub _open
 		}
 	}
 
-	# TODO: fixate $self->{'data'} if $self->{'data'}
+	Data::Reuse::fixate(%{$self->{'data'}}) if($self->{'data'} && (ref($self->{'data'} eq 'HASH')));
 
 	$self->{$table} = $dbh;
 	my @statb = stat($slurp_file);
