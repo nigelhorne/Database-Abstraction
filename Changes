@@ -1,6 +1,6 @@
 Revision history for Database-Abstraction
 
-0.26
+0.26	Tue Apr 15 16:42:48 EDT 2025
 	Added the 'no_fixate' option
 	POC - fixate slurped data
 
