@@ -51,7 +51,7 @@ is($test2->number('four'), undef, 'PSV AUTOLOAD works not found');
 	my $code_called;
 	my $logger = sub {
 		unlike($_[0]->{'line'}, qr/\D/, 'Line numbers are valid');
-		diag($_[0]->{'level'}, ': ', @{$_[0]->{'message'}}) if($ENV{'TEST_VERBOSE'});
+		diag($_[0]->{'level'}, '> ', @{$_[0]->{'message'}}) if($ENV{'TEST_VERBOSE'});
 		$code_called++;
 		# diag(Data::Dumper->new([\@_])->Dump());
 	};
@@ -77,9 +77,9 @@ is($test2->number('four'), undef, 'PSV AUTOLOAD works not found');
 	close($fin);
 
 	# Test contents of the file
-	like($content, qr/^DEBUG: /sm, 'File contains some debugging');
-	like($content, qr/^TRACE: /sm, 'File contains some tracing');
-	unlike($content, qr/^FOO: /sm, 'Sanity check for the regex, that it is actually searching for something');
+	like($content, qr/^DEBUG> /sm, 'File contains some debugging');
+	like($content, qr/^TRACE> /sm, 'File contains some tracing');
+	unlike($content, qr/^FOO> /sm, 'Sanity check for the regex, that it is actually searching for something');
 
 	diag($content) if($ENV{'TEST_VERBOSE'});
 }
