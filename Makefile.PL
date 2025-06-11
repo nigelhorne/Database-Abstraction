@@ -43,7 +43,6 @@ WriteMakefile(
 		'strict' => 0,
 		'warnings' => 0,
 		'Carp' => 0,
-		'Config::Auto' => 0,
 		'Data::Dumper' => 0,
 		'Data::Reuse' => 0,	# Fails installation tests on recent Perls, RT#100461
 		# 'Error' => 0,
@@ -53,6 +52,7 @@ WriteMakefile(
 		'File::pfopen' => 0.03,
 		'File::Temp' => 0,
 		'Log::Abstraction' => 0.05,
+		'Object::Configure' => 0,
 		'Params::Get' => 0,
 		'Scalar::Util' => 0,
 	}, dist => $dist,

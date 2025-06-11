@@ -31,7 +31,6 @@ use strict;
 
 use boolean;
 use Carp;
-use Class::Debug;
 use Data::Dumper;
 use Data::Reuse;
 use DBD::SQLite::Constants qw/:file_open/;	# For SQLITE_OPEN_READONLY
@@ -39,6 +38,7 @@ use Fcntl;	# For O_RDONLY
 use File::Spec;
 use File::pfopen 0.03;	# For $mode and list context
 use File::Temp;
+use Object::Configure;
 use Params::Get;
 # use Error::Simple;	# A nice idea to use this but it doesn't play well with "use lib"
 use Scalar::Util;
@@ -314,7 +314,7 @@ sub new {
 	}
 
 	# Load the configuration from a config file, if provided
-	%args = %{Class::Debug::setup($class, \%args)};
+	%args = %{Object::Configure::configure($class, \%args)};
 
 	croak("$class: where are the files?") unless($args{'directory'} || $defaults{'directory'});
 
