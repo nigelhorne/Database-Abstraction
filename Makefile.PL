@@ -64,10 +64,11 @@ WriteMakefile(
 		'meta-spec' => { version => 2 },
 		resources => {
 			repository => {
+				repository => 'https://github.com/nigelhorne/Database-Abstraction',
 				type => 'git',
 				url => 'git://github.com/nigelhorne/Database-Abstraction.git',
 				web => 'https://github.com/nigelhorne/Database-Abstraction',
-				repository => 'https://github.com/nigelhorne/Database-Abstraction',
+				# license    => 'http://dev.perl.org/licenses/',
 			}, bugtracker => {
 				# web => 'https://rt.cpan.org/Public/Dist/Display.html?Name=Database-Abstraction',
 				web => 'https://github.com/nigelhorne/Database-Abstraction/issues',

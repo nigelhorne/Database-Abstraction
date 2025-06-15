@@ -52,11 +52,11 @@ Database::Abstraction - Read-only Database Abstraction Layer (ORM)
 
 =head1 VERSION
 
-Version 0.26
+Version 0.27
 
 =cut
 
-our $VERSION = '0.26';
+our $VERSION = '0.27';
 
 =head1 DESCRIPTION
 
@@ -1293,6 +1293,16 @@ sub _warn {
 =head1 AUTHOR
 
 Nigel Horne, C<< <njh at nigelhorne.com> >>
+
+=head1 SUPPORT
+
+This module is provided as-is without any warranty.
+
+Please report any bugs or feature requests to C<bug-database-abstraction at rt.cpan.org>,
+or through the web interface at
+L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Database-Abstraction>.
+I will be notified, and then you'll
+automatically be notified of progress on your bug as I make changes.
 
 =head1 BUGS
 
