@@ -218,7 +218,11 @@ sub import
 {
 	my $pkg = shift;
 
-	init(@_);
+	if(scalar(@_)) {
+		my %h = @_;
+		init(Object::Configure::configure($pkg, \%h));
+		# init(\@_);
+	}
 }
 
 =head2 new
