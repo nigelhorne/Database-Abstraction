@@ -206,6 +206,21 @@ sub init
 	return \%defaults
 }
 
+=head2 import
+
+The module can be initialised by the C<use> directive.
+
+    use Database::Abstraction 'directory' => '/etc/data';
+
+=cut
+
+sub import
+{
+	my $pkg = shift;
+
+	init(@_);
+}
+
 =head2 new
 
 Create an object to point to a read-only database.

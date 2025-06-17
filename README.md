@@ -143,6 +143,12 @@ Therefore when given with no arguments you can get the current default values:
     my $defaults = Database::Abstraction::init();
     print $defaults->{'directory'}, "\n";
 
+## import
+
+The module can be initialised by the `use` directive.
+
+    use Database::Abstraction 'directory' => '/etc/data';
+
 ## new
 
 Create an object to point to a read-only database.

@@ -1,5 +1,8 @@
 Revision history for Database-Abstraction
 
+0.28
+	Added the import method
+
 0.27	Sat Jun 14 20:56:27 EDT 2025
 	Use Object::Configure rather than Class::Debug
 
