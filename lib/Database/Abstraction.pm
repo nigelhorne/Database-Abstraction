@@ -227,7 +227,7 @@ sub import
 		init(Object::Configure::configure($pkg, \%h));
 	} elsif((scalar(@_) == 1) && (ref($_[0]) eq 'HASH')) {
 		init(Object::Configure::configure($pkg, $_[0]));
-	} else {
+	} elsif(scalar(@_) > 0) {	# >= 3 would also work here
 		init(\@_);
 	}
 }
