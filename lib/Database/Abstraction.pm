@@ -212,16 +212,23 @@ The module can be initialised by the C<use> directive.
 
     use Database::Abstraction 'directory' => '/etc/data';
 
+or
+
+    use Database::Abstraction { 'directory' => '/etc/data' };
+
 =cut
 
 sub import
 {
 	my $pkg = shift;
 
-	if(scalar(@_)) {
+	if((scalar(@_) % 2) == 0) {
 		my %h = @_;
 		init(Object::Configure::configure($pkg, \%h));
-		# init(\@_);
+	} elsif((scalar(@_) == 1) && (ref($_[0]) eq 'HASH')) {
+		init(Object::Configure::configure($pkg, $_[0]));
+	} else {
+		init(\@_);
 	}
 }
 

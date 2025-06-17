@@ -8,6 +8,7 @@ use Test::Most tests => 8;
 
 BEGIN {
 	use_ok('Database::Abstraction', 'directory' => "$Bin/../data");
+	# use_ok('Database::Abstraction', { 'directory' => "$Bin/../data" });
 	use_ok('Database::test1');
 	use_ok('Database::test2');
 }
