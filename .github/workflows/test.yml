@@ -25,8 +25,8 @@ jobs:
           - ubuntu-22.04
           - ubuntu-20.04
           - windows-2022
-          - windows-2019
-        perl: ['5.38', '5.36', '5.34', '5.32', '5.30', '5.28', '5.22']
+          - windows-latest
+        perl: ['5.40', '5.38', '5.36', '5.34', '5.32', '5.30', '5.28', '5.22']
     name: Perl ${{ matrix.perl }} on ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
