@@ -443,6 +443,7 @@ sub _open
 		$self->{'type'} = 'DBI';
 	} elsif($self->_is_berkeley_db(File::Spec->catfile($dir, "$dbname.db"))) {
 		$self->_debug("$table is a BerkeleyDB file");
+		$self->{'type'} = 'BerkeleyDB';
 	} else {
 		my $fin;
 		($fin, $slurp_file) = File::pfopen::pfopen($dir, $dbname, 'csv.gz:db.gz', '<');
@@ -1258,7 +1259,9 @@ sub _is_berkeley_db
 
 	# Step 1: Check magic number
 	if(open(my $fh, '<', $file)) {
-		read($fh, $header, 4);
+		# Seek to offset 12
+		seek $fh, 12, 0 or return 0;
+		read($fh, $header, 4) or return 0;
 		close $fh;
 	} else {
 		return 0;
@@ -1267,7 +1270,7 @@ sub _is_berkeley_db
 	$header = substr(unpack('H*', $header), 0, 4);
 
 	# Berkeley DB magic numbers
-	if($header eq '6000' || $header eq '0006') {
+	if($header eq '6115' || $header eq '1561') {
 		# Step 2: Attempt to open as Berkeley DB
 
 		require DB_File && DB_File->import();
