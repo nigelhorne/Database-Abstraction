@@ -358,6 +358,10 @@ sub new {
 	# }, $class;
 
 	# Re-seen keys take precedence, so defaults come first
+	# print STDERR ">>>>>>>>>>>>>>>>>>>\n";
+	# print STDERR __LINE__, "\n";
+	# print STDERR $args{'id'} || 'undef';
+	# print STDERR "\n";
 	return bless {
 		no_entry => 0,
 		no_fixate => 0,
@@ -832,10 +836,14 @@ sub fetchrow_hashref {
 	}
 
 	if($self->{'berkeley'}) {
+		# print STDERR ">>>>>>>>>>>>\n";
 		if((!$self->{'no_entry'}) && (scalar keys(%{$params}) == 1) && defined($params->{'entry'})) {
 			return { entry => $self->{'berkeley'}->{$params->{'entry'}} };
 		}
 		my $id = $self->{'id'};
+		# print STDERR $id || 'undef';
+		# print STDERR __LINE__, "\n";
+		# print STDERR "\n";
 		if($self->{'no_entry'} && (scalar keys(%{$params}) == 1) && defined($id) && defined($params->{$id})) {
 			return { $id => $self->{'berkeley'}->{$params->{$id}} };
 		}
