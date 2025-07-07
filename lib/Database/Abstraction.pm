@@ -1270,7 +1270,7 @@ sub _is_berkeley_db
 	$header = substr(unpack('H*', $header), 0, 4);
 
 	# Berkeley DB magic numbers
-	if($header eq '6115' || $header eq '1561') {
+	if($header eq '6115' || $header eq '1561') {	# Btree
 		# Step 2: Attempt to open as Berkeley DB
 
 		require DB_File && DB_File->import();
