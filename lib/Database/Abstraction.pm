@@ -830,6 +830,7 @@ sub fetchrow_hashref {
 
 	$self->_open() if(!$self->{$table});
 
+	# ::diag($self->{'type'});
 	if($self->{'data'} && (!$self->{'no_entry'}) && (scalar keys(%{$params}) == 1) && defined($params->{'entry'})) {
 		$self->_debug('Fast return from slurped data');
 		return $self->{'data'}->{$params->{'entry'}};
@@ -837,6 +838,7 @@ sub fetchrow_hashref {
 
 	if($self->{'berkeley'}) {
 		# print STDERR ">>>>>>>>>>>>\n";
+		# ::diag(Data::Dumper->new([$self->{'berkeley'}])->Dump());
 		if((!$self->{'no_entry'}) && (scalar keys(%{$params}) == 1) && defined($params->{'entry'})) {
 			return { entry => $self->{'berkeley'}->{$params->{'entry'}} };
 		}
@@ -1260,13 +1262,14 @@ sub DESTROY {
 
 # Determine whether a given file is a valid Berkeley DB file.
 # It combines a fast preliminary check with a more thorough validation step for accuracy.
-sub _is_berkeley_db
+sub O_is_berkeley_db
 {
 	my ($self, $file) = @_;
 	my $header;
 
 	# Step 1: Check magic number
 	if(open(my $fh, '<', $file)) {
+		binmode $fh;
 		# Seek to offset 12
 		seek $fh, 12, 0 or return 0;
 		read($fh, $header, 4) or return 0;
@@ -1275,10 +1278,55 @@ sub _is_berkeley_db
 		return 0;
 	}
 
-	$header = substr(unpack('H*', $header), 0, 4);
+	# $header = substr(unpack('H*', $header), 0, 4);
+	$header = unpack('N', $header); # Big-endian
 
 	# Berkeley DB magic numbers
+	::diag(">>>>>>>$header");
 	if($header eq '6115' || $header eq '1561') {	# Btree
+		# Step 2: Attempt to open as Berkeley DB
+
+		require DB_File && DB_File->import();
+
+		my %bdb;
+		if(tie %bdb, 'DB_File', $file, O_RDONLY, 0644, $DB_File::DB_HASH) {
+			# untie %db;
+			$self->{'berkeley'} = \%bdb;
+			return 1;	# Successfully identified as a Berkeley DB file
+		}
+	}
+
+	return 0;
+}
+
+# Determine whether a given file is a valid Berkeley DB file.
+# It combines a fast preliminary check with a more thorough validation step for accuracy.
+sub _is_berkeley_db {
+	my ($self, $file) = @_;
+
+	# Step 1: Check magic number
+	open my $fh, '<', $file or return 0;
+	binmode $fh;
+
+	# Read the first 4 bytes (magic number)
+	read($fh, my $magic_bytes, 4) == 4 or return 0;
+
+	close $fh;
+
+	# Unpack both big-endian and little-endian values
+	my $magic_be = unpack('N', $magic_bytes);	# Big-endian
+	my $magic_le = unpack('V', $magic_bytes);	# Little-endian
+
+	# Known Berkeley DB magic numbers (in both endian formats)
+	my %known_magic = map { $_ => 1 } (
+		0x00061561,	# Btree
+		0x00053162,	# Hash
+		0x00042253,	# Queue
+		0x00052444,	# Recno
+	);
+
+	# ::diag(">>>>>>>$magic");
+	if($known_magic{$magic_be} || $known_magic{$magic_le}) {
 		# Step 2: Attempt to open as Berkeley DB
 
 		require DB_File && DB_File->import();
@@ -1367,7 +1415,7 @@ This program is released under the following licence: GPL2.
 Usage is subject to licence terms.
 The licence terms of this software are as follows:
 Personal single user, single computer use: GPL2
-All other users (for example Commercial, Charity, Educational, Government)
+All other users (for example, Commercial, Charity, Educational, Government)
 must apply in writing for a licence for use from Nigel Horne at the
 above e-mail.
 
