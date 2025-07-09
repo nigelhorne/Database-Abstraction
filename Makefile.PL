@@ -24,6 +24,7 @@ WriteMakefile(
 	'INC' => '',	# e.g., '-I/usr/include/other'
 	PL_FILES	=> {},
 	TEST_REQUIRES => {
+		'DB_File' => 0,
 		'DBD::CSV' => 0,
 		'DBD::XMLSimple' => 0.07,
 		'File::Spec' => 0,
