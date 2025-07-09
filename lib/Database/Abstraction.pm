@@ -843,11 +843,11 @@ sub fetchrow_hashref {
 			return { entry => $self->{'berkeley'}->{$params->{'entry'}} };
 		}
 		my $id = $self->{'id'};
-		# print STDERR $id || 'undef';
-		# print STDERR __LINE__, "\n";
-		# print STDERR "\n";
 		if($self->{'no_entry'} && (scalar keys(%{$params}) == 1) && defined($id) && defined($params->{$id})) {
-			return { $id => $self->{'berkeley'}->{$params->{$id}} };
+			if(my $rc = $self->{'berkeley'}->{$params->{$id}}) {
+				return { $params->{$id} => $rc }	# Return key->value as a hash pair
+			}
+			return;
 		}
 		Carp::croak(ref($self), ': fetchrow_hashref is meaningless on a NoSQL database');
 	}
