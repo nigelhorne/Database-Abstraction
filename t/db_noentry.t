@@ -44,6 +44,4 @@ is($value->{'alpha'}, 'one', 'fetchrow_hashref returned correct scalar value wit
 my $undef = $dao->fetchrow_hashref(entry => 'does_not_exist');
 ok(!defined $undef, 'Nonexistent entry returns undef');
 
-diag(Data::Dumper->new([$undef])->Dump());
-
-done_testing;
+done_testing();
