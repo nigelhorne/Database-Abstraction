@@ -1262,28 +1262,19 @@ sub DESTROY {
 
 # Determine whether a given file is a valid Berkeley DB file.
 # It combines a fast preliminary check with a more thorough validation step for accuracy.
-sub O_is_berkeley_db
-{
+# It looks for the magic number at both byte 0 and byte 12
+# TODO: Combine _db_0 and _db_12 as they are very similar routines
+sub _is_berkeley_db {
 	my ($self, $file) = @_;
-	my $header;
 
 	# Step 1: Check magic number
-	if(open(my $fh, '<', $file)) {
-		binmode $fh;
-		# Seek to offset 12
-		seek $fh, 12, 0 or return 0;
-		read($fh, $header, 4) or return 0;
-		close $fh;
-	} else {
-		return 0;
-	}
+	open my $fh, '<', $file or return 0;
+	binmode $fh;
 
-	# $header = substr(unpack('H*', $header), 0, 4);
-	$header = unpack('N', $header); # Big-endian
+	my $is_db = (($self->_is_berkeley_db_0($fh)) || ($self->_is_berkeley_db_12($fh)));
+	close $fh;
 
-	# Berkeley DB magic numbers
-	::diag(">>>>>>>$header");
-	if($header eq '6115' || $header eq '1561') {	# Btree
+	if($is_db) {
 		# Step 2: Attempt to open as Berkeley DB
 
 		require DB_File && DB_File->import();
@@ -1295,23 +1286,17 @@ sub O_is_berkeley_db
 			return 1;	# Successfully identified as a Berkeley DB file
 		}
 	}
-
 	return 0;
 }
 
 # Determine whether a given file is a valid Berkeley DB file.
 # It combines a fast preliminary check with a more thorough validation step for accuracy.
-sub _is_berkeley_db {
-	my ($self, $file) = @_;
-
-	# Step 1: Check magic number
-	open my $fh, '<', $file or return 0;
-	binmode $fh;
+sub _is_berkeley_db_0
+{
+	my ($self, $fh) = @_;
 
 	# Read the first 4 bytes (magic number)
 	read($fh, my $magic_bytes, 4) == 4 or return 0;
-
-	close $fh;
 
 	# Unpack both big-endian and little-endian values
 	my $magic_be = unpack('N', $magic_bytes);	# Big-endian
@@ -1325,21 +1310,21 @@ sub _is_berkeley_db {
 		0x00052444,	# Recno
 	);
 
-	# ::diag(">>>>>>>$magic");
-	if($known_magic{$magic_be} || $known_magic{$magic_le}) {
-		# Step 2: Attempt to open as Berkeley DB
+	return($known_magic{$magic_be} || $known_magic{$magic_le});
+}
 
-		require DB_File && DB_File->import();
+sub _is_berkeley_db_12
+{
+	my ($self, $fh) = @_;
+	my $header;
 
-		my %bdb;
-		if(tie %bdb, 'DB_File', $file, O_RDONLY, 0644, $DB_File::DB_HASH) {
-			# untie %db;
-			$self->{'berkeley'} = \%bdb;
-			return 1;	# Successfully identified as a Berkeley DB file
-		}
-	}
+	seek $fh, 12, 0 or return 0;
+	read($fh, $header, 4) or return 0;
 
-	return 0;
+	$header = substr(unpack('H*', $header), 0, 4);
+
+	# Berkeley DB magic numbers
+	return($header eq '6115' || $header eq '1561');	# Btree
 }
 
 # Log and remember a message
