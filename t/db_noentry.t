@@ -2,10 +2,13 @@
 
 use strict;
 use warnings;
-use Test::Most;
-use DB_File;
-use File::Temp qw(tempdir);
+
+use Fcntl;
 use File::Spec;
+use File::Temp qw(tempdir);
+use Test::Most;
+
+use Test::Needs 'DB_File';
 
 # Define a subclass to instantiate (since Database::Abstraction is abstract)
 BEGIN {
