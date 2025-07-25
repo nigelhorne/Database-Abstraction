@@ -443,6 +443,7 @@ sub _open
 	if($dbh) {
 		$dbh->do('PRAGMA synchronous = OFF');
 		$dbh->do('PRAGMA cache_size = 65536');
+		$dbh->sqlite_busy_timeout(100000);	# 10s
 		$self->_debug("read in $table from SQLite $slurp_file");
 		$self->{'type'} = 'DBI';
 	} elsif($self->_is_berkeley_db(File::Spec->catfile($dir, "$dbname.db"))) {
