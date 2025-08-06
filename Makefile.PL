@@ -71,9 +71,10 @@ WriteMakefile(
 				web => 'https://github.com/nigelhorne/Database-Abstraction',
 				# license    => 'http://dev.perl.org/licenses/',
 			}, bugtracker => {
-				# web => 'https://rt.cpan.org/Public/Dist/Display.html?Name=Database-Abstraction',
-				web => 'https://github.com/nigelhorne/Database-Abstraction/issues',
-				url => 'https://github.com/nigelhorne/Database-Abstraction/issues',
+				web => 'https://rt.cpan.org/Public/Dist/Display.html?Name=Database-Abstraction',
+				url => 'https://rt.cpan.org/Public/Dist/Display.html?Name=Database-Abstraction',
+				# web => 'https://github.com/nigelhorne/Database-Abstraction/issues',
+				# url => 'https://github.com/nigelhorne/Database-Abstraction/issues',
 				mailto => 'bug-Database-Abstraction@rt.cpan.org'
 			}
 		},
