@@ -5,6 +5,7 @@ Revision history for Database-Abstraction
 	Fix determination of BerkeleyDB
 	Added BerkeleyDB test
 	Increase SQLite timeout
+	Added the count() method
 
 0.27	Sat Jun 14 20:56:27 EDT 2025
 	Use Object::Configure rather than Class::Debug
