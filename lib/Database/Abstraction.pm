@@ -1169,6 +1169,9 @@ sub AUTOLOAD {
 	# Allow the AUTOLOAD feature to be disabled
 	Carp::croak(__PACKAGE__, ": Unknown column $column") if(exists($self->{'auto_load'}) && boolean($self->{'auto_load'})->isFalse());
 
+	# Validate column name - only allow safe column name
+	Carp::croak(__PACKAGE__, ": Invalid column name: $column") unless $column =~ /^[a-zA-Z_][a-zA-Z0-9_]*$/;
+
 	my $table = $self->{table} || ref($self);
 	$table =~ s/.*:://;
 
