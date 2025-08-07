@@ -39,8 +39,8 @@ use File::Spec;
 use File::pfopen 0.03;	# For $mode and list context
 use File::Temp;
 use Log::Abstraction 0.24;
-use Object::Configure;
-use Params::Get;
+use Object::Configure 0.12;
+use Params::Get 0.13;
 # use Error::Simple;	# A nice idea to use this but it doesn't play well with "use lib"
 use Scalar::Util;
 
