@@ -668,7 +668,7 @@ Use caching if that is available.
 sub selectall_hashref {
 	my $self = shift;
 
-	my @rc = $self->selectall_hash(@_);
+	my @rc = grep { defined $_ } $self->selectall_hash(@_);
 	Data::Reuse::fixate(@rc) if(!$self->{'no_fixate'});
 	return \@rc;
 }
