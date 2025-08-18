@@ -443,7 +443,10 @@ sub _open
 	}
 	if($dbh) {
 		$dbh->do('PRAGMA synchronous = OFF');
-		$dbh->do('PRAGMA cache_size = 65536');
+		$dbh->do('PRAGMA cache_size = -4096');	# Use 4MB cache - negative = KB)
+		$dbh->do('PRAGMA journal_mode = OFF');	# Read-only, no journal needed
+		$dbh->do('PRAGMA temp_store = MEMORY');	# Store temp data in RAM
+		$dbh->do('PRAGMA mmap_size = 1048576');	# Use 1MB memory-mapped I/O
 		$dbh->sqlite_busy_timeout(100000);	# 10s
 		$self->_debug("read in $table from SQLite $slurp_file");
 		$self->{'type'} = 'DBI';
