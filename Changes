@@ -3,6 +3,7 @@ Revision history for Database-Abstraction
 0.29
 	Moved the test data from data to t/data
 	Fixed wildcard usage determination
+	Optimise the cache key to improve chances of hits
 
 0.28	Wed Aug  6 19:46:59 EDT 2025
 	Added the import method

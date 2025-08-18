@@ -765,7 +765,7 @@ sub selectall_hash
 			$key .= ' array';
 		}
 		if(defined($query_args[0])) {
-			$key .= ' ' . join(', ', @query_args);
+			$key .= ' ' . join(', ', sort(@query_args));
 		}
 		if(my $rc = $c->get($key)) {
 			$self->_debug('cache HIT');
@@ -894,7 +894,7 @@ sub count
 		$key =~ s/COUNT\((.+?)\)/$1/;
 		$key .= ' array';
 		if(defined($query_args[0])) {
-			$key .= ' ' . join(', ', @query_args);
+			$key .= ' ' . join(', ', sort(@query_args));
 		}
 		if(my $rc = $c->get($key)) {
 			# Unlikely
@@ -1030,7 +1030,7 @@ sub fetchrow_hashref {
 		if(wantarray) {
 			$key = 'array ';
 		}
-		$key = "fetchrow $query " . join(', ', @query_args);
+		$key = "fetchrow $query " . join(', ', sort(@query_args));
 	} else {
 		$key = "fetchrow $query";
 	}
@@ -1331,7 +1331,7 @@ sub AUTOLOAD {
 			$key = 'array ';
 		}
 		if(defined($args[0])) {
-			$key = "fetchrow $query " . join(', ', @args);
+			$key = "fetchrow $query " . join(', ', sort(@args));
 		} else {
 			$key = "fetchrow $query";
 		}
