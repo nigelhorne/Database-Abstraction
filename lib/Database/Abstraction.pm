@@ -582,12 +582,13 @@ sub _open
 						$self->{'data'} = @data;
 					} else {
 						# keyed on the $self->{'id'} (default: "entry") column
-						# while(my $d = shift @data) {
-							# $self->{'data'}->{$d->{$self->{'id'}}} = $d;
-						# }
+						while(my $d = shift @data) {
+							$self->{'data'}->{$d->{$self->{'id'}}} = $d;
+						}
+						# Don't use this code, for some reason it doesn't work - not sure why yet
 						# Build hash directly from the filtered array, better to use map to avoid data copy
 						#	and enclose in { } to ensure it's a hash ref
-						$self->{'data'} = { map { $_->{$self->{'id'}} => $_ } @data };
+						# $self->{'data'} = { map { $_->{$self->{'id'}} => $_ } @data };
 					}
 				}
 			}
@@ -762,7 +763,7 @@ sub selectall_hash
 	my $key;
 	my $c;
 	if($c = $self->{cache}) {
-		$key = $query;
+		$key = ref($self) . '::' . $query;
 		if(wantarray) {
 			$key .= ' array';
 		}
@@ -892,7 +893,7 @@ sub count
 	my $key;
 	my $c;
 	if($c = $self->{cache}) {
-		$key = $query;
+		$key = ref($self) . '::' . $query;
 		$key =~ s/COUNT\((.+?)\)/$1/;
 		$key .= ' array';
 		if(defined($query_args[0])) {
@@ -1027,14 +1028,14 @@ sub fetchrow_hashref {
 	} else {
 		$self->_debug("fetchrow_hashref $query");
 	}
-	my $key;
+	my $key = ref($self) . '::';
 	if(defined($query_args[0])) {
 		if(wantarray) {
-			$key = 'array ';
+			$key .= 'array ';
 		}
-		$key = "fetchrow $query " . join(', ', @query_args);
+		$key .= "fetchrow $query " . join(', ', @query_args);
 	} else {
-		$key = "fetchrow $query";
+		$key .= "fetchrow $query";
 	}
 	my $c;
 	if($c = $self->{cache}) {
@@ -1327,15 +1328,15 @@ sub AUTOLOAD {
 		$self->_debug("AUTOLOAD $query");
 	}
 	my $cache;
-	my $key;
+	my $key = ref($self) . '::';
 	if($cache = $self->{cache}) {
 		if(wantarray) {
-			$key = 'array ';
+			$key .= 'array ';
 		}
 		if(defined($args[0])) {
-			$key = "fetchrow $query " . join(', ', @args);
+			$key .= "fetchrow $query " . join(', ', @args);
 		} else {
-			$key = "fetchrow $query";
+			$key .= "fetchrow $query";
 		}
 		if(my $rc = $cache->get($key)) {
 			$self->_debug('cache HIT');
