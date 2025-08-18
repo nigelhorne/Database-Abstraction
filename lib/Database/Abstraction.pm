@@ -737,7 +737,7 @@ sub selectall_hash
 			$keyword = 'WHERE';
 			$done_where = 1;
 		}
-		if($arg =~ /\@/) {
+		if($arg =~ /[%_]/) {
 			$query .= " $keyword $c1 LIKE ?";
 		} else {
 			$query .= " $keyword $c1 = ?";
@@ -870,7 +870,7 @@ sub count
 			$keyword = 'WHERE';
 			$done_where = 1;
 		}
-		if($arg =~ /\@/) {
+		if($arg =~ /[%_]/) {
 			$query .= " $keyword $c1 LIKE ?";
 		} else {
 			$query .= " $keyword $c1 = ?";
@@ -1002,7 +1002,7 @@ sub fetchrow_hashref {
 				$keyword = 'WHERE';
 				$done_where = 1;
 			}
-			if($arg =~ /\@/) {
+			if($arg =~ /[%_]/) {
 				$query .= " $keyword $c1 LIKE ?";
 			} else {
 				$query .= " $keyword $c1 = ?";
