@@ -797,7 +797,7 @@ sub selectall_hash
 			$c->set($key, $rc, $self->{'cache_duration'});	# Store a ref to the array
 		}
 
-		return @{$rc};
+		return $rc ? @{$rc} : undef;
 	}
 	$self->_warn("selectall_hash failure on $query: @query_args");
 	# throw Error::Simple("$query: @query_args");
