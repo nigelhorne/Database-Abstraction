@@ -560,7 +560,7 @@ sub _open
 
 					$self->_debug('slurp in');
 
-					my @data = @{xsv_slurp(
+					my $dataref = xsv_slurp(
 						shape => 'aoh',
 						text_csv => {
 							sep_char => $sep_char,
@@ -572,17 +572,12 @@ sub _open
 						},
 						# string => \join('', grep(!/^\s*(#|$)/, <DATA>))
 						file => $slurp_file
-					)};
-					@data = grep { $_->{$self->{'id'}} !~ /^\s*#/ } grep { defined($_->{$self->{'id'}}) } @data;
+					);
+					my @data = grep { $_->{$self->{'id'}} !~ /^\s*#/ } grep { defined($_->{$self->{'id'}}) } @{$dataref};
 
-					# $self->{'data'} = @data;
 					if($self->{'no_entry'}) {
 						# Not keyed, will need to scan each entry
-						my $i = 0;
-						$self->{'data'} = ();
-						while(my $d = shift @data) {
-							$self->{'data'}[$i++] = $d;
-						}
+						$self->{'data'} = @data;
 					} else {
 						# keyed on the $self->{'id'} (default: "entry") column
 						# Ignore blank lines or lines starting with # in the CSV file
