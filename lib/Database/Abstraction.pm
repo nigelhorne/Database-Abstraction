@@ -573,6 +573,8 @@ sub _open
 						# string => \join('', grep(!/^\s*(#|$)/, <DATA>))
 						file => $slurp_file
 					);
+
+					# Ignore blank lines or lines starting with # in the CSV file
 					my @data = grep { $_->{$self->{'id'}} !~ /^\s*#/ } grep { defined($_->{$self->{'id'}}) } @{$dataref};
 
 					if($self->{'no_entry'}) {
@@ -580,10 +582,11 @@ sub _open
 						$self->{'data'} = @data;
 					} else {
 						# keyed on the $self->{'id'} (default: "entry") column
-						# Ignore blank lines or lines starting with # in the CSV file
-						while(my $d = shift @data) {
-							$self->{'data'}->{$d->{$self->{'id'}}} = $d;
-						}
+						# while(my $d = shift @data) {
+							# $self->{'data'}->{$d->{$self->{'id'}}} = $d;
+						# }
+						# Build hash directly from the filtered array, better to use map to avoid data copy
+						$self->{'data'} = { map { $_->{$self->{'id'}} => $_ } @data };
 					}
 				}
 			}
