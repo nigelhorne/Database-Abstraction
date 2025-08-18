@@ -6,6 +6,7 @@ Revision history for Database-Abstraction
 	Optimise the cache key to improve chances of hits
 	Optimise SQLite Pragmas
 	Removed data copy when slurping XML with no_entry set
+	Selectall_hashref - remove data copy
 
 0.28	Wed Aug  6 19:46:59 EDT 2025
 	Added the import method

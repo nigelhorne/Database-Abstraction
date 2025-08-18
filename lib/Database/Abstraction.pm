@@ -787,17 +787,17 @@ sub selectall_hash
 			# throw Error::Simple("$query: @query_args");
 			croak("$query: @query_args");
 
-		my @rc;
+		my $rc;
 		while(my $href = $sth->fetchrow_hashref()) {
 			# FIXME: Doesn't store in the cache
 			return $href if(!wantarray);
-			push @rc, $href;
+			push @{$rc}, $href;
 		}
 		if($c && wantarray) {
-			$c->set($key, \@rc, $self->{'cache_duration'});	# Store a ref to the array
+			$c->set($key, $rc, $self->{'cache_duration'});	# Store a ref to the array
 		}
 
-		return @rc;
+		return @{$rc};
 	}
 	$self->_warn("selectall_hash failure on $query: @query_args");
 	# throw Error::Simple("$query: @query_args");
