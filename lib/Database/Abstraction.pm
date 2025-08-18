@@ -770,7 +770,7 @@ sub selectall_hash
 		}
 		if(my $rc = $c->get($key)) {
 			$self->_debug('cache HIT');
-			return @{$rc};	# We stored a ref to the array
+			return wantarray ? @{$rc} : $rc;	# We stored a ref to the array
 
 			# This use of a temporary variable is to avoid
 			#	"Implicit scalar context for array in return"
@@ -1339,7 +1339,7 @@ sub AUTOLOAD {
 		if(my $rc = $cache->get($key)) {
 			$self->_debug('cache HIT');
 			if(wantarray) {
-				return @{$rc};	# We stored a ref to the array
+				return wantarray ? @{$rc} : $rc;	# We stored a ref to the array
 			}
 			return $rc;
 		}
