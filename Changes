@@ -3,7 +3,6 @@ Revision history for Database-Abstraction
 0.29
 	Moved the test data from data to t/data
 	Fixed wildcard usage determination
-	Optimise the cache key to improve chances of hits
 	Optimise SQLite Pragmas
 	Removed data copy when slurping XML with no_entry set
 	Selectall_hashref - remove data copy

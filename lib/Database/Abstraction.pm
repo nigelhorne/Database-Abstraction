@@ -586,6 +586,7 @@ sub _open
 							# $self->{'data'}->{$d->{$self->{'id'}}} = $d;
 						# }
 						# Build hash directly from the filtered array, better to use map to avoid data copy
+						#	and enclose in { } to ensure it's a hash ref
 						$self->{'data'} = { map { $_->{$self->{'id'}} => $_ } @data };
 					}
 				}
@@ -766,7 +767,7 @@ sub selectall_hash
 			$key .= ' array';
 		}
 		if(defined($query_args[0])) {
-			$key .= ' ' . join(', ', sort(@query_args));
+			$key .= ' ' . join(', ', @query_args);
 		}
 		if(my $rc = $c->get($key)) {
 			$self->_debug('cache HIT');
@@ -895,7 +896,7 @@ sub count
 		$key =~ s/COUNT\((.+?)\)/$1/;
 		$key .= ' array';
 		if(defined($query_args[0])) {
-			$key .= ' ' . join(', ', sort(@query_args));
+			$key .= ' ' . join(', ', @query_args);
 		}
 		if(my $rc = $c->get($key)) {
 			# Unlikely
@@ -1031,7 +1032,7 @@ sub fetchrow_hashref {
 		if(wantarray) {
 			$key = 'array ';
 		}
-		$key = "fetchrow $query " . join(', ', sort(@query_args));
+		$key = "fetchrow $query " . join(', ', @query_args);
 	} else {
 		$key = "fetchrow $query";
 	}
@@ -1332,16 +1333,13 @@ sub AUTOLOAD {
 			$key = 'array ';
 		}
 		if(defined($args[0])) {
-			$key = "fetchrow $query " . join(', ', sort(@args));
+			$key = "fetchrow $query " . join(', ', @args);
 		} else {
 			$key = "fetchrow $query";
 		}
 		if(my $rc = $cache->get($key)) {
 			$self->_debug('cache HIT');
-			if(wantarray) {
-				return wantarray ? @{$rc} : $rc;	# We stored a ref to the array
-			}
-			return $rc;
+			return wantarray ? @{$rc} : $rc;	# We stored a ref to the array
 		}
 		$self->_debug('cache MISS');
 	} else {
