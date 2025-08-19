@@ -662,12 +662,17 @@ optimisations such as "LIMIT 1" will not be used.
 
 Use caching if that is available.
 
+Returns undef if there are no matches.
+
 =cut
 
 sub selectall_hashref {
 	my $self = shift;
 
 	my @rc = grep { defined $_ } $self->selectall_hash(@_);
+
+	return if(scalar(@rc) == 0);
+
 	Data::Reuse::fixate(@rc) if(!$self->{'no_fixate'});
 	return \@rc;
 }
