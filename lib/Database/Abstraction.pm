@@ -582,13 +582,12 @@ sub _open
 						$self->{'data'} = @data;
 					} else {
 						# keyed on the $self->{'id'} (default: "entry") column
-						while(my $d = shift @data) {
-							$self->{'data'}->{$d->{$self->{'id'}}} = $d;
-						}
-						# Don't use this code, for some reason it doesn't work - not sure why yet
+						# while(my $d = shift @data) {
+							# $self->{'data'}->{$d->{$self->{'id'}}} = $d;
+						# }
 						# Build hash directly from the filtered array, better to use map to avoid data copy
-						#	and enclose in { } to ensure it's a hash ref
-						# $self->{'data'} = { map { $_->{$self->{'id'}} => $_ } @data };
+						# and enclose in { } to ensure it's a hash ref
+						$self->{'data'} = { map { $_->{$self->{'id'}} => $_ } @data };
 					}
 				}
 			}
