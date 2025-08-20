@@ -673,7 +673,7 @@ sub selectall_hashref {
 	if($self->{'no_entry'}) {
 		$params = Params::Get::get_params(undef, \@_);
 	} elsif(scalar(@_)) {
-		$params = Params::Get::get_params('entry', \@_);
+		$params = Params::Get::get_params('entry', @_);
 	}
 
 	if($self->{'berkeley'}) {
