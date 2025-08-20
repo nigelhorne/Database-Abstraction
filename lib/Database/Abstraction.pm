@@ -710,9 +710,9 @@ sub selectall_hashref {
 	foreach my $c1(sort keys(%{$params})) {	# sort so that the key is always the same
 		my $arg = $params->{$c1};
 		if(ref($arg)) {
-			$self->_fatal("selectall_hashref $query: argument is not a string");
+			$self->_fatal("selectall_hashref(): $query: argument is not a string");
 			# throw Error::Simple("$query: argument is not a string: " . ref($arg));
-			croak("$query: argument is not a string: ", ref($arg));
+			croak("selectall_hashref(): $query: argument is not a string: ", ref($arg));
 		}
 		if(!defined($arg)) {
 			my @call_details = caller(0);
@@ -846,9 +846,9 @@ sub selectall_hash
 	foreach my $c1(sort keys(%{$params})) {	# sort so that the key is always the same
 		my $arg = $params->{$c1};
 		if(ref($arg)) {
-			$self->_fatal("selectall_hash $query: argument is not a string");
+			$self->_fatal("selectall_hash(): $query: argument is not a string");
 			# throw Error::Simple("$query: argument is not a string: " . ref($arg));
-			croak("$query: argument is not a string: ", ref($arg));
+			croak("selectall_hash(): $query: argument is not a string: ", ref($arg));
 		}
 		if(!defined($arg)) {
 			my @call_details = caller(0);
@@ -979,9 +979,9 @@ sub count
 	foreach my $c1(sort keys(%{$params})) {	# sort so that the key is always the same
 		my $arg = $params->{$c1};
 		if(ref($arg)) {
-			$self->_fatal("count $query: argument is not a string");
+			$self->_fatal("count(): $query: argument is not a string");
 			# throw Error::Simple("$query: argument is not a string: " . ref($arg));
-			croak("$query: argument is not a string: ", ref($arg));
+			croak("count(): $query: argument is not a string: ", ref($arg));
 		}
 		if(!defined($arg)) {
 			my @call_details = caller(0);
@@ -1116,9 +1116,9 @@ sub fetchrow_hashref {
 			my $keyword;
 
 			if(ref($arg)) {
-				$self->_fatal("selectall_hash $query: argument is not a string");
+				$self->_fatal("selectall_hash(): $query: argument is not a string");
 				# throw Error::Simple("$query: argument is not a string: " . ref($arg));
-				croak("$query: argument is not a string: ", ref($arg));
+				croak("selectall_hash(): $query: argument is not a string: ", ref($arg));
 			}
 
 			if($done_where) {
