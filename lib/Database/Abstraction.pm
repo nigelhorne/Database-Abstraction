@@ -686,13 +686,13 @@ sub selectall_hashref {
 		if(scalar(keys %{$params}) == 0) {
 			$self->_trace("$table: selectall_hashref fast track return");
 			if(ref($self->{'data'}) eq 'HASH') {
-				return \values %{$self->{'data'}};
+				return Return::Set::set_return(\values %{$self->{'data'}}, { type => 'arrayref' });
 			}
-			return $self->{'data'};
+			return Return::Set::set_return($self->{'data'}, { type => 'arrayref'});
 			# my @rc = values %{$self->{'data'}};
 			# return @rc;
 		} elsif((scalar(keys %{$params}) == 1) && defined($params->{'entry'}) && !$self->{'no_entry'}) {
-			return \$self->{'data'}->{$params->{'entry'}};
+			return Return::Set::set_return([$self->{'data'}->{$params->{'entry'}}], { type => 'arrayref' });
 		}
 	}
 
