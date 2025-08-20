@@ -1613,6 +1613,14 @@ sub _warn {
 	$self->_log('warn', $params->{'warning'});
 }
 
+# Die
+sub _fatal {
+	my $self = shift;
+	my $params = Params::Get::get_params('warning', @_);
+
+	$self->_log('error', $params->{'warning'});
+}
+
 =head1 AUTHOR
 
 Nigel Horne, C<< <njh at nigelhorne.com> >>
