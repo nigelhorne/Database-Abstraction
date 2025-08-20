@@ -669,6 +669,123 @@ Returns undef if there are no matches.
 sub selectall_hashref {
 	my $self = shift;
 
+	###############
+	my $params = Params::Get::get_params(undef, @_);
+	my $table = $self->{table} || ref($self);
+	$table =~ s/.*:://;
+
+	$self->_open() if((!$self->{$table}) && (!$self->{'data'}));
+
+	if($self->{'data'}) {
+		if(scalar(keys %{$params}) == 0) {
+			$self->_trace("$table: selectall_hashref fast track return");
+			if(ref($self->{'data'}) eq 'HASH') {
+				return \values %{$self->{'data'}};
+			}
+			return $self->{'data'};
+			# my @rc = values %{$self->{'data'}};
+			# return @rc;
+		} elsif((scalar(keys %{$params}) == 1) && defined($params->{'entry'}) && !$self->{'no_entry'}) {
+			return \$self->{'data'}->{$params->{'entry'}};
+		}
+	}
+	my $query;
+	my $done_where = 0;
+
+	if(($self->{'type'} eq 'CSV') && !$self->{no_entry}) {
+		$query = "SELECT * FROM $table WHERE entry IS NOT NULL AND entry NOT LIKE '#%'";
+		$done_where = 1;
+	} else {
+		$query = "SELECT * FROM $table";
+	}
+
+	my @query_args;
+	foreach my $c1(sort keys(%{$params})) {	# sort so that the key is always the same
+		my $arg = $params->{$c1};
+		if(ref($arg)) {
+			$self->_fatal("selectall_hashref $query: argument is not a string");
+			# throw Error::Simple("$query: argument is not a string: " . ref($arg));
+			croak("$query: argument is not a string: ", ref($arg));
+		}
+		if(!defined($arg)) {
+			my @call_details = caller(0);
+			# throw Error::Simple("$query: value for $c1 is not defined in call from " .
+				# $call_details[2] . ' of ' . $call_details[1]);
+			Carp::croak("$query: value for $c1 is not defined in call from ",
+				$call_details[2], ' of ', $call_details[1]);
+		}
+
+		my $keyword;
+		if($done_where) {
+			$keyword = 'AND';
+		} else {
+			$keyword = 'WHERE';
+			$done_where = 1;
+		}
+		if($arg =~ /[%_]/) {
+			$query .= " $keyword $c1 LIKE ?";
+		} else {
+			$query .= " $keyword $c1 = ?";
+		}
+		push @query_args, $arg;
+	}
+	if(!$self->{no_entry}) {
+		$query .= ' ORDER BY ' . $self->{'id'};
+	}
+	if(!wantarray) {
+		$query .= ' LIMIT 1';
+	}
+
+	if(defined($query_args[0])) {
+		$self->_debug("selectall_hashref $query: ", join(', ', @query_args));
+	} else {
+		$self->_debug("selectall_hashref $query");
+	}
+
+	my $key;
+	my $c;
+	if($c = $self->{cache}) {
+		$key = ref($self) . '::' . $query;
+		if(wantarray) {
+			$key .= ' array';
+		}
+		if(defined($query_args[0])) {
+			$key .= ' ' . join(', ', @query_args);
+		}
+		if(my $rc = $c->get($key)) {
+			$self->_debug('cache HIT');
+			return $rc;	# We stored a ref to the array
+
+			# This use of a temporary variable is to avoid
+			#	"Implicit scalar context for array in return"
+			# my @rc = @{$rc};
+			# return @rc;
+		}
+		$self->_debug('cache MISS');
+	} else {
+		$self->_debug('cache not used');
+	}
+	# if(my $sth = $self->{$table}->prepare($query)) {
+		# $sth->execute(@query_args) ||
+			# # throw Error::Simple("$query: @query_args");
+			# croak("$query: @query_args");
+# 
+		# my $rc;
+		# while(my $href = $sth->fetchrow_hashref()) {
+			# return $href if(!wantarray);	# FIXME: Doesn't store in the cache
+			# push @{$rc}, $href;
+		# }
+		# if($c) {
+			# $c->set($key, $rc, $self->{'cache_duration'});	# Store a ref to the array
+		# }
+# 
+		# return $rc ? @{$rc} : undef;
+	# }
+	# $self->_warn("selectall_hash failure on $query: @query_args");
+	# # throw Error::Simple("$query: @query_args");
+	# croak("$query: @query_args");
+
+	##############
 	my @rc = grep { defined $_ } $self->selectall_hash(@_);
 
 	return if(scalar(@rc) == 0);
