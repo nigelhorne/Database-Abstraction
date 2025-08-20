@@ -795,11 +795,10 @@ sub selectall_hash
 
 		my $rc;
 		while(my $href = $sth->fetchrow_hashref()) {
-			# FIXME: Doesn't store in the cache
-			return $href if(!wantarray);
+			return $href if(!wantarray);	# FIXME: Doesn't store in the cache
 			push @{$rc}, $href;
 		}
-		if($c && wantarray) {
+		if($c) {
 			$c->set($key, $rc, $self->{'cache_duration'});	# Store a ref to the array
 		}
 
