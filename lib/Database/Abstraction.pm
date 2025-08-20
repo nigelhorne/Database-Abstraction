@@ -668,13 +668,19 @@ Returns undef if there are no matches.
 
 sub selectall_hashref {
 	my $self = shift;
+	my $params;
 
-	###############
-	my $params = Params::Get::get_params(undef, @_);
-	my $table = $params->{'table'} || $self->{'table'} || ref($self);
-	$table =~ s/.*:://;
+	if($self->{'no_entry'}) {
+		$params = Params::Get::get_params(undef, \@_);
+	} elsif(scalar(@_)) {
+		$params = Params::Get::get_params('entry', \@_);
+	}
 
-	$self->_open() if((!$self->{$table}) && (!$self->{'data'}));
+	if($self->{'berkeley'}) {
+		Carp::croak(ref($self), ': selectall_hash is meaningless on a NoSQL database');
+	}
+
+	my $table = $self->_open_table($params);
 
 	if($self->{'data'}) {
 		if(scalar(keys %{$params}) == 0) {
@@ -690,131 +696,127 @@ sub selectall_hashref {
 		}
 	}
 
-#	my $query;
-#	my $done_where = 0;
-#
-#	if(($self->{'type'} eq 'CSV') && !$self->{no_entry}) {
-#		$query = "SELECT * FROM $table WHERE entry IS NOT NULL AND entry NOT LIKE '#%'";
-#		$done_where = 1;
-#	} else {
-#		$query = "SELECT * FROM $table";
-#	}
-#
-#	my @query_args;
-#	foreach my $c1(sort keys(%{$params})) {	# sort so that the key is always the same
-#		my $arg = $params->{$c1};
-#		if(ref($arg)) {
-#			$self->_fatal("selectall_hashref $query: argument is not a string");
-#			# throw Error::Simple("$query: argument is not a string: " . ref($arg));
-#			croak("$query: argument is not a string: ", ref($arg));
-#		}
-#		if(!defined($arg)) {
-#			my @call_details = caller(0);
-#			# throw Error::Simple("$query: value for $c1 is not defined in call from " .
-#				# $call_details[2] . ' of ' . $call_details[1]);
-#			Carp::croak("$query: value for $c1 is not defined in call from ",
-#				$call_details[2], ' of ', $call_details[1]);
-#		}
-#
-#		my $keyword;
-#		if($done_where) {
-#			$keyword = 'AND';
-#		} else {
-#			$keyword = 'WHERE';
-#			$done_where = 1;
-#		}
-#		if($arg =~ /[%_]/) {
-#			$query .= " $keyword $c1 LIKE ?";
-#		} else {
-#			$query .= " $keyword $c1 = ?";
-#		}
-#		push @query_args, $arg;
-#	}
-#	if(!$self->{no_entry}) {
-#		$query .= ' ORDER BY ' . $self->{'id'};
-#	}
-#	if(!wantarray) {
-#		$query .= ' LIMIT 1';
-#	}
-#
-#	if(defined($query_args[0])) {
-#		$self->_debug("selectall_hashref $query: ", join(', ', @query_args));
-#	} else {
-#		$self->_debug("selectall_hashref $query");
-#	}
-#
-#	my $key;
-#	my $c;
-#	if($c = $self->{cache}) {
-#		$key = ref($self) . '::' . $query;
-#		if(wantarray) {
-#			$key .= ' array';
-#		}
-#		if(defined($query_args[0])) {
-#			$key .= ' ' . join(', ', @query_args);
-#		}
-#		if(my $rc = $c->get($key)) {
-#			$self->_debug('cache HIT');
-#			return $rc;	# We stored a ref to the array
-#
-#			# This use of a temporary variable is to avoid
-#			#	"Implicit scalar context for array in return"
-#			# my @rc = @{$rc};
-#			# return @rc;
-#		}
-#		$self->_debug('cache MISS');
-#	} else {
-#		$self->_debug('cache not used');
-#	}
-#
-#	if(my $sth = $self->{$table}->prepare($query)) {
-#		$sth->execute(@query_args) ||
-#			# throw Error::Simple("$query: @query_args");
-#			croak("$query: @query_args");
-#
-#		my $rc;
-#		while(my $href = $sth->fetchrow_hashref()) {
-#			return $href if(!wantarray);	# FIXME: Doesn't store in the cache
-#			push @{$rc}, $href;
-#		}
-#		if($c) {
-#			$c->set($key, $rc, $self->{'cache_duration'});	# Store a ref to the array
-#		}
-#
-#		return $rc ? @{$rc} : undef;
-#	}
-#	$self->_warn("selectall_hash failure on $query: @query_args");
-#	# throw Error::Simple("$query: @query_args");
-#	croak("$query: @query_args");
+	my $query;
+	my $done_where = 0;
 
-	##############
-	my @rc = grep { defined $_ } $self->selectall_hash(@_);
+	if(($self->{'type'} eq 'CSV') && !$self->{no_entry}) {
+		$query = "SELECT * FROM $table WHERE entry IS NOT NULL AND entry NOT LIKE '#%'";
+		$done_where = 1;
+	} else {
+		$query = "SELECT * FROM $table";
+	}
 
-	return if(scalar(@rc) == 0);
+	my @query_args;
+	foreach my $c1(sort keys(%{$params})) {	# sort so that the key is always the same
+		my $arg = $params->{$c1};
+		if(ref($arg)) {
+			$self->_fatal("selectall_hashref $query: argument is not a string");
+			# throw Error::Simple("$query: argument is not a string: " . ref($arg));
+			croak("$query: argument is not a string: ", ref($arg));
+		}
+		if(!defined($arg)) {
+			my @call_details = caller(0);
+			# throw Error::Simple("$query: value for $c1 is not defined in call from " .
+				# $call_details[2] . ' of ' . $call_details[1]);
+			Carp::croak("$query: value for $c1 is not defined in call from ",
+				$call_details[2], ' of ', $call_details[1]);
+		}
 
-	Data::Reuse::fixate(@rc) if(!$self->{'no_fixate'});
-	return \@rc;
+		my $keyword;
+		if($done_where) {
+			$keyword = 'AND';
+		} else {
+			$keyword = 'WHERE';
+			$done_where = 1;
+		}
+		if($arg =~ /[%_]/) {
+			$query .= " $keyword $c1 LIKE ?";
+		} else {
+			$query .= " $keyword $c1 = ?";
+		}
+		push @query_args, $arg;
+	}
+	if(!$self->{no_entry}) {
+		$query .= ' ORDER BY ' . $self->{'id'};
+	}
+
+	if(defined($query_args[0])) {
+		$self->_debug("selectall_hashref $query: ", join(', ', @query_args));
+	} else {
+		$self->_debug("selectall_hashref $query");
+	}
+
+	my $key;
+	my $c;
+	if($c = $self->{cache}) {
+		$key = ref($self) . "::$query array";
+		if(defined($query_args[0])) {
+			$key .= ' ' . join(', ', @query_args);
+		}
+		if(my $rc = $c->get($key)) {
+			$self->_debug('cache HIT');
+			return $rc;	# We stored a ref to the array
+
+			# This use of a temporary variable is to avoid
+			#	"Implicit scalar context for array in return"
+			# my @rc = @{$rc};
+			# return @rc;
+		}
+		$self->_debug('cache MISS');
+	} else {
+		$self->_debug('cache not used');
+	}
+
+	if(my $sth = $self->{$table}->prepare($query)) {
+		$sth->execute(@query_args) ||
+			# throw Error::Simple("$query: @query_args");
+			croak("$query: @query_args");
+
+		my $rc;
+		while(my $href = $sth->fetchrow_hashref()) {
+			push @{$rc}, $href;
+		}
+		if($c) {
+			$c->set($key, $rc, $self->{'cache_duration'});	# Store a ref to the array
+		}
+
+		Data::Reuse::fixate(@{$rc}) if(!$self->{'no_fixate'});
+
+		return $rc;
+	}
+	$self->_warn("selectall_hash failure on $query: @query_args");
+	# throw Error::Simple("$query: @query_args");
+	croak("$query: @query_args");
+
+	# my @rc = grep { defined $_ } $self->selectall_hash(@_);
+
+	# return if(scalar(@rc) == 0);
+
+	# Data::Reuse::fixate(@rc) if(!$self->{'no_fixate'});
+	# return \@rc;
 }
 
 =head2	selectall_hash
 
 Similar to selectall_hashref but returns an array of hash references.
 
+Con:	Copies more data around than selectall_hashref
+Pro:	Better determination of list vs scalar mode than selectall_hashref by setting "LIMIT 1"
+
+TODO:	Remove duplicated code
+
 =cut
 
 sub selectall_hash
 {
 	my $self = shift;
-	my $params = Params::Get::get_params(undef, @_);
 
 	if($self->{'berkeley'}) {
 		Carp::croak(ref($self), ': selectall_hash is meaningless on a NoSQL database');
 	}
 
-	my $table = $params->{'table'} || $self->{'table'} || ref($self);
-	$table =~ s/.*:://;
-
-	$self->_open() if((!$self->{$table}) && (!$self->{'data'}));
+	my $params = Params::Get::get_params(undef, \@_);
+	my $table = $self->_open_table($params);
 
 	if($self->{'data'}) {
 		if(scalar(keys %{$params}) == 0) {
@@ -921,7 +923,11 @@ sub selectall_hash
 			$c->set($key, $rc, $self->{'cache_duration'});	# Store a ref to the array
 		}
 
-		return $rc ? @{$rc} : undef;
+		if($rc) {
+			Data::Reuse::fixate(@{$rc}) if(!$self->{'no_fixate'});
+			return @{$rc};
+		}
+		return;
 	}
 	$self->_warn("selectall_hash failure on $query: @query_args");
 	# throw Error::Simple("$query: @query_args");
@@ -937,16 +943,13 @@ Return the number items/rows matching the given criteria
 sub count
 {
 	my $self = shift;
-	my $params = Params::Get::get_params(undef, @_);
 
 	if($self->{'berkeley'}) {
 		Carp::croak(ref($self), ': count is meaningless on a NoSQL database');
 	}
 
-	my $table = $self->{table} || ref($self);
-	$table =~ s/.*:://;
-
-	$self->_open() if((!$self->{$table}) && (!$self->{'data'}));
+	my $params = Params::Get::get_params(undef, \@_);
+	my $table = $self->_open_table($params);
 
 	if($self->{'data'}) {
 		if(scalar(keys %{$params}) == 0) {
@@ -1071,10 +1074,7 @@ sub fetchrow_hashref {
 		$params = Params::Get::get_params(undef, @_);
 	}
 
-	my $table = $params->{'table'} || $self->{'table'} || ref($self);
-	$table =~ s/.*:://;
-
-	$self->_open() if(!$self->{$table});
+	my $table = $self->_open_table($params);
 
 	# ::diag($self->{'type'});
 	if($self->{'data'} && (!$self->{'no_entry'}) && (scalar keys(%{$params}) == 1) && defined($params->{'entry'})) {
@@ -1206,22 +1206,17 @@ this will still work by accessing that actual database.
 sub execute
 {
 	my $self = shift;
-	my $args = Params::Get::get_params('query', @_);
 
 	if($self->{'berkeley'}) {
 		Carp::croak(ref($self), ': execute is meaningless on a NoSQL database');
 	}
 
+	my $args = Params::Get::get_params('query', @_);
 	# Ensure the 'query' parameter is provided
 	Carp::croak(__PACKAGE__, ': Usage: execute(query => $query)')
 		unless defined $args->{'query'};
 
-	# Get table name (remove package name prefix if present)
-	my $table = $self->{table} || ref($self);
-	$table =~ s/.*:://;
-
-	# Open a connection if it's not already open
-	$self->_open() unless $self->{$table};
+	my $table = $self->_open_table($args);
 
 	my $query = $args->{'query'};
 
@@ -1298,10 +1293,7 @@ sub AUTOLOAD {
 	# Validate column name - only allow safe column name
 	Carp::croak(__PACKAGE__, ": Invalid column name: $column") unless $column =~ /^[a-zA-Z_][a-zA-Z0-9_]*$/;
 
-	my $table = $self->{table} || ref($self);
-	$table =~ s/.*:://;
-
-	$self->_open() if((!$self->{$table}) && (!$self->{'data'}));	# Open early to set $self->{'berkeley'}
+	my $table = $self->_open_table();
 
 	my %params;
 	if(ref($_[0]) eq 'HASH') {
@@ -1504,6 +1496,21 @@ sub DESTROY {
 		untie %{$self->{'berkeley'}};
 		delete $self->{'berkeley'};
 	}
+}
+
+# Determine the table and open the database
+sub _open_table
+{
+	my($self, $params) = @_;
+
+	# Get table name (remove package name prefix if present)
+	my $table = $params->{'table'} || $self->{'table'} || ref($self);
+	$table =~ s/.*:://;
+
+	# Open a connection if it's not already open
+	$self->_open() if((!$self->{$table}) && (!$self->{'data'}));
+
+	return $table;
 }
 
 # Determine whether a given file is a valid Berkeley DB file.
