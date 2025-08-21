@@ -22,7 +22,7 @@ package Database::Abstraction;
 # TODO:	Add full CRUD support
 # TODO:	It would be better for the default sep_char to be ',' rather than '!'
 # FIXME:	t/xml.t fails in slurping mode
-# TODO:	Other databases e.g. Redis, noSQL, remote databases such as MySQL, PostgresSQL
+# TODO:	Other databases e.g., Redis, noSQL, remote databases such as MySQL, PostgresSQL
 # TODO: The no_entry/entry terminology is confusing.  Replace with no_id/id_column
 # TODO: Add support for DBM::Deep
 
@@ -41,7 +41,7 @@ use File::Temp;
 use Log::Abstraction 0.24;
 use Object::Configure 0.12;
 use Params::Get 0.13;
-# use Error::Simple;	# A nice idea to use this but it doesn't play well with "use lib"
+# use Error::Simple;	# A nice idea to use this, but it doesn't play well with "use lib"
 use Scalar::Util;
 
 our %defaults;
@@ -1504,21 +1504,38 @@ sub AUTOLOAD {
 	return $rc;
 }
 
-sub DESTROY {
+sub DESTROY
+{
 	if(defined($^V) && ($^V ge 'v5.14.0')) {
 		return if ${^GLOBAL_PHASE} eq 'DESTRUCT';	# >= 5.14.0 only
 	}
 	my $self = shift;
 
+	# Clean up temporary file
 	if($self->{'temp'}) {
 		unlink delete $self->{'temp'};
 	}
-	if(my $table = delete $self->{'table'}) {
-		$table->finish();
+
+	# Clean up database handles
+	my $table_name = $self->{'table'} || ref($self);
+	$table_name =~ s/.*:://;
+
+	if(my $dbh = delete $self->{$table_name}) {
+		$dbh->disconnect() if $dbh->can('disconnect');
+		$dbh->finish() if $dbh->can('finish');
 	}
+
+	# Clean up Berkeley DB
 	if($self->{'berkeley'}) {
-		untie %{$self->{'berkeley'}};
+		eval {
+			untie %{$self->{'berkeley'}};
+		};
 		delete $self->{'berkeley'};
+	}
+	
+	# Clear all other attributes to break potential circular references
+	foreach my $key (keys %$self) {
+		delete $self->{$key};
 	}
 }
 
