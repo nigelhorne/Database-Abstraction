@@ -608,13 +608,17 @@ sub _open
 					} elsif(ref($xml) eq 'ARRAY') {
 						@data = @{$xml};
 					} elsif((ref($xml) eq 'HASH') && !$self->{'no_entry'}) {
-						if((scalar(keys %{$xml}) == 1) && $xml->{$table}) {
-							@data = $xml->{$table};
+						if(scalar(keys %{$xml}) == 1) {
+							if($xml->{$table}) {
+								@data = $xml->{$table};
+							} else {
+								die 'TODO: import arbitrary XML with "entry" field';
+							}
 						} else {
-							die 'TODO: import arbitrary XML with no "entry" field';
+							die 'TODO: import arbitrary XML (differnt number of keys)';
 						}
 					} else {
-						die 'TODO: import arbitrary XML';
+						die 'TODO: import arbitrary XML, cannot currently handle ', ref($xml);
 					}
 					$self->{'data'} = ();
 					if($self->{'no_entry'}) {
@@ -637,7 +641,7 @@ sub _open
 				}
 			} else {
 				# throw Error(-file => "$dir/$table");
-				Carp::croak("Can't find a $dbname file for the table $table in $dir");
+				Carp::croak("Can't find a file called '$dbname' for the table $table in $dir");
 			}
 			$self->{'type'} = 'XML';
 		}
