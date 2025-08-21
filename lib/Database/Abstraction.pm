@@ -652,7 +652,7 @@ sub _open
 	return $self;
 }
 
-=head2	selectall_hashref
+=head2	selectall_arrayref
 
 Returns a reference to an array of hash references of all the data meeting
 the given criteria.
@@ -666,7 +666,7 @@ Returns undef if there are no matches.
 
 =cut
 
-sub selectall_hashref {
+sub selectall_arrayref {
 	my $self = shift;
 	my $params;
 
@@ -677,14 +677,14 @@ sub selectall_hashref {
 	}
 
 	if($self->{'berkeley'}) {
-		Carp::croak(ref($self), ': selectall_hash is meaningless on a NoSQL database');
+		Carp::croak(ref($self), ': selectall_arrayref is meaningless on a NoSQL database');
 	}
 
 	my $table = $self->_open_table($params);
 
 	if($self->{'data'}) {
 		if(scalar(keys %{$params}) == 0) {
-			$self->_trace("$table: selectall_hashref fast track return");
+			$self->_trace("$table: selectall_arrayref fast track return");
 			if(ref($self->{'data'}) eq 'HASH') {
 				return Return::Set::set_return(\values %{$self->{'data'}}, { type => 'arrayref' });
 			}
@@ -710,9 +710,9 @@ sub selectall_hashref {
 	foreach my $c1(sort keys(%{$params})) {	# sort so that the key is always the same
 		my $arg = $params->{$c1};
 		if(ref($arg)) {
-			$self->_fatal("selectall_hashref(): $query: argument is not a string");
+			$self->_fatal("selectall_arrayref(): $query: argument is not a string");
 			# throw Error::Simple("$query: argument is not a string: " . ref($arg));
-			croak("selectall_hashref(): $query: argument is not a string: ", ref($arg));
+			croak("selectall_arrayref(): $query: argument is not a string: ", ref($arg));
 		}
 		if(!defined($arg)) {
 			my @call_details = caller(0);
@@ -741,9 +741,9 @@ sub selectall_hashref {
 	}
 
 	if(defined($query_args[0])) {
-		$self->_debug("selectall_hashref $query: ", join(', ', @query_args));
+		$self->_debug("selectall_arrayref $query: ", join(', ', @query_args));
 	} else {
-		$self->_debug("selectall_hashref $query");
+		$self->_debug("selectall_arrayref $query");
 	}
 
 	my $key;
@@ -784,11 +784,11 @@ sub selectall_hashref {
 
 		return $rc;
 	}
-	$self->_warn("selectall_hash failure on $query: @query_args");
+	$self->_warn("selectall_array failure on $query: @query_args");
 	# throw Error::Simple("$query: @query_args");
 	croak("$query: @query_args");
 
-	# my @rc = grep { defined $_ } $self->selectall_hash(@_);
+	# my @rc = grep { defined $_ } $self->selectall_array(@_);
 
 	# return if(scalar(@rc) == 0);
 
@@ -796,23 +796,35 @@ sub selectall_hashref {
 	# return \@rc;
 }
 
-=head2	selectall_hash
+=head2	selectall_hashref
 
-Similar to selectall_hashref but returns an array of hash references.
+Deprecated misleading legacy name for selectall_arrayref.
 
-Con:	Copies more data around than selectall_hashref
-Pro:	Better determination of list vs scalar mode than selectall_hashref by setting "LIMIT 1"
+=cut
+
+sub selectall_hashref
+{
+	my $self = shift;
+	return $self->selectall_arrayref(@_);
+}
+
+=head2	selectall_array
+
+Similar to selectall_array but returns an array of hash references.
+
+Con:	Copies more data around than selectall_arrayref
+Pro:	Better determination of list vs scalar mode than selectall_arrayref by setting "LIMIT 1"
 
 TODO:	Remove duplicated code
 
 =cut
 
-sub selectall_hash
+sub selectall_array
 {
 	my $self = shift;
 
 	if($self->{'berkeley'}) {
-		Carp::croak(ref($self), ': selectall_hash is meaningless on a NoSQL database');
+		Carp::croak(ref($self), ': selectall_array is meaningless on a NoSQL database');
 	}
 
 	my $params = Params::Get::get_params(undef, \@_);
@@ -820,7 +832,7 @@ sub selectall_hash
 
 	if($self->{'data'}) {
 		if(scalar(keys %{$params}) == 0) {
-			$self->_trace("$table: selectall_hash fast track return");
+			$self->_trace("$table: selectall_array fast track return");
 			if(ref($self->{'data'}) eq 'HASH') {
 				return values %{$self->{'data'}};
 			}
@@ -846,9 +858,9 @@ sub selectall_hash
 	foreach my $c1(sort keys(%{$params})) {	# sort so that the key is always the same
 		my $arg = $params->{$c1};
 		if(ref($arg)) {
-			$self->_fatal("selectall_hash(): $query: argument is not a string");
+			$self->_fatal("selectall_array(): $query: argument is not a string");
 			# throw Error::Simple("$query: argument is not a string: " . ref($arg));
-			croak("selectall_hash(): $query: argument is not a string: ", ref($arg));
+			croak("selectall_array(): $query: argument is not a string: ", ref($arg));
 		}
 		if(!defined($arg)) {
 			my @call_details = caller(0);
@@ -880,9 +892,9 @@ sub selectall_hash
 	}
 
 	if(defined($query_args[0])) {
-		$self->_debug("selectall_hash $query: ", join(', ', @query_args));
+		$self->_debug("selectall_array $query: ", join(', ', @query_args));
 	} else {
-		$self->_debug("selectall_hash $query");
+		$self->_debug("selectall_array $query");
 	}
 
 	my $key;
@@ -929,9 +941,21 @@ sub selectall_hash
 		}
 		return;
 	}
-	$self->_warn("selectall_hash failure on $query: @query_args");
+	$self->_warn("selectall_array failure on $query: @query_args");
 	# throw Error::Simple("$query: @query_args");
 	croak("$query: @query_args");
+}
+
+=head2	selectall_hash
+
+Deprecated misleading legacy name for selectall_array.
+
+=cut
+
+sub selectall_hash
+{
+	my $self = shift;
+	return $self->selectall_array(@_);
 }
 
 =head2	count
@@ -1116,9 +1140,9 @@ sub fetchrow_hashref {
 			my $keyword;
 
 			if(ref($arg)) {
-				$self->_fatal("selectall_hash(): $query: argument is not a string");
+				$self->_fatal("fetchrow_hashref: $query: argument is not a string");
 				# throw Error::Simple("$query: argument is not a string: " . ref($arg));
-				croak("selectall_hash(): $query: argument is not a string: ", ref($arg));
+				croak("fetchrow_hash(): $query: argument is not a string: ", ref($arg));
 			}
 
 			if($done_where) {
