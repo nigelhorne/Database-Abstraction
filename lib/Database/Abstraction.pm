@@ -778,7 +778,7 @@ sub selectall_arrayref {
 
 		my $rc;
 		while(my $href = $sth->fetchrow_hashref()) {
-			push @{$rc}, $href;
+			push @{$rc}, $href if(scalar keys %{$href});
 		}
 		if($c) {
 			$c->set($key, $rc, $self->{'cache_duration'});	# Store a ref to the array
