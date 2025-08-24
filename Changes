@@ -1,6 +1,6 @@
 Revision history for Database-Abstraction
 
-0.30
+0.30	Sun Aug 24 15:11:14 EDT 2025
 	slurp mode - remove a data copy
 	selectall_hashref now returns undef if there are no matches
 	rewrote selectall_hashref to not just call selectall_hash, that saves data copying
