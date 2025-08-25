@@ -1536,7 +1536,7 @@ sub DESTROY
 		};
 		delete $self->{'berkeley'};
 	}
-	
+
 	# Clear all other attributes to break potential circular references
 	foreach my $key (keys %$self) {
 		delete $self->{$key};
