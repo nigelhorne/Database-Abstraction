@@ -1502,6 +1502,7 @@ sub AUTOLOAD {
 		return @rc;
 	}
 	my $rc = $sth->fetchrow_array();	# Return the first match only
+	$sth->finish();
 	if($cache) {
 		return $cache->set($key, $rc, $self->{'cache_duration'});
 	}
