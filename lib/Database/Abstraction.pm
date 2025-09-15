@@ -1704,6 +1704,14 @@ so if XML fails for you on a small file force non-slurping mode with
         max_slurp_size => 0	# force to not use slurp and therefore to use SQL
     });
 
+=head1 SEE ALSO
+
+=over 4
+
+=item * Test coverage report: L<https://nigelhorne.github.io/Database-Abstraction/coverage/>
+
+=back
+
 =head1 LICENSE AND COPYRIGHT
 
 Copyright 2015-2025 Nigel Horne.
