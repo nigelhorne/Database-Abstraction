@@ -2,6 +2,7 @@ Revision history for Database-Abstraction
 
 0.31
 	Call sth->finish() when needed
+	selectall_arrayref was setting an extra level of reference
 
 0.30	Sun Aug 24 15:11:14 EDT 2025
 	slurp mode - remove a data copy
