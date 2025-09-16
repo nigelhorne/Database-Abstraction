@@ -392,15 +392,11 @@ sub set_logger
 	my $self = shift;
 	my $params = Params::Get::get_params('logger', @_);
 
-	if(defined($params->{'logger'})) {
-		if(my $logger = $params->{'logger'}) {
-			if(Scalar::Util::blessed($logger)) {
-				$self->{'logger'} = $logger;
-			} else {
-				$self->{'logger'} = Log::Abstraction->new($logger);
-			}
+	if(my $logger = ($params->{'logger'})) {
+		if(Scalar::Util::blessed($logger)) {
+			$self->{'logger'} = $logger;
 		} else {
-			$self->{'logger'} = Log::Abstraction->new();
+			$self->{'logger'} = Log::Abstraction->new($logger);
 		}
 		return $self;
 	}
@@ -688,7 +684,7 @@ sub selectall_arrayref {
 	}
 
 	if($self->{'berkeley'}) {
-		Carp::croak(ref($self), ': selectall_arrayref is meaningless on a NoSQL database');
+		$self->_fatal(ref($self), ': selectall_arrayref is meaningless on a NoSQL database');
 	}
 
 	my $table = $self->_open_table($params);
