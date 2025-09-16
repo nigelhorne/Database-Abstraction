@@ -694,6 +694,9 @@ sub selectall_arrayref {
 			$self->_trace("$table: selectall_arrayref fast track return");
 			if(ref($self->{'data'}) eq 'HASH') {
 				$self->_debug("$table: returning ", scalar keys %{$self->{'data'}}, ' entries');
+				if(scalar keys %{$self->{'data'}} <= 10) {
+					$self->_debug(Dumper($self->{'data'}));
+				}
 				return Return::Set::set_return(values %{$self->{'data'}}, { type => 'arrayref' });
 			}
 			return Return::Set::set_return($self->{'data'}, { type => 'arrayref'});
