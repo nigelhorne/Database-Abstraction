@@ -693,6 +693,7 @@ sub selectall_arrayref {
 		if(scalar(keys %{$params}) == 0) {
 			$self->_trace("$table: selectall_arrayref fast track return");
 			if(ref($self->{'data'}) eq 'HASH') {
+				$self->_debug("$table: returning ", scalar keys %{$self->{'data'}}, ' entries');
 				return Return::Set::set_return(values %{$self->{'data'}}, { type => 'arrayref' });
 			}
 			return Return::Set::set_return($self->{'data'}, { type => 'arrayref'});
