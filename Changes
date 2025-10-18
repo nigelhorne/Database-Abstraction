@@ -1,5 +1,8 @@
 Revision history for Database-Abstraction
 
+0.33
+	Start to all undef to search for IS NULL
+
 0.32	Tue Sep 16 08:26:41 EDT 2025
 	Fix fast track return in selectall_arrayref
 

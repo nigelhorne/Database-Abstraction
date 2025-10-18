@@ -4,7 +4,7 @@ use strict;
 use FindBin qw($Bin);
 
 use File::Spec;
-use Test::Most tests => 23;
+use Test::Most tests => 24;
 use Test::NoWarnings;
 
 use lib 't/lib';
@@ -72,3 +72,6 @@ like($@, qr/There is no column foo in test1/, 'Correct test message for invalid 
 my $unknown;
 lives_ok(sub { $unknown = $test1->number('empty') }, 'AUTOLOAD survives empty column');
 ok(!defined($unknown));
+
+# Test undef
+lives_ok(sub { my $res = $test1->fetchrow_hashref({ number => undef }) }, 'Undef can be used, will search IS NULL');
