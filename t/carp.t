@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use FindBin qw($Bin);
 use File::Spec;
-use Test::Most tests => 5;
+use Test::Most tests => 3;
 use Test::Needs 'Test::Carp';
 use Carp;
 use lib 't/lib';
@@ -17,7 +17,6 @@ ERROR: {
 
 	my $test1 = new_ok('Database::test1' => [$directory]);
 
-	does_croak_that_matches(sub { my @rc = $test1->selectall_hash(number => undef) }, qr/selectall_hash value for number is not defined/);
 	does_croak_that_matches(sub {
 		my $non_existant = Database::test1->new({directory => $directory, dbname => 'nan', max_slurp_size => 0});
 		cmp_ok($non_existant->number('three'), '==', 3, "Database doesn't exist");

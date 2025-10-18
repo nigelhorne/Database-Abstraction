@@ -39,8 +39,8 @@ use Fcntl;	# For O_RDONLY
 use File::Spec;
 use File::pfopen 0.03;	# For $mode and list context
 use File::Temp;
-use Log::Abstraction 0.24;
-use Object::Configure 0.12;
+use Log::Abstraction 0.26;
+use Object::Configure 0.16;
 use Params::Get 0.13;
 # use Error::Simple;	# A nice idea to use this, but it doesn't play well with "use lib"
 use Scalar::Util;
@@ -886,13 +886,6 @@ sub selectall_array
 			# throw Error::Simple("$query: argument is not a string: " . ref($arg));
 			$self->_fatal("selectall_array(): $query: argument is not a string: ", ref($arg));
 		}
-		if(!defined($arg)) {
-			my @call_details = caller(0);
-			# throw Error::Simple("$query: value for $c1 is not defined in call from " .
-				# $call_details[2] . ' of ' . $call_details[1]);
-			Carp::croak("$query: value for $c1 is not defined in call from ",
-				$call_details[2], ' of ', $call_details[1]);
-		}
 
 		my $keyword;
 		if($done_where) {
@@ -901,12 +894,16 @@ sub selectall_array
 			$keyword = 'WHERE';
 			$done_where = 1;
 		}
-		if($arg =~ /[%_]/) {
-			$query .= " $keyword $c1 LIKE ?";
+		if(!defined($arg)) {
+			$query .= " $keyword $c1 IS NULL"
 		} else {
-			$query .= " $keyword $c1 = ?";
+			if($arg =~ /[%_]/) {
+				$query .= " $keyword $c1 LIKE ?";
+			} else {
+				$query .= " $keyword $c1 = ?";
+			}
+			push @query_args, $arg;
 		}
-		push @query_args, $arg;
 	}
 	if(!$self->{no_entry}) {
 		$query .= ' ORDER BY ' . $self->{'id'};
