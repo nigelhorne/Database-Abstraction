@@ -1,6 +1,6 @@
 Revision history for Database-Abstraction
 
-0.33
+0.33	Sat Oct 18 18:35:46 EDT 2025
 	Using undef to searches sets IS NULL
 	Latest testing dashboard
 
