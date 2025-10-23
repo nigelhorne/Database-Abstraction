@@ -393,7 +393,7 @@ sub set_logger
 	my $self = shift;
 	my $params = Params::Get::get_params('logger', @_);
 
-	if(my $logger = ($params->{'logger'})) {
+	if(my $logger = $params->{'logger'}) {
 		if(Scalar::Util::blessed($logger)) {
 			$self->{'logger'} = $logger;
 		} else {
