@@ -22,7 +22,7 @@ package Database::Abstraction;
 # TODO:	Add full CRUD support
 # TODO:	It would be better for the default sep_char to be ',' rather than '!'
 # FIXME:	t/xml.t fails in slurping mode
-# TODO:	Other databases e.g., Redis, noSQL, remote databases such as MySQL, PostgresSQL
+# TODO:	Other databases e.g., Redis, noSQL, remote databases such as MySQL, PostgreSQL
 # TODO: The no_entry/entry terminology is confusing.  Replace with no_id/id_column
 # TODO: Add support for DBM::Deep
 # TODO: Log queries and the time that they took to execute per database
