@@ -778,6 +778,7 @@ sub selectall_arrayref {
 		if(defined($query_args[0])) {
 			$key .= ' ' . join(', ', @query_args);
 		}
+		$self->_debug("cache key = $key");
 		if(my $rc = $c->get($key)) {
 			$self->_debug('cache HIT');
 			return $rc;	# We stored a ref to the array
