@@ -1251,6 +1251,8 @@ to the query.
 If the data have been slurped,
 this will still work by accessing that actual database.
 
+If "args" is given, it's an argument for the query.
+
 =cut
 
 sub execute
@@ -1262,6 +1264,7 @@ sub execute
 	}
 
 	my $args = Params::Get::get_params('query', @_);
+
 	# Ensure the 'query' parameter is provided
 	Carp::croak(__PACKAGE__, ': Usage: execute(query => $query)')
 		unless defined $args->{'query'};
@@ -1278,7 +1281,11 @@ sub execute
 
 	# Prepare and execute the query
 	my $sth = $self->{$table}->prepare($query);
-	$sth->execute() or croak($query);	# Die with the query in case of error
+	if(exists($args->{args})) {
+		$sth->execute($args->{args}) or croak($query, "($args)");	# Die with the query in case of error
+	} else {
+		$sth->execute() or croak($query);	# Die with the query in case of error
+	}
 
 	# Fetch the results
 	my @results;
