@@ -291,6 +291,8 @@ to the query.
 If the data have been slurped,
 this will still work by accessing that actual database.
 
+If "args" is given, it's an array of the arguments (see `execute()` in [DBI](https://metacpan.org/pod/DBI)).
+
 ## updated
 
 Returns the timestamp of the last database update.

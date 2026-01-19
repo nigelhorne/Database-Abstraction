@@ -1251,7 +1251,7 @@ to the query.
 If the data have been slurped,
 this will still work by accessing that actual database.
 
-If "args" is given, it's an arrayref of the arguments
+If "args" is given, it's an array of the arguments (see C<execute()> in L<DBI>).
 
 =cut
 
@@ -1282,7 +1282,7 @@ sub execute
 	# Prepare and execute the query
 	my $sth = $self->{$table}->prepare($query);
 	if(exists($args->{args})) {
-		$sth->execute($args->{args}) or croak($query, join(', ', @{$args->{args}}));	# Die with the query in case of error
+		$sth->execute($args->{args}) or croak($query, join(', ', $args->{args}));	# Die with the query in case of error
 	} else {
 		$sth->execute() or croak($query);	# Die with the query in case of error
 	}
