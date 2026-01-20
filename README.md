@@ -15,7 +15,7 @@ Database::Abstraction - Read-only Database Abstraction Layer (ORM)
 
 # VERSION
 
-Version 0.33
+Version 0.34
 
 # DESCRIPTION
 
