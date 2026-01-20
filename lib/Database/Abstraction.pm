@@ -1,7 +1,7 @@
 package Database::Abstraction;
 
 # Author Nigel Horne: njh@nigelhorne.com
-# Copyright (C) 2015-2025, Nigel Horne
+# Copyright (C) 2015-2026, Nigel Horne
 
 # Usage is subject to licence terms.
 # The licence terms of this software are as follows:
@@ -1740,7 +1740,7 @@ so if XML fails for you on a small file force non-slurping mode with
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2015-2025 Nigel Horne.
+Copyright 2015-2026 Nigel Horne.
 
 This program is released under the following licence: GPL2.
 Usage is subject to licence terms.

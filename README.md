@@ -356,7 +356,7 @@ so if XML fails for you on a small file force non-slurping mode with
 
 # LICENSE AND COPYRIGHT
 
-Copyright 2015-2025 Nigel Horne.
+Copyright 2015-2026 Nigel Horne.
 
 This program is released under the following licence: GPL2.
 Usage is subject to licence terms.
