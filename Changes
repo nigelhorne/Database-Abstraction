@@ -1,6 +1,6 @@
 Revision history for Database-Abstraction
 
-0.35
+0.35	Mon Jun  8 08:25:03 EDT 2026
 	[ Bug fixes ]
 	- Pass f_dir on open
 	- Canonicalize directory path via Cwd::abs_path to fix DBD::File safety check rejecting paths containing '..'
