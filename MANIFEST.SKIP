@@ -69,3 +69,5 @@
 Database-.*
 .test-script-*
 typescript
+CLAUDE.md
+\.claude
