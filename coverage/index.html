@@ -39,7 +39,7 @@
 		td.positive { color: green; font-weight: bold; }
 		td.negative { color: red; font-weight: bold; }
 		td.neutral { color: gray; }
-		// Show cursor points on the headers to show that they are clickable
+		/* Show cursor points on the headers to show that they are clickable */
 		th { background-color: #f2f2f2; cursor: pointer; }
 		th.sortable {
 			cursor: pointer;
@@ -58,6 +58,75 @@
 			display: inline-block;
 			vertical-align: middle;
 		}
+		tr.cpan-fail td {
+			background-color: #fdd;
+		}
+		tr.cpan-unknown td {
+			background-color: #eee;
+			color: #666;
+		}
+		tr.cpan-na td {
+			background-color: #ffffde;
+			color: #666;
+		}
+		.new-failure {
+			background: #c00;
+			color: #fff;
+			font-weight: bold;
+			padding: 2px 6px;
+			border-radius: 4px;
+			font-size: 0.85em;
+		}
+		.notice {
+			padding: 8px 12px;
+			margin: 10px 0;
+			border-radius: 4px;
+			font-size: 0.95em;
+		}
+		.notice strong {
+			font-weight: bold;
+		}
+		.notice.perl-version-cliff {
+			background-color: #fff3cd; /* soft amber */
+			border: 1px solid #ffeeba;
+			color: #856404;
+		}
+		.notice.perl-version-cliff a {
+			color: #533f03;
+			text-decoration: underline;
+		}
+		.notice.perl-version-cliff a:hover {
+			text-decoration: none;
+		}
+		.notice.locale-cliff {
+			border-left: 4px solid #d97706;
+			background: #fffbeb;
+			padding: 0.5em 1em;
+		}
+		.notice.rt-issues {
+			background: #fff6e5;
+			border-left: 4px solid #d9822b;
+		}
+		table.root-causes {
+			border-collapse: collapse;
+			width: 100%;
+			margin-bottom: 1.5em;
+		}
+		table.root-causes th,
+		table.root-causes td {
+			border: 1px solid #ccc;
+			padding: 8px;
+			vertical-align: top;
+		}
+		table.root-causes tr.high {
+			background-color: #dfd;
+		}
+		table.root-causes tr.med {
+			background-color: #ffd;
+		}
+		table.root-causes tr.low {
+			background-color: #fdd;
+		}
 	</style>
 </head>
 <body>
@@ -65,31 +134,28 @@
 	<a href="https://github.com/nigelhorne/Database-Abstraction">
 		<img src="https://img.shields.io/github/stars/nigelhorne/Database-Abstraction?style=social" alt="GitHub stars">
 	</a>
-	<img src="https://img.shields.io/badge/coverage-64%25-yellow" alt="Coverage badge">
+	<img src="https://img.shields.io/badge/coverage-64%25-red" alt="Coverage badge">
 </div>
 <h1>Database::Abstraction</h1><h2>Coverage Report</h2>
 <table data-sort-col="0" data-sort-order="asc">
 <!-- Make the column headers clickable -->
 <thead>
 <tr>
-	<th class="sortable" onclick="sortTable(0)"><span class="label">File</span> <span class="arrow active">&#x25B2;</span></th>
-	<th class="sortable" onclick="sortTable(1)"><span class="label">Stmt</span> <span class="arrow">&#x25B2;</span></th>
-	<th class="sortable" onclick="sortTable(2)"><span class="label">Branch</span> <span class="arrow">&#x25B2;</span></th>
-	<th class="sortable" onclick="sortTable(3)"><span class="label">Cond</span> <span class="arrow">&#x25B2;</span></th>
-	<th class="sortable" onclick="sortTable(4)"><span class="label">Sub</span> <span class="arrow">&#x25B2;</span></th>
-	<th class="sortable" onclick="sortTable(5)"><span class="label">Total</span> <span class="arrow">&#x25B2;</span></th>
-	<th class="sortable" onclick="sortTable(6)"><span class="label">&Delta;</span> <span class="arrow">&#x25B2;</span></th>
+	<th class="sortable" onclick="sortTable(this, 0)"><span class="label">File</span> <span class="arrow active">&#x25B2;</span></th>
+	<th class="sortable" onclick="sortTable(this, 1)"><span class="label">Stmt</span> <span class="arrow">&#x25B2;</span></th>
+	<th class="sortable" onclick="sortTable(this, 2)"><span class="label">Branch</span> <span class="arrow">&#x25B2;</span></th>
+	<th class="sortable" onclick="sortTable(this, 3)"><span class="label">Cond</span> <span class="arrow">&#x25B2;</span></th>
+	<th class="sortable" onclick="sortTable(this, 4)"><span class="label">Sub</span> <span class="arrow">&#x25B2;</span></th>
+	<th class="sortable" onclick="sortTable(this, 5)"><span class="label">Total</span> <span class="arrow">&#x25B2;</span></th>
+	<th class="sortable" onclick="sortTable(this, 6)"><span class="label">&Delta;</span> <span class="arrow">&#x25B2;</span></th>
 </tr>
 </thead>
 
 <tbody>
 
-<tr class="low"><td><a href="blib-lib-Database-Abstraction-pm.html" title="View coverage line by line" target="_blank">blib/lib/Database/Abstraction.pm</a> <a href="https://github.com/nigelhorne/Database-Abstraction/blob/81eb98f1aca46e0e3a2ebb49ecadfcaca49a271a/blib/lib/Database/Abstraction.pm" class="icon-link" title="View source on GitHub">&#128269;</a><canvas class="sparkline" width="80" height="20" data-points="63.7,63.6,63.7,63.8,64.1,63.8,63.8,63.9,64.5,64.5,64.5,64.4,64.5,64.4,64.4,64.3,64.2,64.2"></canvas></td><td>71.3</td><td>56.3</td><td>48.4</td><td>92.5</td><td><span class="coverage-badge badge-bad" title="Needs improvement">64.4%</span></td><td class="positive" title="Previous: 64.2%">&#9650; 0.2%</td></tr>
-
+<tr class="low"><td><a href="blib-lib-Database-Abstraction-pm.html" title="View coverage line by line" target="_blank">lib/Database/Abstraction.pm</a> <a href="https://github.com/nigelhorne/Database-Abstraction/blob/5a3b4f09d826b8477be9e5be87dfa52e4ffba5c0/lib/Database/Abstraction.pm" class="icon-link" title="View source on GitHub">&#128269;</a><canvas class="sparkline" width="80" height="20" data-points="64.5,64.4,64.5,64.4,64.4,64.3,64.2,64.2,64.4,64.5"></canvas></td><td>71.4</td><td>56.3</td><td>48.9</td><td>92.7</td><td><span class="coverage-badge badge-bad" title="Needs improvement">64.6%</span></td><td class="positive" title="Previous (sparkline): 64.4%">&#9650; 0.1%</td></tr>
 <tr class="summary-row nosort"><td colspan="2"><strong>Summary</strong></td><td colspan="2">1 files</td><td colspan="3">Avg: 64%, Low: 1</td></tr>
-
-<tr class="med nosort"><td><strong>Total</strong></td><td>71.3</td><td>56.3</td><td>48.4</td><td>92.5</td><td colspan="2"><strong>64.4</strong></td></tr>
-
+<tr class="med nosort"><td><strong>Total</strong></td><td>71.4</td><td>56.3</td><td>48.9</td><td>92.7</td><td colspan="2"><strong>64.6</strong></td></tr>
 </tbody></table>
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1em;">
 	<div>
@@ -106,12 +172,11 @@
 		<button id="resetZoomBtn" type="button">Reset Zoom</button>
 	</div>
 </div>
-
 <canvas id="coverageTrend" width="600" height="300"></canvas>
 <!-- Zoom controls for the trend chart -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <!-- Add chartjs-plugin-zoom (required for wheel/pinch/drag zoom & pan) -->
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.1.1/dist/chartjs-plugin-zoom.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom\@2.1.1/dist/chartjs-plugin-zoom.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
 <script>
 function linearRegression(data) {
@@ -124,6 +189,9 @@ function linearRegression(data) {
 	const sumXY = xs.reduce((acc, val, i) => acc + val * ys[i], 0);
 	const sumX2 = xs.reduce((acc, val) => acc + val * val, 0);
 
+	if(n < 2 || (n * sumX2 - sumX * sumX) === 0) {
+		return [];
+	}
 	const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
 	const intercept = (sumY - slope * sumX) / n;
 
@@ -133,24 +201,24 @@ function linearRegression(data) {
 	}));
 }
 
-const dataPoints = [ { x: "2025-09-16T07:50:35-04:00", y: 63.8202247191011, delta: 0, url: "https://github.com/nigelhorne/Database-Abstraction/commit/e032b08", label: "2025-09-16T07:50:35-04:00", pointBackgroundColor: "gray", comment: "Added debugging statement" },
-{ x: "2025-09-16T08:14:10-04:00", y: 63.9013452914798, delta: 0.1, url: "https://github.com/nigelhorne/Database-Abstraction/commit/f0ade09", label: "2025-09-16T08:14:10-04:00", pointBackgroundColor: "green", comment: "Fix fast track return in selectall_arrayref" },
-{ x: "2025-10-18T18:04:51-04:00", y: 64.4677661169415, delta: 0.6, url: "https://github.com/nigelhorne/Database-Abstraction/commit/d6db4ae", label: "2025-10-18T18:04:51-04:00", pointBackgroundColor: "green", comment: "Latest testing dashboard" },
-{ x: "2025-10-18T18:37:16-04:00", y: 64.4677661169415, delta: 0.0, url: "https://github.com/nigelhorne/Database-Abstraction/commit/51a32fe", label: "2025-10-18T18:37:16-04:00", pointBackgroundColor: "gray", comment: "Release 0.33" },
-{ x: "2025-10-23T10:35:38-04:00", y: 64.4677661169415, delta: 0.0, url: "https://github.com/nigelhorne/Database-Abstraction/commit/af0a1df", label: "2025-10-23T10:35:38-04:00", pointBackgroundColor: "gray", comment: "Fix logger with array test when a configuration file has been set up" },
-{ x: "2025-10-30T17:02:55-04:00", y: 64.3928035982009, delta: -0.1, url: "https://github.com/nigelhorne/Database-Abstraction/commit/0d60963", label: "2025-10-30T17:02:55-04:00", pointBackgroundColor: "red", comment: "Fix typo" },
-{ x: "2025-12-06T14:46:00-05:00", y: 64.4677661169415, delta: 0.1, url: "https://github.com/nigelhorne/Database-Abstraction/commit/d3a69c5", label: "2025-12-06T14:46:00-05:00", pointBackgroundColor: "green", comment: "Merge pull request #7 from nigelhorne/dependabot/github_actions/actions/checkout-6" },
-{ x: "2026-01-16T08:29:32-05:00", y: 64.4194756554307, delta: -0.0, url: "https://github.com/nigelhorne/Database-Abstraction/commit/2fead3d", label: "2026-01-16T08:29:32-05:00", pointBackgroundColor: "gray", comment: "Added debugging for the cache key" },
-{ x: "2026-01-16T08:40:46-05:00", y: 64.3712574850299, delta: -0.0, url: "https://github.com/nigelhorne/Database-Abstraction/commit/828363d", label: "2026-01-16T08:40:46-05:00", pointBackgroundColor: "gray", comment: "More key debugging" },
-{ x: "2026-01-18T08:20:53-05:00", y: 64.1579731743666, delta: -0.2, url: "https://github.com/nigelhorne/Database-Abstraction/commit/259f4b6", label: "2026-01-18T08:20:53-05:00", pointBackgroundColor: "red", comment: "Allow execute() to take an argument(s)" } ];
 
+const dataPoints = [ { x: "2025-09-16T08:14:10-04:00", y: 63.9013452914798, delta: 0, url: "https://github.com/nigelhorne/Database-Abstraction/commit/f0ade099d5221a8f799645cd96bf5b77318a7786", label: "2025-09-16T08:14:10-04:00", pointBackgroundColor: "gray", comment: "Fix fast track return in selectall_arrayref" },
+{ x: "2025-10-18T18:04:51-04:00", y: 64.4677661169415, delta: 0.6, url: "https://github.com/nigelhorne/Database-Abstraction/commit/d6db4ae53dc28556091c5c3904829dc9e1f463d3", label: "2025-10-18T18:04:51-04:00", pointBackgroundColor: "green", comment: "Latest testing dashboard" },
+{ x: "2025-10-18T18:37:16-04:00", y: 64.4677661169415, delta: 0.0, url: "https://github.com/nigelhorne/Database-Abstraction/commit/51a32fefe8e25db0c94412f21d3a8dd7300907d8", label: "2025-10-18T18:37:16-04:00", pointBackgroundColor: "gray", comment: "Release 0.33" },
+{ x: "2025-10-23T10:35:38-04:00", y: 64.4677661169415, delta: 0.0, url: "https://github.com/nigelhorne/Database-Abstraction/commit/af0a1dfbb47987c80bc05ef2bf9915bee0133f78", label: "2025-10-23T10:35:38-04:00", pointBackgroundColor: "gray", comment: "Fix logger with array test when a configuration file has been set up" },
+{ x: "2025-10-30T17:02:55-04:00", y: 64.3928035982009, delta: -0.1, url: "https://github.com/nigelhorne/Database-Abstraction/commit/0d60963ec480cdde76c8075dd51b80b3b8133f2d", label: "2025-10-30T17:02:55-04:00", pointBackgroundColor: "red", comment: "Fix typo" },
+{ x: "2025-12-06T14:46:00-05:00", y: 64.4677661169415, delta: 0.1, url: "https://github.com/nigelhorne/Database-Abstraction/commit/d3a69c524a613bdb7faabbd8419108c3a8a43e52", label: "2025-12-06T14:46:00-05:00", pointBackgroundColor: "green", comment: "Merge pull request #7 from nigelhorne/dependabot/github_actions/actions/checkout-6" },
+{ x: "2026-01-16T08:29:32-05:00", y: 64.4194756554307, delta: -0.0, url: "https://github.com/nigelhorne/Database-Abstraction/commit/2fead3d320221e913b5fb1fb35b1430ed2143c69", label: "2026-01-16T08:29:32-05:00", pointBackgroundColor: "gray", comment: "Added debugging for the cache key" },
+{ x: "2026-01-16T08:40:46-05:00", y: 64.3712574850299, delta: -0.0, url: "https://github.com/nigelhorne/Database-Abstraction/commit/828363da7cf720eae3cbf51c80e5aaa3c910e751", label: "2026-01-16T08:40:46-05:00", pointBackgroundColor: "gray", comment: "More key debugging" },
+{ x: "2026-01-18T08:20:53-05:00", y: 64.1579731743666, delta: -0.2, url: "https://github.com/nigelhorne/Database-Abstraction/commit/259f4b63efcc71377c12050a0e882f18f224d98d", label: "2026-01-18T08:20:53-05:00", pointBackgroundColor: "red", comment: "Allow execute() to take an argument(s)" },
+{ x: "2026-01-18T20:55:43-05:00", y: 64.381520119225, delta: 0.2, url: "https://github.com/nigelhorne/Database-Abstraction/commit/81eb98f1aca46e0e3a2ebb49ecadfcaca49a271a", label: "2026-01-18T20:55:43-05:00", pointBackgroundColor: "green", comment: "Clearer spacing on the error message" } ];
 const regressionPoints = linearRegression(dataPoints);
 // Try to register the zoom plugin (handles different UMD builds)
 (function registerZoomPlugin(){
 	try {
 		const candidates = ['chartjsPluginZoom','ChartZoom','zoomPlugin','chartjs_plugin_zoom','ChartjsPluginZoom','chartjsPluginZoom'];
-		for (const name of candidates) {
-			if (window[name]) {
+		for(const name of candidates) {
+			if(window[name]) {
 				try { Chart.register(window[name]); console.log('Registered zoom plugin:', name); return; } catch(e) { console.warn('zoom register failed for', name, e); }
 			}
 		}
@@ -235,7 +303,7 @@ const chart = new Chart(ctx, {
 			}
 		}, onClick: (e) => {
 			const points = chart.getElementsAtEventForMode(e, 'nearest', { intersect: true }, true);
-			if (points.length) {
+			if(points.length) {
 				const url = chart.data.datasets[0].data[points[0].index].url;
 				window.open(url, '_blank');
 			}
@@ -252,10 +320,10 @@ document.getElementById('toggleTrend').addEventListener('change', function(e) {
 
 // Reset Zoom button handler (calls plugin API if available)
 const resetBtn = document.getElementById('resetZoomBtn');
-if (resetBtn) {
+if(resetBtn) {
 	resetBtn.addEventListener('click', function() {
 		try {
-			if (chart && typeof chart.resetZoom === 'function') {
+			if(chart && typeof chart.resetZoom === 'function') {
 				chart.resetZoom();
 			} else {
 				console.warn('resetZoom not available; zoom plugin may not be registered.');
@@ -266,81 +334,74 @@ if (resetBtn) {
 	});
 }
 
-function sortTable(n) {
-	const table = document.querySelector("table");
-	if (!table || !table.tBodies || !table.tBodies[0]) return;
+function sortTable(th, colIndex) {
+	const table = th.closest("table");
+	if(!table || !table.tBodies.length) return;
 
-	// All rows in tbody
-	const allBodyRows = Array.from(table.tBodies[0].rows);
+	const tbody = table.tBodies[0];
+	const rows = Array.from(tbody.rows);
 
-	// Separate normal (sortable) rows and fixed (nosort) rows.
-	const normalRows = allBodyRows.filter(r => !r.classList.contains("nosort"));
-	const fixedRows = allBodyRows.filter(r => r.classList.contains("nosort"));
-
-	// Decide numeric vs text column (column 0 = File => text)
-	const isNumeric = n > 0;
-
-	// Determine ascending/descending toggle logic
 	const prevCol = table.getAttribute("data-sort-col");
 	const prevOrder = table.getAttribute("data-sort-order") || "desc";
-	const asc = (prevCol != n) ? true : (prevOrder === "desc");
+	const asc = (prevCol != colIndex) ? true : (prevOrder === "desc");
+
+	const isNumeric = colIndex === 0; // Date column
+
+	const normalRows = rows.filter(r => !r.classList.contains("nosort"));
+	const fixedRows = rows.filter(r => r.classList.contains("nosort"));
 
 	normalRows.sort((a, b) => {
-		let x = (a.cells[n] && a.cells[n].innerText) ? a.cells[n].innerText.trim() : "";
-		let y = (b.cells[n] && b.cells[n].innerText) ? b.cells[n].innerText.trim() : "";
+		let x = a.cells[colIndex]?.innerText.trim() || "";
+		let y = b.cells[colIndex]?.innerText.trim() || "";
 
-		if (isNumeric) {
-			// Remove non-number characters (arrows, percent signs, bullets, etc.)
-			x = parseFloat(x.replace(/[^0-9.\-+eE]/g, '')) || 0;
-			y = parseFloat(y.replace(/[^0-9.\-+eE]/g, '')) || 0;
+		if(isNumeric) {
+			x = Date.parse(x) || 0;
+			y = Date.parse(y) || 0;
 		} else {
-			// Text compare (case-insensitive)
 			x = x.toLowerCase();
 			y = y.toLowerCase();
 		}
 
-		if (x < y) return asc ? -1 : 1;
-		if (x > y) return asc ? 1 : -1;
+		if(x < y) return asc ? -1 : 1;
+		if(x > y) return asc ? 1 : -1;
 		return 0;
 	});
 
-	// Reattach rows: sorted normalRows first, then fixedRows (keeps summary/total last)
-	normalRows.forEach(r => table.tBodies[0].appendChild(r));
-	fixedRows.forEach(r => table.tBodies[0].appendChild(r));
+	normalRows.forEach(r => tbody.appendChild(r));
+	fixedRows.forEach(r => tbody.appendChild(r));
 
-	// Update header arrows
+	// Update arrows
 	const headers = table.tHead.rows[0].cells;
-	for (let i = 0; i < headers.length; i++) {
+	for(let i = 0; i < headers.length; i++) {
 		const arrow = headers[i].querySelector(".arrow");
-		if (!arrow) continue;
-		if (i === n) {
-			// active column: bold arrow, direction ▲ or ▼
+		if(!arrow) continue;
+
+		if(i === colIndex) {
 			arrow.textContent = asc ? "▲" : "▼";
 			arrow.classList.add("active");
 		} else {
-			// inactive column: always ▲, dimmed
 			arrow.textContent = "▲";
 			arrow.classList.remove("active");
 		}
 	}
 
-	// Remember state (so clicking same column toggles)
-	table.setAttribute("data-sort-col", n);
+	table.setAttribute("data-sort-col", colIndex);
 	table.setAttribute("data-sort-order", asc ? "asc" : "desc");
 }
+
 
 // Initial display.
 // The table has been set up sorted in ascending order on the filename; reflect that in the GUI
 document.addEventListener("DOMContentLoaded", () => {
 	const table = document.querySelector("table");
-	if (!table) return;
+	if(!table) return;
 
 	const headers = table.tHead.rows[0].cells;
-	for (let i = 0; i < headers.length; i++) {
+	for(let i = 0; i < headers.length; i++) {
 		const arrow = headers[i].querySelector(".arrow");
-		if (!arrow) continue;
+		if(!arrow) continue;
 
-		if (i === 0) {
+		if(i === 0) {
 			arrow.textContent = "▲";
 			arrow.classList.add("active");
 		} else {
@@ -353,7 +414,7 @@ document.addEventListener("DOMContentLoaded", () => {
 document.addEventListener("DOMContentLoaded", () => {
 	document.querySelectorAll("canvas.sparkline").forEach(canvas => {
 		const raw = canvas.getAttribute("data-points");
-		if (!raw) return;
+		if(!raw) return;
 		const points = raw.split(",").map(v => parseFloat(v));
 
 		new Chart(canvas.getContext("2d"), {
@@ -400,10 +461,172 @@ function refresh(){
 }
 </script>
 
+<p><center>Use mouse wheel or pinch to zoom; drag to pan</center></p>
+<p>No issues active on <a href="https://rt.cpan.org/Public/Dist/Display.html?Name=Database-Abstraction">RT</a></p>
+<h2>CPAN Testers Failures for Database-Abstraction 0.34</h2>
+<h3>Failure Summary (all reports)</h3>
+<ul>
+<li><b>Perl 5.43.x</b>: 6 failures</li>
+<p><em>75% of failures occur on Perl 5.43.x</em></p>
+<li><b>linux</b>: 2 failures</li>
+<li><b>5.40 / cygwin</b>: 1 failures</li>
+</ul>
+<h3>Likely Root Causes</h3>
+<table class="root-causes">
+<thead>
+<tr>
+	<th>Cause</th>
+	<th>Confidence</th>
+	<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+
+<tr class="low">
+	<td halign="center"><strong>Scattered failures (no clear version or OS pattern)</strong></td>
+	<td halign="center">Weak (40%)</td>
+	<td halign="center"><ul><li>Failures and passes both seen on 3 common Perl series</li><li>Possible causes: flaky tests, optional dependency differences, or CGI environment assumptions</li><li>Review test output from failing reports for specific error messages</li></ul></td>
+</tr>
+
+</tbody>
+</table>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+	const toggleFail = document.getElementById('toggleFail');
+	const toggleUnknown = document.getElementById('toggleUnknown');
+	const toggleNA = document.getElementById('toggleNA');
+	const toggleNew = document.getElementById('toggleNew');
+
+	function update() {
+		document.querySelectorAll('tr').forEach(row => {
+			// Skip header rows
+			if(row.querySelector('th')) return;
+
+			// Determine row status
+			const isFail = row.classList.contains('cpan-fail');
+			const isUnknown = row.classList.contains('cpan-unknown');
+			const isNA = row.classList.contains('cpan-na');
+			const isNew = !!row.querySelector('.new-failure');
+
+			// Decide whether to show the row
+			let show = true;
+
+			if(toggleFail && !toggleFail.checked && isFail) show = false;
+			if(toggleUnknown && !toggleUnknown.checked && isUnknown) show = false;
+			if(toggleNA && !toggleNA.checked && isNA) show = false;
+			if(toggleNew && toggleNew.checked && !isNew) show = false;
+
+			row.style.display = show ? '' : 'none';
+		});
+	}
+
+	[toggleFail, toggleUnknown, toggleNA, toggleNew].forEach(cb => {
+		if(cb) cb.addEventListener('change', update);
+	});
+
+	update();
+});
+document.addEventListener("DOMContentLoaded", () => {
+	const th = document.querySelector("table.sortable-table th");
+	if(th) sortTable(th, 0);
+});
+</script>
+
+<p><em>Showing one failure per OS/Perl combination.</em></p>
+<div style="margin-bottom: 0.5em;">
+	<label>
+		<input type="checkbox" id="toggleFail" checked>
+		FAIL
+	</label>
+	<label style="margin-left: 1em;">
+		<input type="checkbox" id="toggleUnknown">
+		UNKNOWN
+	</label>
+	<label style="margin-left: 1em;">
+		<input type="checkbox" id="toggleNA">
+		NA
+	</label>
+	<label style="margin-left: 1em;">
+		<input type="checkbox" id="toggleNew">
+		NEW only
+	</label>
+</div>
+
+<table class="sortable-table" data-sort-col="0" data-sort-order="asc">
+<thead>
+<tr>
+	<th class="sortable" onclick="sortTable(this, 0)">
+		<span class="label">Date</span> <span class="arrow">&#x25B2;</span>
+	</th>
+	<th class="sortable" onclick="sortTable(this, 1)">
+		<span class="label">OS</span> <span class="arrow">&#x25B2;</span>
+	</th>
+	<th class="sortable" onclick="sortTable(this, 2)">
+		<span class="label">Perl</span> <span class="arrow">&#x25B2;</span>
+	</th>
+	<th class="sortable" onclick="sortTable(this, 3)">
+		<span class="label">Reporter</span> <span class="arrow">&#x25B2;</span>
+	</th>
+	<th class="sortable" onclick="sortTable(this, 4)" title="Marks failures that did not occur in the previous release. The same OS, Perl version, architecture, and platform were passing before.">
+		<span class="label">New</span> <span class="arrow">&#x25B2;</span>
+	</th>
+	<th>Report</th>
+</tr>
+</thead>
+<tbody>
+
+<tr class="cpan-fail"><td>2026-05-24T01:07:00Z</td><td>linux</td><td>5.43.11</td><td>Carlos Guevara</td><td></td>
+				<td><a href="https://www.cpantesters.org/cpan/report/e38622fe-570c-11f1-9c2d-c8ab320ea9ec" target="_blank">View</a></td></tr>
+<tr class="cpan-fail"><td>2026-05-24T02:19:00Z</td><td>netbsd</td><td>5.43.11</td><td>Carlos Guevara</td><td></td>
+				<td><a href="https://www.cpantesters.org/cpan/report/f52c4b64-5716-11f1-9b74-aa4e75ca4e9e" target="_blank">View</a></td></tr>
+<tr class="cpan-fail"><td>2026-05-24T02:56:00Z</td><td>midnightbsd</td><td>5.43.10</td><td>Carlos Guevara</td><td></td>
+				<td><a href="https://www.cpantesters.org/cpan/report/1b2fb8c8-571c-11f1-8c8d-c5bcb82c4505" target="_blank">View</a></td></tr>
+<tr class="cpan-fail"><td>2026-01-29T10:06:00Z</td><td>linux</td><td>5.24.4</td><td>David Cantrell (DCANTRELL)</td><td></td>
+				<td><a href="https://www.cpantesters.org/cpan/report/2e1dca6e-fcfa-11f0-bfb0-cc532d48e55f" target="_blank">View</a></td></tr>
+<tr class="cpan-fail"><td>2026-05-22T02:31:00Z</td><td>freebsd</td><td>5.43.11</td><td>Carlos Guevara</td><td></td>
+				<td><a href="https://www.cpantesters.org/cpan/report/53af2036-5586-11f1-8da0-cd4b76ceaf04" target="_blank">View</a></td></tr>
+<tr class="cpan-fail"><td>2026-05-24T02:22:00Z</td><td>solaris</td><td>5.43.11</td><td>Carlos Guevara</td><td></td>
+				<td><a href="https://www.cpantesters.org/cpan/report/5c509ff2-5717-11f1-98b6-935b3ce31ca2" target="_blank">View</a></td></tr>
+<tr class="cpan-fail"><td>2026-05-24T00:35:00Z</td><td>dragonfly</td><td>5.43.11</td><td>Carlos Guevara</td><td></td>
+				<td><a href="https://www.cpantesters.org/cpan/report/69f29a2a-5708-11f1-b513-92e479c04a4f" target="_blank">View</a></td></tr>
+<tr class="cpan-fail"><td>2026-05-26T18:09:00Z</td><td>cygwin</td><td>5.40.3</td><td>Peter John Acklam (PJACKLAM)</td><td></td>
+				<td><a href="https://www.cpantesters.org/cpan/report/4cd62dca-7000-1014-b33a-928e51401e70" target="_blank">View</a></td></tr>
+</tbody></table>
+<h2>Mutation Report</h2>
+<h3>Mutation Summary</h3>
+<ul>
+<li><b>Score</b>: 100%</li>
+<li><b>Total</b>: 0</li>
+<li><b>Killed</b>: 
+0
+</li>
+<li><b>Survived</b>: 
+0
+</li>
+</ul>
+<h3>Mutation Files</h3>
+
+<table border='1' cellpadding='5'>
+
+<tr><th>File</th><th>Total</th><th>Killed</th><th>Survivors</th><th>Skipped</th><th>Score%</th><th>Complexity</th><th title="TER1=Statement, TER2=Branch, TER3=LCSAJ Path">TER1 / TER2 / TER3</th></tr>
+
+</table>
+
+<h2>Structural Coverage (Approximate)</h2>
+<div class='summary'>
+Statement Coverage: 71.45% (518 / 725)<br>
+Branch Coverage: 56.28% (224 / 398)<br>
+<em>Approximate LCSAJ derived from branch and statement coverage.</em>
+</div>
+<h2>Executive Summary</h2>
+<div class='summary'>
+Tests execute 71.45% of the code. No mutation data available yet — trigger the mutation workflow for fault detection analysis.
+</div>
 <footer>
-	<p><span style="margin-left:8px;color:#666;font-size:0.9em;">Use mouse wheel or pinch to zoom; drag to pan</span></p>
 	<p>Project: <a href="https://github.com/nigelhorne/Database-Abstraction">Database-Abstraction</a></p>
-	<p><em>Last updated: 2026-01-19 02:00:55 - <a href="https://github.com/nigelhorne/Database-Abstraction/commit/81eb98f1aca46e0e3a2ebb49ecadfcaca49a271a">commit <code>81eb98f</code></a></em></p>
+	<p><em>Last updated: 2026-06-08 12:03:46 - <a href="https://github.com/nigelhorne/Database-Abstraction/commit/5a3b4f09d826b8477be9e5be87dfa52e4ffba5c0">commit <code>5a3b4f0</code></a></em></p>
+	<p style="float: right; font-size: 0.85em; color: #999;">Powered by <a href="https://metacpan.org/dist/App-Test-Generator">App::Test::Generator 0.38</a></p>
 </footer>
 </body>
 </html>
