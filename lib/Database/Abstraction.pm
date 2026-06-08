@@ -36,6 +36,7 @@ use Data::Dumper;
 use Data::Reuse;
 use DBD::SQLite::Constants qw/:file_open/;	# For SQLITE_OPEN_READONLY
 use Fcntl;	# For O_RDONLY
+use Cwd;
 use File::Spec;
 use File::pfopen 0.03;	# For $mode and list context
 use File::Temp;
@@ -430,7 +431,7 @@ sub _open
 	# Read in the database
 	my $dbh;
 
-	my $dir = $self->{'directory'} || $defaults{'directory'};
+	my $dir = Cwd::abs_path($self->{'directory'} || $defaults{'directory'});
 	my $dbname = $self->{'dbname'} || $defaults{'dbname'} || $table;
 	my $slurp_file = File::Spec->catfile($dir, "$dbname.sql");
 
