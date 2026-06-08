@@ -498,10 +498,13 @@ sub _open
 								col_names => $params->{'column_names'},
 							},
 						},
+						f_dir      => $dir,
+						RaiseError => 1,
+						PrintError => 0
 					}
 				);
 			} else {
-				$dbh = DBI->connect("dbi:CSV:db_name=$slurp_file", undef, undef, { csv_sep_char => $sep_char});
+				$dbh = DBI->connect("dbi:CSV:db_name=$slurp_file", undef, undef, { csv_sep_char => $sep_char, f_dir => $dir, RaiseError => 1 });
 			}
 			$dbh->{'RaiseError'} = 1;
 
