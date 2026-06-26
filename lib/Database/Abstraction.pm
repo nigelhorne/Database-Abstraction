@@ -32,6 +32,7 @@ use strict;
 
 use boolean;
 use Carp;
+use Class::Abstract;
 use Data::Dumper;
 use Data::Reuse;
 use DBD::SQLite::Constants qw/:file_open/;	# For SQLITE_OPEN_READONLY
@@ -319,6 +320,8 @@ Uses Carp::carp to log warnings for incorrect usage or potential mistakes.
 sub new {
 	my $class = shift;
 	my %args;
+
+	Class::Abstract::check_abstract($class);	# enforces abstract contract
 
 	# Handle hash or hashref arguments
 	if((scalar(@_) == 1) && !ref($_[0])) {

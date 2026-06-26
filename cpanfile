@@ -3,6 +3,7 @@
 requires 'perl', '5.008';
 
 requires 'Carp';
+requires 'Class::Abstract';
 requires 'Cwd';
 requires 'DBD::SQLite::Constants';
 requires 'Data::Dumper';

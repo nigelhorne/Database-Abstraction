@@ -1,5 +1,9 @@
 Revision history for Database-Abstraction
 
+0.36
+	[ Enhancements ]
+	Use Class::Abstract to ensure it's not instatiated directly
+
 0.35	Mon Jun  8 08:25:03 EDT 2026
 	[ Bug fixes ]
 	- Pass f_dir on open
