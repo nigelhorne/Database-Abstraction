@@ -1,8 +1,30 @@
 Revision history for Database-Abstraction
 
-0.36
+0.36	
 	[ Enhancements ]
-	Use Class::Abstract to ensure it's not instatiated directly
+	- Prepared statement caching: all DBI prepare() calls replaced with
+	  prepare_cached() for statement-handle reuse across queries
+	- Schema introspection: new columns() and schema() methods; SQLite uses
+	  PRAGMA table_info, other DBI drivers use column_info, slurp mode
+	  inspects the first row; results are cached after the first call
+	- DSN portability: new() now accepts dsn/username/password parameters,
+	  bypassing file detection entirely; dialect is auto-detected from the
+	  DSN prefix (sqlite/postgres/mysql); SQLite performance PRAGMAs are
+	  only applied when connecting via a sqlite DSN
+	- Operator-hash query criteria: all select methods now accept hashref
+	  values for comparison operators (> < >= <= != -like -not_like
+	  -in -not_in -between) and logical groupings (-or -and); backed by
+	  new private helpers _build_where / _build_where_conditions /
+	  _match_criterion / _has_complex_criteria
+	- Automatic joins: selectall_arrayref(), selectall_array(), and
+	  fetchrow_hashref() accept a join parameter (hashref or arrayref of
+	  hashrefs with keys table/on/type); backed by _build_joins(); valid
+	  JOIN types are INNER LEFT RIGHT FULL CROSS (default INNER)
+	- Chained query builder: new query() method returns a
+	  Database::Abstraction::Query object supporting fluent method chaining:
+	  ->select()->where()->join()->order_by()->limit()->offset()->all()/
+	  first()/count()
+	- Use Class::Abstract to ensure it's not instantiated directly
 
 0.35	Mon Jun  8 08:25:03 EDT 2026
 	[ Bug fixes ]
