@@ -355,9 +355,11 @@ sub new {
 		}
 	}
 
-	croak("$class: where are the files?") unless($args{'directory'} || $defaults{'directory'});
+	unless($args{'dsn'} || $defaults{'dsn'}) {
+		croak("$class: where are the files?") unless($args{'directory'} || $defaults{'directory'});
 
-	croak("$class: ", $args{'directory'} || $defaults{'directory'}, ' is not a directory') unless(-d ($args{'directory'} || $defaults{'directory'}));
+		croak("$class: ", $args{'directory'} || $defaults{'directory'}, ' is not a directory') unless(-d ($args{'directory'} || $defaults{'directory'}));
+	}
 
 	# init(\%args);
 
@@ -433,6 +435,38 @@ sub _open
 
 	# Read in the database
 	my $dbh;
+
+	# DSN-based connection bypasses file detection entirely
+	if(my $dsn = $self->{'dsn'} || $defaults{'dsn'}) {
+		require DBI && DBI->import() unless DBI->can('connect');
+
+		my $dialect = 'generic';
+		if    ($dsn =~ /^dbi:SQLite:/i) { $dialect = 'sqlite'   }
+		elsif ($dsn =~ /^dbi:Pg:/i)     { $dialect = 'postgres' }
+		elsif ($dsn =~ /^dbi:mysql:/i)  { $dialect = 'mysql'    }
+		$self->{'_dialect'} = $dialect;
+
+		$dbh = DBI->connect(
+			$dsn,
+			$self->{'username'},
+			$self->{'password'},
+			{ RaiseError => 1, AutoCommit => 1 },
+		) or Carp::croak(ref($self), ": cannot connect: $DBI::errstr");
+
+		if($dialect eq 'sqlite') {
+			$dbh->do('PRAGMA synchronous = OFF');
+			$dbh->do('PRAGMA cache_size = -4096');
+			$dbh->do('PRAGMA journal_mode = OFF');
+			$dbh->do('PRAGMA temp_store = MEMORY');
+			$dbh->do('PRAGMA mmap_size = 1048576');
+			$dbh->sqlite_busy_timeout(100000);
+		}
+
+		$self->{'type'} = 'DBI';
+		$self->{$table} = $dbh;
+		$self->{'_updated'} = time();
+		return $self;
+	}
 
 	my $dir = Cwd::abs_path($self->{'directory'} || $defaults{'directory'});
 	my $dbname = $self->{'dbname'} || $defaults{'dbname'} || $table;
@@ -800,7 +834,7 @@ sub selectall_arrayref {
 		$self->_debug('cache not used');
 	}
 
-	if(my $sth = $self->{$table}->prepare($query)) {
+	if(my $sth = $self->{$table}->prepare_cached($query)) {
 		$sth->execute(@query_args) ||
 			# throw Error::Simple("$query: @query_args");
 			croak("$query: @query_args");
@@ -951,14 +985,17 @@ sub selectall_array
 		$self->_debug('cache not used');
 	}
 
-	if(my $sth = $self->{$table}->prepare($query)) {
+	if(my $sth = $self->{$table}->prepare_cached($query)) {
 		$sth->execute(@query_args) ||
 			# throw Error::Simple("$query: @query_args");
 			croak("$query: @query_args");
 
 		my $rc;
 		while(my $href = $sth->fetchrow_hashref()) {
-			return $href if(!wantarray);	# FIXME: Doesn't store in the cache
+			if(!wantarray) {
+				$sth->finish();
+				return $href;	# FIXME: Doesn't store in the cache
+			}
 			push @{$rc}, $href;
 		}
 		if($c) {
@@ -1087,7 +1124,7 @@ sub count
 		$self->_debug('cache not used');
 	}
 
-	if(my $sth = $self->{$table}->prepare($query)) {
+	if(my $sth = $self->{$table}->prepare_cached($query)) {
 		$sth->execute(@query_args) ||
 			# throw Error::Simple("$query: @query_args");
 			croak("$query: @query_args");
@@ -1229,10 +1266,11 @@ sub fetchrow_hashref {
 		}
 	}
 
-	my $sth = $self->{$table}->prepare($query) or die $self->{$table}->errstr();
+	my $sth = $self->{$table}->prepare_cached($query) or die $self->{$table}->errstr();
 	# $sth->execute(@query_args) || throw Error::Simple("$query: @query_args");
 	$sth->execute(@query_args) || croak("$query: @query_args");
 	my $rc = $sth->fetchrow_hashref();
+	$sth->finish();
 	if($c) {
 		if($rc) {
 			$self->_debug("stash $key=>$rc in the cache for ", $self->{'cache_duration'});
@@ -1287,7 +1325,7 @@ sub execute
 	$self->_debug("execute $query");
 
 	# Prepare and execute the query
-	my $sth = $self->{$table}->prepare($query);
+	my $sth = $self->{$table}->prepare_cached($query);
 	if(exists($args->{args})) {
 		$sth->execute($args->{args}) or croak("$query: ", join(', ', $args->{args}));	# Die with the query in case of error
 	} else {
@@ -1297,8 +1335,10 @@ sub execute
 	# Fetch the results
 	my @results;
 	while (my $row = $sth->fetchrow_hashref()) {
-		# Return a single hashref if scalar context is expected
-		return $row unless wantarray;
+		unless(wantarray) {
+			$sth->finish();
+			return $row;
+		}
 		push @results, $row;
 	}
 
@@ -1316,6 +1356,118 @@ sub updated {
 	my $self = shift;
 
 	return $self->{'_updated'};
+}
+
+=head2 columns
+
+Returns an array reference of column names for the current table.
+Results are cached after the first call.
+
+    my $cols = $obj->columns();    # ['entry', 'name', 'age']
+
+=cut
+
+sub columns {
+	my $self = shift;
+
+	return $self->{'_columns'} if $self->{'_columns'};
+
+	my $table = $self->_open_table({});
+
+	my @cols;
+
+	if($self->{'berkeley'}) {
+		return $self->{'_columns'} = ['entry', 'value'];
+	}
+
+	if(my $data = $self->{'data'}) {
+		if(ref($data) eq 'HASH') {
+			my ($first) = values %{$data};
+			@cols = sort keys %{$first} if $first;
+		}
+	} else {
+		my $sth = $self->{$table}->prepare_cached("SELECT * FROM $table WHERE 1=0");
+		$sth->execute();
+		@cols = @{$sth->{NAME}};
+		$sth->finish();
+	}
+
+	return $self->{'_columns'} = \@cols;
+}
+
+=head2 schema
+
+Returns a hash reference describing the schema of the current table.
+Each key is a column name; each value is a hash with keys
+C<type>, C<nullable>, C<default>, and C<pk>.
+Results are cached after the first call.
+
+    my $schema = $obj->schema();
+    print $schema->{entry}{type};    # e.g. "TEXT"
+
+=cut
+
+sub schema {
+	my $self = shift;
+
+	return $self->{'_schema'} if $self->{'_schema'};
+
+	my $table = $self->_open_table({});
+	my %schema;
+
+	if($self->{'berkeley'}) {
+		return $self->{'_schema'} = {
+			entry => { type => 'TEXT', nullable => 0, default => undef, pk => 1 },
+			value => { type => 'TEXT', nullable => 1, default => undef, pk => 0 },
+		};
+	}
+
+	if(my $data = $self->{'data'}) {
+		if(ref($data) eq 'HASH') {
+			my ($first) = values %{$data};
+			if($first) {
+				my $id = $self->{'id'};
+				for my $col (keys %{$first}) {
+					$schema{$col} = {
+						type     => 'TEXT',
+						nullable => ($col eq $id ? 0 : 1),
+						default  => undef,
+						pk       => ($col eq $id ? 1 : 0),
+					};
+				}
+			}
+		}
+	} else {
+		my $driver = $self->{$table}->{'Driver'}{'Name'} // '';
+		if($driver eq 'SQLite') {
+			my $sth = $self->{$table}->prepare_cached("PRAGMA table_info($table)");
+			$sth->execute();
+			while(my $row = $sth->fetchrow_hashref()) {
+				$schema{$row->{'name'}} = {
+					type     => $row->{'type'},
+					nullable => !$row->{'notnull'},
+					default  => $row->{'dflt_value'},
+					pk       => $row->{'pk'},
+				};
+			}
+			$sth->finish();
+		} else {
+			my $sth = $self->{$table}->column_info(undef, undef, $table, '%');
+			if($sth) {
+				while(my $row = $sth->fetchrow_hashref()) {
+					$schema{$row->{'COLUMN_NAME'}} = {
+						type     => $row->{'TYPE_NAME'},
+						nullable => $row->{'NULLABLE'},
+						default  => $row->{'COLUMN_DEF'},
+						pk       => 0,
+					};
+				}
+				$sth->finish();
+			}
+		}
+	}
+
+	return $self->{'_schema'} = \%schema;
 }
 
 =head2 AUTOLOAD
@@ -1524,8 +1676,8 @@ sub AUTOLOAD {
 	} else {
 		$self->_debug('cache not used');
 	}
-	# my $sth = $self->{$table}->prepare($query) || throw Error::Simple($query);
-	my $sth = $self->{$table}->prepare($query) || croak($query);
+	# my $sth = $self->{$table}->prepare_cached($query) || throw Error::Simple($query);
+	my $sth = $self->{$table}->prepare_cached($query) || croak($query);
 	# $sth->execute(@args) || throw Error::Simple($query);
 	$sth->execute(@args) || croak($query);
 
@@ -1593,6 +1745,20 @@ sub _open_table
 	$self->_open() if((!$self->{$table}) && (!$self->{'data'}));
 
 	return $table;
+}
+
+# Quote a SQL identifier using the current connection's dialect rules.
+# Falls back to ANSI double-quoting when no connection is available.
+sub _quote_identifier
+{
+	my ($self, $name) = @_;
+
+	my $table = $self->{'table'} || ref($self);
+	$table =~ s/.*:://;
+	if(my $dbh = $self->{$table}) {
+		return $dbh->quote_identifier($name);
+	}
+	return qq{"$name"};
 }
 
 # Determine whether a given file is a valid Berkeley DB file.

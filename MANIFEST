@@ -50,7 +50,9 @@ t/pod-snippets.t
 t/pod-spelling.t
 t/pod-synopsis.t
 t/pod.t
+t/portability.t
 t/psv.t
+t/schema.t
 t/strict.t
 t/tabs.t
 t/test7.t
