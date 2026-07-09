@@ -22,7 +22,6 @@ use Readonly;
 use Scalar::Util qw(blessed looks_like_number);
 
 use Test::Most;
-use Test::Mockingbird;
 use Test::Returns;
 
 # ---------------------------------------------------------------------------

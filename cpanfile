@@ -43,7 +43,6 @@ on 'test' => sub {
 	requires 'Test::Compile';
 	requires 'Test::DescribeMe';
 	requires 'Test::Memory::Cycle';
-	requires 'Test::Mockingbird';
 	requires 'Test::Most';
 	requires 'Test::Needs';
 	requires 'Test::NoWarnings';

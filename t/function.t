@@ -11,8 +11,6 @@
 # up a real database for every test.
 #
 # Mocking policy:
-#   - Test::Mockingbird is used when we need to stub out methods that
-#     would require real files or DBI connections (e.g., _open, _open_table).
 #   - Concrete fixture files in t/data/ are used for integration-level
 #     tests where the real backend logic is being exercised.
 #   - Test::Returns validates return-value shapes (scalar / arrayref / hashref).
@@ -28,7 +26,6 @@ use Scalar::Util qw(blessed looks_like_number);
 use Readonly;
 
 use Test::Most;
-use Test::Mockingbird;
 use Test::Returns;
 use Test::Memory::Cycle;
 
