@@ -912,7 +912,7 @@ sub selectall_arrayref {
 	}
 
 	if($self->{'berkeley'}) {
-		$self->_fatal(ref($self), ': selectall_arrayref is meaningless on a NoSQL database');
+		Carp::croak(ref($self), ': selectall_arrayref is meaningless on a NoSQL database');
 	}
 
 	my $table = $self->_open_table($params);
@@ -936,7 +936,9 @@ sub selectall_arrayref {
 			}
 			return set_return($self->{'data'}, { type => 'arrayref'});
 		} elsif((scalar(keys %{$params}) == 1) && defined($params->{'entry'}) && !$self->{'no_entry'}) {
-			return set_return([$self->{'data'}->{$params->{'entry'}}], { type => 'arrayref' });
+			# exists() guard: fixate() locks all keys in the slurp hash
+			my $v = exists($self->{'data'}->{$params->{'entry'}}) ? $self->{'data'}->{$params->{'entry'}} : undef;
+			return set_return([$v], { type => 'arrayref' });
 		} elsif(ref($self->{'data'}) eq 'HASH') {
 			# Scan in-memory hash for simple column criteria without touching DBI.
 			# fixate() locks hash keys, so use exists() to avoid throwing on unknown columns.
@@ -1803,7 +1805,7 @@ sub AUTOLOAD {
 			} elsif((scalar keys %params) == 0) {
 				if(wantarray) {
 					if($distinct) {
-						my %h = map { $_ => 1 } map { exists($_->{$column}) ? $_->{$column} : undef } values %{$data};
+						my %h = map { $_ => 1 } grep { defined } map { exists($_->{$column}) ? $_->{$column} : undef } values %{$data};
 						return keys %h;
 					}
 					return map { exists($_->{$column}) ? $_->{$column} : undef } values %{$data}
