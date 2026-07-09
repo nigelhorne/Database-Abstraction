@@ -241,11 +241,11 @@ pre details.mutant-details ul {
 <body>
 <button class="toggle" onclick="toggleTheme()">🌙 Toggle Theme</button>
 <h1>lib/Database/Abstraction/Query.pm</h1>
-<div class="nav"><a href="../../../../index.html">Index</a>
+<div class="nav"><a href="../Abstraction.pm.html">⬅ Previous</a> <a href="../../../../index.html">Index</a>
 </div><div class='summary'>
 <strong>Structural Coverage (Approximate)</strong><p>
-TER1 (Statement): 82.86%<br>
-TER2 (Branch): 54.35%<br>
+TER1 (Statement): 90.48%<br>
+TER2 (Branch): 63.04%<br>
 TER3 (LCSAJ): 100.0% (5/5)<br>
 Approximate LCSAJ segments: 47<br>
 </div>
@@ -570,7 +570,7 @@ is( func(INPUT), EXPECTED, &#39;Verify correct return value&#39; );
 </span><span class="">  257: {
 </span><span class="">  258: 	my ($self, $n) = @_;
 </span><span class="">  259: 	$self-&gt;{&#39;_offset&#39;} = $n;
-</span><span class="survived-2 tooltip" data-tooltip="Boolean logic mutation survived. Add tests covering both true and false paths. Return value mutation survived. Add tests asserting exact return values.">  260: 	return $self;
+</span><span class="survived-2 tooltip" data-tooltip="Return value mutation survived. Add tests asserting exact return values. Boolean logic mutation survived. Add tests covering both true and false paths.">  260: 	return $self;
 </span>
 					<details class="mutant-details">
 					<summary>Mutants (Total: 2, Killed: 0, Survived: 2)</summary>
