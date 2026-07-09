@@ -345,17 +345,17 @@ subtest 'EX11: DESTROY unlinks the temp file (line 1920)' => sub {
 
 	my $tmp_path;
 	{
-		my ($tmp_fh, $fname) = tempfile(UNLINK => 0);
-		$tmp_path = $fname;
-		close $tmp_fh;
+		# Use File::Temp with UNLINK=>1 to simulate what the gzip path now stores
+		my $tmp_obj = File::Temp->new(SUFFIX => '.csv', UNLINK => 1);
+		$tmp_path = $tmp_obj->filename();
 
-		# Simulate what the gzip path does: set $self->{'temp'} to a real file
+		# Simulate what the gzip path does: store the File::Temp object in _temp_fh
 		my $db = Database::test1->new(directory => $DATA_DIR);
-		$db->{'temp'} = $tmp_path;
+		$db->{'_temp_fh'} = $tmp_obj;
 		ok(-e $tmp_path, 'temp file exists before DESTROY');
-		# $db goes out of scope here → DESTROY fires
+		# $db goes out of scope here → DESTROY fires → _temp_fh deleted → auto-unlink
 	}
-	ok(!-e $tmp_path, 'DESTROY unlinks temp file (line 1920)');
+	ok(!-e $tmp_path, 'DESTROY auto-unlinks temp file via File::Temp _temp_fh');
 };
 
 # ---------------------------------------------------------------------------
@@ -518,7 +518,7 @@ SKIP: {
 			'gzip CSV instantiation lives (lines 684-691)';
 		cmp_ok($db->count(), '==', 2,
 			'gzip CSV returns correct row count');
-		ok($db->{'temp'}, 'temp filename stored after gunzip (line 691)');
+		ok(defined($db->{'_temp_fh'}), 'File::Temp object stored in _temp_fh after gunzip (line 691)');
 		# DESTROY fires when $db goes out of scope, unlinks temp file (line 1920)
 	};
 }

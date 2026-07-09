@@ -558,6 +558,14 @@ sub new {
 		croak("$class: ", $args{'directory'} || $defaults{'directory'}, ' is not a directory') unless(-d ($args{'directory'} || $defaults{'directory'}));
 	}
 
+	# Validate the primary-key column name to prevent SQL injection via ORDER BY / WHERE
+	for my $src (\%defaults, \%args) {
+		if(defined $src->{'id'}) {
+			croak("$class: unsafe id column name '$src->{id}'")
+				unless $src->{'id'} =~ /^[a-zA-Z_][a-zA-Z0-9_]*$/;
+		}
+	}
+
 	# Defaults are set first so that %args keys override them
 	return bless {
 		no_entry => 0,
@@ -652,6 +660,8 @@ sub _open
 
 	my $dir = Cwd::abs_path($self->{'directory'} || $defaults{'directory'});
 	my $dbname = $self->{'dbname'} || $defaults{'dbname'} || $table;
+	Carp::croak(ref($self), ": unsafe dbname '$dbname'")
+		unless $dbname =~ /^[a-zA-Z0-9_.-]+$/ && $dbname !~ /\.\./;
 	my $slurp_file = File::Spec->catfile($dir, "$dbname.sql");
 
 	$self->_debug("_open: try to open $slurp_file");
@@ -685,10 +695,11 @@ sub _open
 			Gzip::Faster->import();
 
 			close($fin);
-			$fin = File::Temp->new(SUFFIX => '.csv', UNLINK => 0);
+			$fin = File::Temp->new(SUFFIX => '.csv', UNLINK => 1);
 			print $fin gunzip_file($slurp_file);
+			$fin->flush();
 			$slurp_file = $fin->filename();
-			$self->{'temp'} = $slurp_file;
+			$self->{'_temp_fh'} = $fin;	# Keep object alive; auto-unlinks at DESTROY
 		} else {
 			($fin, $slurp_file) = File::pfopen::pfopen($dir, $dbname, 'psv', '<');
 			if(defined($fin)) {
@@ -700,6 +711,8 @@ sub _open
 			}
 		}
 		if(my $filename = $self->{'filename'} || $defaults{'filename'}) {
+			Carp::croak(ref($self), ": unsafe filename '$filename'")
+				unless $filename =~ /^[a-zA-Z0-9_.-]+$/ && $filename !~ /\.\./;
 			$self->_debug("Looking for $filename in $dir");
 			$slurp_file = File::Spec->catfile($dir, $filename);
 		}
@@ -1939,10 +1952,8 @@ sub DESTROY
 	}
 	my $self = shift;
 
-	# Clean up temporary file
-	if($self->{'temp'}) {
-		unlink delete $self->{'temp'};
-	}
+	# Clean up temporary file — deleting the File::Temp object triggers auto-unlink
+	delete $self->{'_temp_fh'};
 
 	# Clean up database handles
 	my $table_name = $self->{'table'} || ref($self);
@@ -1980,6 +1991,8 @@ sub _build_joins
 	for my $j (@specs) {
 		my $type  = uc($j->{'type'}  // 'INNER');
 		my $jtable = $j->{'table'} or Carp::croak('join: missing "table"');
+		Carp::croak("join: unsafe table name '$jtable'")
+			unless $jtable =~ /^[a-zA-Z_][a-zA-Z0-9_.]*$/;
 		my $on     = $j->{'on'}    or Carp::croak('join: missing "on" condition');
 		Carp::croak("Invalid JOIN type: $type") unless $valid_types{$type};
 		push @clauses, "$type JOIN $jtable ON ($on)";
@@ -2153,6 +2166,35 @@ sub _scan_berkeley
 	return \@rows;
 }
 
+# SQL LIKE match using dynamic programming (O(m*n), no catastrophic backtracking).
+# % matches any sequence of chars; _ matches exactly one char.  Case-insensitive.
+sub _like_match
+{
+	my ($str, $pattern) = @_;
+	my @s = split //, lc($str);
+	my @p = split //, lc($pattern);
+	my $m = scalar @s;
+	my $n = scalar @p;
+
+	my @dp = map { [ (0) x ($m + 1) ] } 0 .. $n;
+	$dp[0][0] = 1;
+
+	for my $i (1 .. $n) {
+		if($p[$i - 1] eq '%') {
+			$dp[$i][0] = $dp[$i - 1][0];
+			for my $j (1 .. $m) {
+				$dp[$i][$j] = ($dp[$i - 1][$j] || $dp[$i][$j - 1]) ? 1 : 0;
+			}
+		} else {
+			for my $j (1 .. $m) {
+				$dp[$i][$j] = ($dp[$i - 1][$j - 1]
+					&& ($p[$i - 1] eq '_' || $p[$i - 1] eq $s[$j - 1])) ? 1 : 0;
+			}
+		}
+	}
+	return $dp[$n][$m];
+}
+
 sub _match_criterion
 {
 	my ($self, $row_val, $crit_val) = @_;
@@ -2168,14 +2210,10 @@ sub _match_criterion
 				return 0 unless defined($row_val) && $row_val >= $operand->[0] && $row_val <= $operand->[1];
 			} elsif($op eq '-like') {
 				return 0 unless defined($row_val);
-				# quotemeta literal chars before converting SQL wildcards to
-				# regex so that metacharacters in the pattern cannot crash the match
-				my $pat = join('', map { $_ eq '%' ? '.*' : $_ eq '_' ? '.' : quotemeta($_) } split(/([%_])/, $operand));
-				return 0 unless $row_val =~ /^$pat$/i;
+				return 0 unless _like_match($row_val, $operand);
 			} elsif($op eq '-not_like') {
 				return 0 unless defined($row_val);
-				my $pat = join('', map { $_ eq '%' ? '.*' : $_ eq '_' ? '.' : quotemeta($_) } split(/([%_])/, $operand));
-				return 0 if $row_val =~ /^$pat$/i;
+				return 0 if _like_match($row_val, $operand);
 			} elsif($op eq '!=') {
 				if(!defined($operand)) {
 					return 0 unless defined($row_val);
