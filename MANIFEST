@@ -33,6 +33,7 @@ t/eof.t
 t/eol.t
 t/function.t
 t/init.t
+t/integration.t
 t/join.t
 t/lib/Database/passwd.pm
 t/lib/Database/test1.pm
