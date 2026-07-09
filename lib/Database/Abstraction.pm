@@ -896,8 +896,8 @@ Pass a C<join> key to combine with another table:
         join      => { table => 'dept', on => 'e.dept_id = dept.id' },
     );
 
-Results are returned in the cache (if configured).  For slurped data the
-returned rows are made read-only unless C<no_fixate> was set.
+Results are returned in the cache (if configured) and the returned array
+reference is made read-only unless C<no_fixate> was set.
 
 B<Note:> because this returns an array reference, no C<LIMIT> is applied.
 Use L</selectall_array> in scalar context, or L</query> with C<< ->limit() >>,
@@ -1032,6 +1032,15 @@ sub selectall_arrayref {
 			push @{$rc}, $href if(scalar keys %{$href});
 		}
 		$c->set($key, $rc, $self->{'cache_duration'}) if $c;
+
+		if(!$self->{'no_fixate'}) {
+			# forget() clears stale address→canonical mappings from prior calls;
+			# fixate() then deduplicates values within this result set only.
+			# Without forget(), freed hashref addresses from previous fixate calls
+			# can collide with new DBI hashrefs and return wrong canonical rows.
+			Data::Reuse::forget();
+			Data::Reuse::fixate(@{$rc});
+		}
 
 		return $rc;
 	}
@@ -1179,6 +1188,10 @@ sub selectall_array
 		$c->set($key, $rc, $self->{'cache_duration'}) if $c;
 
 		if($rc) {
+			if(!$self->{'no_fixate'}) {
+				Data::Reuse::forget();
+				Data::Reuse::fixate(@{$rc});
+			}
 			return @{$rc};
 		}
 		return;
