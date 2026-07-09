@@ -20,7 +20,7 @@ https://pjcj.net
 <h1>Branch Coverage</h1>
 <table>
 <tr><td class="h" align="right">File:</td><td align="left">blib/lib/Database/Abstraction.pm</td></tr>
-<tr><td class="h" align="right">Coverage:</td><td align="left" class="c0">73.1%</td></tr>
+<tr><td class="h" align="right">Coverage:</td><td align="left" class="c0">74.8%</td></tr>
 </table>
 <div><br/></div>
 <table>
@@ -70,7 +70,7 @@ https://pjcj.net
 <tr><td class="h"><a id="L806">806</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (-s $slurp_file &lt;= $max_slurp_size) { }</td></tr>
 <tr><td class="h"><a id="L814">814</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (ref $$xml{$key} eq &#39;ARRAY&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">elsif (ref $xml eq &#39;ARRAY&#39;) { }</td></tr>
-<tr><td class="h"></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">elsif (ref $xml eq &#39;HASH&#39; and not $$self{&#39;no_entry&#39;}) { }</td></tr>
+<tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif (ref $xml eq &#39;HASH&#39; and not $$self{&#39;no_entry&#39;}) { }</td></tr>
 <tr><td class="h"><a id="L819">819</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (scalar keys %{$xml;} == 1) { }</td></tr>
 <tr><td class="h"><a id="L820">820</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$xml{$table}) { }</td></tr>
 <tr><td class="h"><a id="L832">832</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&#39;no_entry&#39;}) { }</td></tr>
@@ -119,7 +119,7 @@ https://pjcj.net
 <tr><td class="h"><a id="L1100">1100</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if $where</td></tr>
 <tr><td class="h"><a id="L1102">1102</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $where</td></tr>
 <tr><td class="h"><a id="L1104">1104</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ($$self{&quot;no_entry&quot;})</td></tr>
-<tr><td class="h"><a id="L1107">1107</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless (wantarray)</td></tr>
+<tr><td class="h"><a id="L1107">1107</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless (wantarray)</td></tr>
 <tr><td class="h"><a id="L1111">1111</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $query_args[0]) { }</td></tr>
 <tr><td class="h"><a id="L1119">1119</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($c = $$self{&#39;cache&#39;}) { }</td></tr>
 <tr><td class="h"><a id="L1121">1121</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if (wantarray)</td></tr>
@@ -128,8 +128,8 @@ https://pjcj.net
 <tr><td class="h"><a id="L1130">1130</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">wantarray ? :</td></tr>
 <tr><td class="h"><a id="L1142">1142</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if (my $sth = $$self{$table}-&gt;prepare_cached($query))</td></tr>
 <tr><td class="h"><a id="L1143">1143</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $sth-&gt;execute(@query_args)</td></tr>
-<tr><td class="h"><a id="L1147">1147</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless (wantarray)</td></tr>
-<tr><td class="h"><a id="L1150">1150</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if $c</td></tr>
+<tr><td class="h"><a id="L1147">1147</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless (wantarray)</td></tr>
+<tr><td class="h"><a id="L1150">1150</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if $c</td></tr>
 <tr><td class="h"><a id="L1155">1155</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if $c</td></tr>
 <tr><td class="h"><a id="L1157">1157</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if ($rc)</td></tr>
 <tr><td class="h"><a id="L1158">1158</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">unless $$self{&quot;no_fixate&quot;}</td></tr>
@@ -299,29 +299,29 @@ https://pjcj.net
 <tr><td class="h"><a id="L2113">2113</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $row_val and grep {$row_val eq $_;} @{$operand;}</td></tr>
 <tr><td class="h"><a id="L2115">2115</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if defined $row_val and grep {$row_val eq $_;} @{$operand;}</td></tr>
 <tr><td class="h"><a id="L2117">2117</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $row_val and $row_val &gt;= $$operand[0] and $row_val &lt;= $$operand[1]</td></tr>
-<tr><td class="h"><a id="L2119">2119</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless defined $row_val</td></tr>
+<tr><td class="h"><a id="L2119">2119</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $row_val</td></tr>
 <tr><td class="h"><a id="L2122">2122</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">$_ eq &#39;_&#39; ? :</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$_ eq &#39;%&#39; ? :</td></tr>
 <tr><td class="h"><a id="L2123">2123</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $row_val =~ /^$pat$/i</td></tr>
-<tr><td class="h"><a id="L2125">2125</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless defined $row_val</td></tr>
+<tr><td class="h"><a id="L2125">2125</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $row_val</td></tr>
 <tr><td class="h"><a id="L2126">2126</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">$_ eq &#39;_&#39; ? :</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$_ eq &#39;%&#39; ? :</td></tr>
 <tr><td class="h"><a id="L2127">2127</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if $row_val =~ /^$pat$/i</td></tr>
 <tr><td class="h"><a id="L2129">2129</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (not defined $operand) { }</td></tr>
-<tr><td class="h"><a id="L2130">2130</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">unless defined $row_val</td></tr>
+<tr><td class="h"><a id="L2130">2130</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $row_val</td></tr>
 <tr><td class="h"><a id="L2132">2132</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $row_val and $row_val ne $operand</td></tr>
 <tr><td class="h"><a id="L2135">2135</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $row_val and $row_val &gt; $operand</td></tr>
-<tr><td class="h"><a id="L2137">2137</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless defined $row_val and $row_val &lt; $operand</td></tr>
-<tr><td class="h"><a id="L2139">2139</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless defined $row_val and $row_val &gt;= $operand</td></tr>
-<tr><td class="h"><a id="L2141">2141</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless defined $row_val and $row_val &lt;= $operand</td></tr>
+<tr><td class="h"><a id="L2137">2137</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $row_val and $row_val &lt; $operand</td></tr>
+<tr><td class="h"><a id="L2139">2139</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $row_val and $row_val &gt;= $operand</td></tr>
+<tr><td class="h"><a id="L2141">2141</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $row_val and $row_val &lt;= $operand</td></tr>
 <tr><td class="h"><a id="L2147">2147</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">!(defined $row_val &amp;&amp; defined $crit_val) ? :</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">!(defined $row_val || defined $crit_val) ? :</td></tr>
 <tr><td class="h"><a id="L2162">2162</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">unless $$self{$table} or $$self{&quot;data&quot;}</td></tr>
 <tr><td class="h"><a id="L2175">2175</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (my $dbh = $$self{$table})</td></tr>
 <tr><td class="h"><a id="L2191">2191</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless do {
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BEGIN {
-&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;autodie::Scope::GuardStack/guard3&#39;} = &#39;autodie::Scope::Guard=CODE(0x55e424f645c8)&#39;;
-&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;no Fatal&#39;} = &#39;HASH(0x55e4242f3680)&#39;;
+&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;autodie::Scope::GuardStack/guard3&#39;} = &#39;autodie::Scope::Guard=CODE(0x560f1a82cc80)&#39;;
+&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;no Fatal&#39;} = &#39;HASH(0x560f19bbb9a8)&#39;;
 }
 &#11;open $fh, &quot;&lt;&quot;, $file
 }</td></tr>
