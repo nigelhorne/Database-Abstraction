@@ -67,6 +67,7 @@ WriteMakefile(
 		'Test::Needs' => 0,
 		'Test::NoWarnings' => 0,
 		'Test::Returns' => 0,
+		'Test::Without::Module' => 0,
 		'Text::xSV::Slurp' => 0,
 		'XML::Simple' => 0
 	}, dist => $dist,

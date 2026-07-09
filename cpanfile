@@ -47,6 +47,7 @@ on 'test' => sub {
 	requires 'Test::Needs';
 	requires 'Test::NoWarnings';
 	requires 'Test::Returns';
+	requires 'Test::Without::Module';
 	requires 'Text::xSV::Slurp';
 	requires 'XML::Simple';
 };
