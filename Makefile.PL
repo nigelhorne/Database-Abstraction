@@ -13,7 +13,7 @@ if($^O eq 'darwin') {
 
 WriteMakefile(
 	NAME		=> 'Database::Abstraction',
-	AUTHOR		=> q{Nigel Horne <njh@bandsman.co.uk>},
+	AUTHOR		=> q{Nigel Horne <njh@nigelhorne.com>},
 	VERSION_FROM	=> 'lib/Database/Abstraction.pm',
 	ABSTRACT_FROM	=> 'lib/Database/Abstraction.pm',
 	((defined($ExtUtils::MakeMaker::VERSION) && ($ExtUtils::MakeMaker::VERSION >= 6.3002))
@@ -25,28 +25,6 @@ WriteMakefile(
 	PL_FILES	=> {},
 	CONFIGURE_REQUIRES => {
 		'ExtUtils::MakeMaker' => 6.64,	# Minimum version for TEST_REQUIRES
-	}, TEST_REQUIRES => {
-		'DBD::CSV' => 0,
-		'DBD::XMLSimple' => 0.07,
-		'Fcntl' => 0,
-		'File::Glob' => 0,
-		'File::Slurp' => 0,
-		'File::Spec' => 0,
-		'File::stat' => 0,
-		'File::Temp' => 0,
-		'FindBin' => 0,
-		'IPC::System::Simple' => 0,
-		'JSON::MaybeXS' => 0,
-		'POSIX' => 0,
-		'Readonly' => 0,
-		'Test::Carp' => 0,
-		'Test::Compile' => 0,
-		'Test::DescribeMe' => 0,
-		'Test::Most' => 0,
-		'Test::Needs' => 0,
-		'Test::NoWarnings' => 0,
-		'Text::xSV::Slurp' => 0,
-		'XML::Simple' => 0
 	}, PREREQ_PM => {
 		'autodie' => 0,
 		'boolean' => 0,
@@ -67,6 +45,29 @@ WriteMakefile(
 		'Object::Configure' => 0.16,
 		'Params::Get' => 0.13,
 		'Scalar::Util' => 0,
+	}, TEST_REQUIRES => {
+		'DBD::CSV' => 0,
+		'DBD::XMLSimple' => 0.07,
+		'Fcntl' => 0,
+		'File::Glob' => 0,
+		'File::Slurp' => 0,
+		'File::Spec' => 0,
+		'File::stat' => 0,
+		'File::Temp' => 0,
+		'FindBin' => 0,
+		'IPC::System::Simple' => 0,
+		'JSON::MaybeXS' => 0,
+		'POSIX' => 0,
+		'Readonly' => 0,
+		'Test::Carp' => 0,
+		'Test::Compile' => 0,
+		'Test::DescribeMe' => 0,
+		'Test::Memory::Cycle' => 0,
+		'Test::Most' => 0,
+		'Test::Needs' => 0,
+		'Test::NoWarnings' => 0,
+		'Text::xSV::Slurp' => 0,
+		'XML::Simple' => 0
 	}, dist => $dist,
 	clean		=> { FILES => 'Database-Abstraction-*' },
 	# META_ADD => {

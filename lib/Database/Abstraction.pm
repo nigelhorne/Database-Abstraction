@@ -1198,7 +1198,8 @@ sub count
 			}
 			return scalar @{$self->{'data'}};
 		} elsif((scalar(keys %{$params}) == 1) && defined($params->{'entry'}) && !$self->{'no_entry'}) {
-			return $self->{'data'}->{$params->{'entry'}} ? 1 : 0;
+			# exists() guard: fixate() locks all keys in the slurp hash
+			return (exists($self->{'data'}->{$params->{'entry'}}) && $self->{'data'}->{$params->{'entry'}}) ? 1 : 0;
 		}
 	}
 
