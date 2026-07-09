@@ -2432,7 +2432,9 @@ same criteria has already populated it.
 
 =item * L<Database::Abstraction::Query> — chained query builder
 
-=item * Test coverage report: L<https://nigelhorne.github.io/Database-Abstraction/coverage/>
+=item * L<Configure an Object at Runtime|Object::Configure>
+
+=item * L<Test Dashboard|https://nigelhorne.github.io/Database-Abstraction/coverage/>
 
 =back
 

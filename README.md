@@ -709,7 +709,8 @@ same criteria has already populated it.
 # SEE ALSO
 
 - [Database::Abstraction::Query](https://metacpan.org/pod/Database%3A%3AAbstraction%3A%3AQuery) — chained query builder
-- Test coverage report: [https://nigelhorne.github.io/Database-Abstraction/coverage/](https://nigelhorne.github.io/Database-Abstraction/coverage/)
+- [Configure an Object at Runtime](https://metacpan.org/pod/Object%3A%3AConfigure)
+- [Test Dashboard](https://nigelhorne.github.io/Database-Abstraction/coverage/)
 
 # LICENSE AND COPYRIGHT
 

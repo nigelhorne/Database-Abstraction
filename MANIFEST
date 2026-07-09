@@ -50,6 +50,7 @@ t/lib/Database/test8.pm
 t/lib/MyLogger.pm
 t/locales.t
 t/logger.t
+t/mutant_killers.t
 t/no_entry.t
 t/passwd.t
 t/pod-cm.t
