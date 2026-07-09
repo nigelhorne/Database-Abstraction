@@ -42,9 +42,11 @@ on 'test' => sub {
 	requires 'Test::Carp';
 	requires 'Test::Compile';
 	requires 'Test::DescribeMe';
+	requires 'Test::Memory::Cycle';
 	requires 'Test::Most';
 	requires 'Test::Needs';
 	requires 'Test::NoWarnings';
+	requires 'Test::Returns';
 	requires 'Text::xSV::Slurp';
 	requires 'XML::Simple';
 };

@@ -2255,7 +2255,7 @@ sub _trace {
 # Emit a warning message somewhere
 sub _warn {
 	my $self = shift;
-	my $params = Params::Get::get_params('warning', @_);
+	my $params = Params::Get::get_params('warning', \@_);
 
 	$self->_log('warn', $params->{'warning'});
 	Carp::carp(join('', grep defined, $params->{'warning'}));
@@ -2264,7 +2264,7 @@ sub _warn {
 # Die
 sub _fatal {
 	my $self = shift;
-	my $params = Params::Get::get_params('warning', @_);
+	my $params = Params::Get::get_params('warning', \@_);
 
 	$self->_log('error', $params->{'warning'});
 	Carp::croak(join('', grep defined, $params->{'warning'}));

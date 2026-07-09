@@ -396,6 +396,18 @@ reference is made read-only unless `no_fixate` was set.
 Use ["selectall\_array"](#selectall_array) in scalar context, or ["query"](#query) with `->limit()`,
 when you want `LIMIT 1`.
 
+### PSEUDOCODE
+
+    1. Parse criteria; extract and build any JOIN clause.
+    2. If data is slurped AND no joins AND criteria are simple:
+       a. No criteria → return all rows as arrayref.
+       b. entry-only lookup → return [$data{entry}].
+       c. Otherwise → scan rows in-memory with _match_criterion.
+    3. Otherwise build SQL: SELECT * FROM table [JOIN] [WHERE] ORDER BY id.
+    4. Check cache; return cached arrayref on HIT.
+    5. prepare_cached + execute; fetch all rows.
+    6. Store result in cache; fixate the array; return arrayref.
+
 ## selectall\_hashref
 
 Deprecated alias for ["selectall\_arrayref"](#selectall_arrayref).  Use `selectall_arrayref` in
@@ -571,6 +583,24 @@ Results come from the slurp cache when available.
 Throws an error if the column does not exist (slurp mode) or if AUTOLOAD
 has been disabled with `auto_load => 0`.
 
+### PSEUDOCODE
+
+    1. Extract column name from $AUTOLOAD; guard on DESTROY.
+    2. Croak if auto_load => 0.
+    3. Validate $column against /^[a-zA-Z_][a-zA-Z0-9_]*$/.
+    4. If data is slurped:
+       a. List context, no params → map column over all rows (exists guard).
+       b. entry-only param → direct hash lookup (exists guard).
+       c. No params, scalar → first value in hash.
+       d. no_entry set → scan array for matching key/value pair.
+       e. Other params → scan keyed hash for matching column.
+    5. If not slurped, build SQL:
+       - List:   SELECT column FROM table [WHERE ...] ORDER BY column
+       - Scalar: SELECT DISTINCT column FROM table [WHERE ...] LIMIT 1
+    6. Check cache; return on HIT.
+    7. prepare_cached + execute; fetch result.
+    8. Store in cache; fixate; return.
+
 # AUTHOR
 
 Nigel Horne, `<njh at nigelhorne.com>`
@@ -585,16 +615,96 @@ or through the web interface at
 I will be notified, and then you'll
 automatically be notified of progress on your bug as I make changes.
 
+# MESSAGES
+
+The table below lists every error that the module can croak or carp, what
+triggers it, and how to resolve it.
+
+- `_Class_: abstract class`
+
+    Direct instantiation of `Database::Abstraction` was attempted.
+    Create a subclass and instantiate that instead.
+
+- `_Class_: where are the files?`
+
+    Neither `directory` nor `dsn` was supplied to `new()`.
+
+- `_Class_: _/path_ is not a directory`
+
+    The `directory` argument exists on disk but is not a directory.
+
+- `_Class_: cannot connect: _$DBI::errstr_`
+
+    DBI failed to connect to the given `dsn`.  Check credentials and host.
+
+- `Can't find a file called '_name_' for the table _T_ in _dir_`
+
+    None of the probe extensions (`.sql`, `.psv`, `.csv`, `.db`, `.xml`)
+    matched in `directory`.
+
+- `_Class_: prepare failed: _$errstr_`
+
+    `prepare_cached()` returned false.  Usually a syntax error in an internally
+    built query; file a bug if you see this from a normal API call.
+
+- `_build_where_conditions: unsafe column name '_name_'`
+
+    A criteria key contained characters outside `[A-Za-z0-9_.]`.
+    This is a SQL-injection guard.  Use only valid SQL identifier characters.
+
+- `join: missing "table"` / `join: missing "on" condition`
+
+    A join spec hashref is incomplete.  Both `table` and `on` are required.
+
+- `Invalid JOIN type: _TYPE_`
+
+    `type` in a join spec was not one of `INNER LEFT RIGHT FULL CROSS`.
+
+- `_Class_: Unknown column _col_` / `_Class_: AUTOLOAD disabled`
+
+    An AUTOLOAD call was made for a column that does not exist, or AUTOLOAD
+    was disabled with `auto_load => 0`.
+
+- `Usage: set_logger(logger => $logger)`
+
+    `set_logger()` was called without a `logger` argument.
+
+- `Usage: execute(query => $query)`
+
+    `execute()` was called without a `query` argument.
+
+- `XML slurp: _..._ is not yet supported`
+
+    The XML file structure is too complex for slurp mode.
+    Use `max_slurp_size => 0` to force the DBI/XMLSimple SQL path.
+
+- `_Class_: _method_ is meaningless on a NoSQL database`
+
+    A relational method (`selectall_arrayref`, `count`, `execute`, etc.)
+    was called on a BerkeleyDB backend, which only supports key-value lookup
+    via `fetchrow_hashref`.
+
 # KNOWN LIMITATIONS
 
-- The default CSV separator is `!` rather than `,` for historical reasons.
-Pass `sep_char => ','` for standard CSV files.
-- The primary-key column is named `entry` rather than `key` because `key`
-is a reserved word in SQL.  This can be overridden with the `id` parameter.
-- XML slurping is fragile for complex documents.  If XML fails on a small
-file, force SQL mode with `max_slurp_size => 0`.
-- The chained query builder (`query()`) and joins are not supported on
-BerkeleyDB backends.
+- **Read-only.**  No INSERT, UPDATE, or DELETE is provided.  `execute()`
+runs raw read-only SQL.
+- **Default CSV separator is `!`**, not `,`, for historical reasons.
+Pass `sep_char => ','` for standard RFC 4180 files.
+- **Primary-key column is named `entry`**, not `key`, because `key`
+is a SQL reserved word.  Override with the `id` parameter.
+- **XML slurp is limited.**  Only simple flat XML structures are supported
+in slurp mode.  Multi-key or deeply nested documents will croak.
+Force SQL mode with `max_slurp_size => 0` if slurp fails.
+- **Unique key assumption in slurp mode.**  Duplicate values in the key
+column silently overwrite earlier rows.  Disable slurp with
+`max_slurp_size => 0` if duplicates are expected.
+- **BerkeleyDB does not support joins or the chained query builder.**
+- **Column names must be valid SQL identifiers** (letters, digits,
+underscores, and a single dot for `table.column` join notation).
+Other characters will cause a croak.
+- **count() cache is opportunistic.**  Count results are served from cache
+only when a prior `selectall_arrayref()` or `count()` call with the
+same criteria has already populated it.
 
 # SEE ALSO
 
