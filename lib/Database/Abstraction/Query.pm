@@ -95,7 +95,10 @@ L<Database::Abstraction/QUERY CRITERIA>.
 
 =item *
 
-BerkeleyDB backends are not supported.
+BerkeleyDB backends support C<all()>, C<first()>, and C<count()> with
+C<where()> criteria and C<order_by()>/C<limit()>/C<offset()> applied in Perl.
+The C<join()> builder method and the C<select()> column projection are not
+supported on BerkeleyDB and will raise an error.
 
 =back
 
@@ -260,6 +263,26 @@ sub offset
 	return $self;
 }
 
+# Apply Perl-side sort, offset, and limit to an arrayref of rows in place.
+# Used by the BerkeleyDB execution paths in all() and first().
+# order_by must be a single "column [ASC|DESC]" string (multi-column not supported).
+sub _apply_perl_sort_limit
+{
+	my ($rows, $order_by, $offset, $limit) = @_;
+
+	if(defined $order_by) {
+		my ($col, $dir) = ($order_by =~ /^(\S+)(?:\s+(ASC|DESC))?$/i);
+		$dir //= 'ASC';
+		@{$rows} = sort {
+			$dir =~ /DESC/i
+				? (($b->{$col} // '') cmp ($a->{$col} // ''))
+				: (($a->{$col} // '') cmp ($b->{$col} // ''))
+		} @{$rows};
+	}
+	splice(@{$rows}, 0, $offset) if $offset;
+	splice(@{$rows}, $limit)     if defined $limit;
+}
+
 # Internal: assemble SQL + bind args.  $count_only replaces SELECT cols with COUNT(*).
 sub _build_sql
 {
@@ -316,7 +339,16 @@ sub all
 	my $self = shift;
 	my $db   = $self->{'_db'};
 
-	croak(ref($db), ': query->all() is not supported on BerkeleyDB') if $db->{'berkeley'};
+	# Ensure _open() fires before checking the backend type.
+	$db->_open_table({});
+
+	if($db->{'berkeley'}) {
+		croak(ref($db), ': query->all() with JOINs is not supported on BerkeleyDB')
+			if @{$self->{'_joins'}};
+		my $rows = $db->selectall_arrayref({%{$self->{'_where'}}});
+		_apply_perl_sort_limit($rows, $self->{'_order_by'}, $self->{'_offset'}, $self->{'_limit'});
+		return $rows;
+	}
 
 	my ($query, $args, $table) = $self->_build_sql(0);
 	$db->_debug("Query->all: $query");
@@ -347,7 +379,15 @@ sub first
 	my $self = shift;
 	my $db   = $self->{'_db'};
 
-	croak(ref($db), ': query->first() is not supported on BerkeleyDB') if $db->{'berkeley'};
+	$db->_open_table({});
+
+	if($db->{'berkeley'}) {
+		croak(ref($db), ': query->first() with JOINs is not supported on BerkeleyDB')
+			if @{$self->{'_joins'}};
+		my $rows = $db->selectall_arrayref({%{$self->{'_where'}}});
+		_apply_perl_sort_limit($rows, $self->{'_order_by'}, $self->{'_offset'}, undef);
+		return $rows->[0];
+	}
 
 	my $saved = $self->{'_limit'};
 	$self->{'_limit'} = 1;
@@ -379,7 +419,13 @@ sub count
 	my $self = shift;
 	my $db   = $self->{'_db'};
 
-	croak(ref($db), ': query->count() is not supported on BerkeleyDB') if $db->{'berkeley'};
+	$db->_open_table({});
+
+	if($db->{'berkeley'}) {
+		croak(ref($db), ': query->count() with JOINs is not supported on BerkeleyDB')
+			if @{$self->{'_joins'}};
+		return $db->count({%{$self->{'_where'}}});
+	}
 
 	my ($query, $args, $table) = $self->_build_sql(1);
 	$db->_debug("Query->count: $query");

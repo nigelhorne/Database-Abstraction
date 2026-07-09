@@ -906,7 +906,19 @@ when you want C<LIMIT 1>.
 
 sub selectall_arrayref {
 	my $self = shift;
+
+	# Fire _open() first so $self->{'berkeley'} is known before we parse @_.
+	# BerkeleyDB param parsing must use get_params(undef, \@_) so that
+	# key-value pairs like (join => {...}) are not mangled by the positional
+	# 'entry' mapping that non-BerkeleyDB paths use.
+	$self->_open_table({});
+
 	my $params;
+
+	if($self->{'berkeley'}) {
+		$params = Params::Get::get_params(undef, \@_) // {};
+		return set_return($self->_scan_berkeley($params), { type => 'arrayref' });
+	}
 
 	if($self->{'no_entry'}) {
 		$params = Params::Get::get_params(undef, \@_);
@@ -914,13 +926,10 @@ sub selectall_arrayref {
 		$params = Params::Get::get_params('entry', @_);
 	}
 
-	if($self->{'berkeley'}) {
-		Carp::croak(ref($self), ': selectall_arrayref is meaningless on a NoSQL database');
-	}
-
 	my $table = $self->_open_table($params);
 
 	$params //= {};
+
 	my $join_clause = '';
 	if(my $join_spec = delete $params->{'join'}) {
 		$join_clause = $self->_build_joins($join_spec);
@@ -1051,8 +1060,12 @@ sub selectall_array
 {
 	my $self = shift;
 
+	$self->_open_table({});
+
 	if($self->{'berkeley'}) {
-		Carp::croak(ref($self), ': selectall_array is meaningless on a NoSQL database');
+		my $params = Params::Get::get_params(undef, \@_) // {};
+		my $rows = $self->_scan_berkeley($params);
+		return wantarray ? @{$rows} : $rows->[0];
 	}
 
 	my $params = Params::Get::get_params(undef, \@_);
@@ -1193,8 +1206,11 @@ sub count
 {
 	my $self = shift;
 
+	$self->_open_table({});
+
 	if($self->{'berkeley'}) {
-		Carp::croak(ref($self), ': count is meaningless on a NoSQL database');
+		my $params = Params::Get::get_params(undef, \@_) // {};
+		return scalar @{$self->_scan_berkeley($params)};
 	}
 
 	my $params = Params::Get::get_params(undef, \@_);
@@ -2102,6 +2118,41 @@ sub _build_where_conditions
 # Test a single in-memory row value against a criteria value.
 # $crit_val may be a plain scalar or an operator hashref.
 # Returns true when the row value satisfies the criterion.
+# Scan the entire BerkeleyDB tied hash, building rows as {entry=>$k, value=>$v},
+# and filter by $params criteria using _match_criterion.
+# Croaks when JOINs or -or/-and groupings are requested (unsupported for key-value stores).
+sub _scan_berkeley
+{
+	my ($self, $params) = @_;
+	$params //= {};
+
+	if(delete $params->{'join'}) {
+		Carp::croak(ref($self), ': BerkeleyDB does not support JOINs');
+	}
+	if(grep { $_ eq '-or' || $_ eq '-and' } keys %{$params}) {
+		Carp::croak(ref($self), ': BerkeleyDB does not support -or/-and groupings');
+	}
+
+	my $bdb = $self->{'berkeley'};
+	my @rows = map { { entry => $_, value => $bdb->{$_} } } keys %{$bdb};
+
+	if(my @cols = keys %{$params}) {
+		@rows = grep {
+			my $row = $_;
+			my $match = 1;
+			for my $col (@cols) {
+				unless($self->_match_criterion($row->{$col}, $params->{$col})) {
+					$match = 0;
+					last;
+				}
+			}
+			$match;
+		} @rows;
+	}
+
+	return \@rows;
+}
+
 sub _match_criterion
 {
 	my ($self, $row_val, $crit_val) = @_;
@@ -2158,8 +2209,10 @@ sub _open_table
 	my $table = $params->{'table'} || $self->{'table'} || ref($self);
 	$table =~ s/.*:://;
 
-	# Open a connection if it's not already open
-	$self->_open() if((!$self->{$table}) && (!$self->{'data'}));
+	# Open a connection if it's not already open.
+	# BerkeleyDB never sets $self->{$table} (no DBI handle) or $self->{'data'},
+	# so we also guard on $self->{'berkeley'} to avoid re-tying on every call.
+	$self->_open() if((!$self->{$table}) && (!$self->{'data'}) && (!$self->{'berkeley'}));
 
 	return $table;
 }

@@ -50,24 +50,26 @@ my $missing = $dao->fetchrow_hashref(entry => 'does_not_exist');
 ok(!defined $missing, 'fetchrow_hashref returns undef for nonexistent key');
 
 # ---------------------------------------------------------------------------
-# Relational methods still croak in no_entry mode
+# Relational-style methods now work for BerkeleyDB via in-memory scan
 # ---------------------------------------------------------------------------
 
-throws_ok { $dao->selectall_arrayref() }
-	qr/meaningless on a NoSQL database/i,
-	'selectall_arrayref() croaks for no_entry BerkeleyDB';
+my $all = $dao->selectall_arrayref();
+is(ref($all), 'ARRAY', 'selectall_arrayref() returns an arrayref for no_entry BerkeleyDB');
+is(scalar @{$all}, 2, 'selectall_arrayref() returns all 2 rows');
+my %by_entry = map { $_->{'entry'} => $_->{'value'} } @{$all};
+is($by_entry{'alpha'}, 'one',   'selectall_arrayref row: alpha => one');
+is($by_entry{'beta'},  'two',   'selectall_arrayref row: beta  => two');
 
-throws_ok { $dao->selectall_array() }
-	qr/meaningless on a NoSQL database/i,
-	'selectall_array() croaks for no_entry BerkeleyDB';
+my @arr = $dao->selectall_array();
+is(scalar @arr, 2, 'selectall_array() returns 2 rows for no_entry BerkeleyDB');
 
-throws_ok { $dao->count() }
-	qr/meaningless on a NoSQL database/i,
-	'count() croaks for no_entry BerkeleyDB';
+is($dao->count(), 2, 'count() returns 2 for no_entry BerkeleyDB');
+is($dao->count(entry => 'alpha'), 1, 'count(entry=>...) returns 1 for matching key');
+is($dao->count(entry => 'missing'), 0, 'count(entry=>...) returns 0 for absent key');
 
 throws_ok { $dao->execute(query => 'SELECT 1') }
 	qr/meaningless on a NoSQL database/i,
-	'execute() croaks for no_entry BerkeleyDB';
+	'execute() croaks for no_entry BerkeleyDB (SQL not applicable)';
 
 # ---------------------------------------------------------------------------
 # columns() and schema() — same fixed values regardless of no_entry

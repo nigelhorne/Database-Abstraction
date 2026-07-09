@@ -63,28 +63,84 @@ throws_ok { $dao->fetchrow_hashref(foo => 'a', bar => 'b') }
 	'fetchrow_hashref() with non-entry params croaks for BerkeleyDB';
 
 # ---------------------------------------------------------------------------
-# Relational methods that are meaningless on a key-value store
+# selectall_arrayref / selectall_array / count — now work via in-memory scan
 # ---------------------------------------------------------------------------
 
-throws_ok { $dao->selectall_arrayref() }
-	qr/meaningless on a NoSQL database/i,
-	'selectall_arrayref() croaks for BerkeleyDB';
+my $all = $dao->selectall_arrayref();
+is(ref($all), 'ARRAY', 'selectall_arrayref() returns an arrayref');
+is(scalar @{$all}, 3, 'selectall_arrayref() returns all 3 rows');
+my %by_entry = map { $_->{'entry'} => $_->{'value'} } @{$all};
+is($by_entry{'k1'}, 'v1', 'selectall_arrayref row: k1 => v1');
+is($by_entry{'k2'}, 'v2', 'selectall_arrayref row: k2 => v2');
 
-throws_ok { $dao->selectall_array() }
-	qr/meaningless on a NoSQL database/i,
-	'selectall_array() croaks for BerkeleyDB';
+# selectall_arrayref with scalar criteria
+my $k1_rows = $dao->selectall_arrayref(entry => 'k1');
+is(scalar @{$k1_rows}, 1,    'selectall_arrayref(entry=>...) returns 1 matching row');
+is($k1_rows->[0]{'value'}, 'v1', 'selectall_arrayref criteria result has correct value');
 
-throws_ok { $dao->selectall_hash() }
-	qr/meaningless on a NoSQL database/i,
-	'selectall_hash() (alias for selectall_array) croaks for BerkeleyDB';
+# selectall_arrayref with operator-hash criteria (feature 4: operator-hash criteria)
+my $ne_rows = $dao->selectall_arrayref(entry => { '!=' => 'k1' });
+is(scalar @{$ne_rows}, 2, 'selectall_arrayref with operator criteria != returns 2 rows');
 
-throws_ok { $dao->count() }
-	qr/meaningless on a NoSQL database/i,
-	'count() croaks for BerkeleyDB';
+# selectall_arrayref with join param → croak (feature 5: joins unsupported)
+throws_ok { $dao->selectall_arrayref(join => { table => 'other', on => 'a=b' }) }
+	qr/BerkeleyDB does not support JOINs/i,
+	'selectall_arrayref() with join croaks for BerkeleyDB';
 
+# selectall_array
+my @arr = $dao->selectall_array();
+is(scalar @arr, 3, 'selectall_array() returns 3 rows in list context');
+
+# selectall_hash is an alias for selectall_array
+my @hash_arr = $dao->selectall_hash();
+is(scalar @hash_arr, 3, 'selectall_hash() alias also returns 3 rows');
+
+# count
+is($dao->count(), 3, 'count() returns total row count');
+is($dao->count(entry => 'k1'), 1, 'count(entry=>...) returns 1 for known key');
+is($dao->count(entry => 'no_such'), 0, 'count(entry=>...) returns 0 for unknown key');
+is($dao->count(value => 'v2'), 1, 'count(value=>...) filters by value column');
+
+# execute() remains meaningless (it requires a SQL query string)
 throws_ok { $dao->execute(query => 'SELECT 1') }
 	qr/meaningless on a NoSQL database/i,
-	'execute() croaks for BerkeleyDB';
+	'execute() croaks for BerkeleyDB (SQL not applicable)';
+
+# ---------------------------------------------------------------------------
+# Query builder (feature 6: chained Query builder now works for BerkeleyDB)
+# ---------------------------------------------------------------------------
+
+my $q_all = $dao->query()->all();
+is(ref($q_all), 'ARRAY', 'query()->all() returns arrayref for BerkeleyDB');
+is(scalar @{$q_all}, 3, 'query()->all() returns all 3 rows');
+
+my $q_where = $dao->query()->where(entry => 'k2')->all();
+is(scalar @{$q_where}, 1, 'query()->where()->all() filters correctly');
+is($q_where->[0]{'value'}, 'v2', 'query()->where()->all() correct value');
+
+my $q_count = $dao->query()->where(value => 'v3')->count();
+is($q_count, 1, 'query()->where()->count() returns 1 for matching value');
+
+my $q_first = $dao->query()->where(entry => 'k1')->first();
+is(ref($q_first), 'HASH', 'query()->where()->first() returns hashref');
+is($q_first->{'value'}, 'v1', 'query()->where()->first() correct value');
+
+# order_by + limit + offset applied in Perl
+my $q_sorted = $dao->query()->order_by('entry')->all();
+is($q_sorted->[0]{'entry'}, 'k1', 'query()->order_by() sorts ascending correctly');
+is($q_sorted->[-1]{'entry'}, 'k3', 'query()->order_by() last entry is k3');
+
+my $q_limited = $dao->query()->order_by('entry')->limit(2)->all();
+is(scalar @{$q_limited}, 2, 'query()->limit(2) returns 2 rows');
+is($q_limited->[0]{'entry'}, 'k1', 'query()->limit(2) first entry is k1');
+
+my $q_offset = $dao->query()->order_by('entry')->offset(1)->limit(1)->all();
+is($q_offset->[0]{'entry'}, 'k2', 'query()->offset(1)->limit(1) returns second entry');
+
+# query()->join() must croak for BerkeleyDB
+throws_ok { $dao->query()->join({table=>'t', on=>'a=b'})->all() }
+	qr/JOINs is not supported on BerkeleyDB/i,
+	'query()->join()->all() croaks for BerkeleyDB';
 
 # ---------------------------------------------------------------------------
 # columns() — fixed schema for BerkeleyDB

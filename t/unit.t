@@ -280,14 +280,13 @@ note '=== 5. selectall_arrayref() ===';
 	ok(defined($none) && ref($none) eq 'ARRAY',
 		'5.6 selectall_arrayref(): no-match returns arrayref, not undef');
 
-	# 5.7  BerkeleyDB backend → croak with meaningful message
-	SKIP: {
-		eval { require DB_File } or skip 'DB_File not available', 1;
+	# 5.7  BerkeleyDB backend → returns empty arrayref (in-memory scan on empty hash)
+	{
 		my $bdb = Database::test1->new($DATA_DIR);
-		$bdb->{'berkeley'} = {};	# inject sentinel to trigger the guard
-		throws_ok { $bdb->selectall_arrayref() }
-			qr/meaningless on a NoSQL/i,
-			'5.7 selectall_arrayref(): BerkeleyDB backend causes croak';
+		$bdb->{'berkeley'} = {};	# inject empty sentinel to exercise BerkeleyDB path
+		my $rc = $bdb->selectall_arrayref();
+		is(ref($rc), 'ARRAY', '5.7 selectall_arrayref(): BerkeleyDB path returns arrayref');
+		is(scalar @{$rc}, 0,   '5.7 selectall_arrayref(): empty BerkeleyDB yields 0 rows');
 	}
 
 	# 5.8  selectall_hashref is a documented deprecated alias
@@ -324,13 +323,12 @@ note '=== 6. selectall_array() ===';
 	is(scalar @via_alias, scalar @rows,
 		'6.4 selectall_hash(): deprecated alias returns same number of rows');
 
-	# 6.5  BerkeleyDB → croak
+	# 6.5  BerkeleyDB → returns empty list (in-memory scan on empty hash)
 	{
 		my $bdb = Database::test1->new($DATA_DIR);
 		$bdb->{'berkeley'} = {};
-		throws_ok { $bdb->selectall_array() }
-			qr/meaningless on a NoSQL/i,
-			'6.5 selectall_array(): BerkeleyDB backend causes croak';
+		my @rows = $bdb->selectall_array();
+		is(scalar @rows, 0, '6.5 selectall_array(): BerkeleyDB path returns empty list');
 	}
 }
 
@@ -395,13 +393,11 @@ note '=== 8. count() ===';
 	my $by_num = $db->count(number => 1);
 	is($by_num, 1, '8.4 count(): non-key criterion filters correctly');
 
-	# 8.5  BerkeleyDB → croak
+	# 8.5  BerkeleyDB → returns 0 for empty hash (in-memory scan)
 	{
 		my $bdb = Database::test1->new($DATA_DIR);
 		$bdb->{'berkeley'} = {};
-		throws_ok { $bdb->count() }
-			qr/meaningless on a NoSQL/i,
-			'8.5 count(): BerkeleyDB backend causes croak';
+		is($bdb->count(), 0, '8.5 count(): BerkeleyDB path returns 0 for empty hash');
 	}
 }
 
