@@ -788,8 +788,11 @@ sub _open
 					my @data = grep { $_->{$self->{'id'}} !~ /^\s*#/ } grep { defined($_->{$self->{'id'}}) } @{$dataref};
 
 					if($self->{'no_entry'}) {
-						# Not keyed on a primary column — keep as ordered list
-						$self->{'data'} = @data;
+						# Not keyed on a primary column — keep as ordered list.
+						# Only store a reference when rows were found; an empty-array ref
+						# is truthy, which would activate the in-memory fast-path and
+						# silently return 0 results instead of falling through to SQL.
+						$self->{'data'} = @data ? \@data : undef;
 					} else {
 						# Key the hash by $self->{'id'} for O(1) entry lookups
 						$self->{'data'} = { map { $_->{$self->{'id'}} => $_ } @data };
@@ -1762,7 +1765,9 @@ sub AUTOLOAD {
 			# Return all column values from the in-memory hash.
 			# Use exists() because fixate() locks inner row hashes —
 			# accessing a disallowed key would throw without the guard.
-			return map { exists($_->{$column}) ? $_->{$column} : undef } values %{$data};
+			# Handle both HASH (keyed data) and ARRAY (no_entry CSV slurp).
+			my @_rows = ref($data) eq 'ARRAY' ? @{$data} : values %{$data};
+			return map { exists($_->{$column}) ? $_->{$column} : undef } @_rows;
 		}
 		my $id = $self->{'id'};
 		if(($self->{'type'} eq 'CSV') && !$self->{'no_entry'}) {
@@ -1813,7 +1818,10 @@ sub AUTOLOAD {
 						my %h = map { $_ => 1 } grep { defined } map { exists($_->{$column}) ? $_->{$column} : undef } values %{$data};
 						return keys %h;
 					}
-					return map { exists($_->{$column}) ? $_->{$column} : undef } values %{$data}
+					# DEAD CODE: unreachable because the outer `if(wantarray && !$distinct)`
+					# handles the wantarray+!distinct case. In this else branch, wantarray
+					# implies $distinct (which returns above), so this line is never executed.
+					# return map { exists($_->{$column}) ? $_->{$column} : undef } values %{$data}
 				}
 				# Scalar: return the first value found without building a full list
 				foreach my $v (values %{$data}) {

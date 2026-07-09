@@ -32,6 +32,7 @@ t/db_noentry.t
 t/edge_cases.t
 t/eof.t
 t/eol.t
+t/extended_tests.t
 t/function.t
 t/init.t
 t/integration.t
@@ -41,6 +42,7 @@ t/lib/Database/test1.pm
 t/lib/Database/test2.pm
 t/lib/Database/test3.pm
 t/lib/Database/test4.pm
+t/lib/Database/test4ne.pm
 t/lib/Database/test5.pm
 t/lib/Database/test6.pm
 t/lib/Database/test7.pm
