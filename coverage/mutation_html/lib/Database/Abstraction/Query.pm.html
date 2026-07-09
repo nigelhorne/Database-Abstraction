@@ -502,7 +502,7 @@ Approximate LCSAJ segments: 47<br>
 </span><span class="">  210: 	my ($self, $spec) = @_;
 </span><span class="">  211: 	my @specs = ref($spec) eq &#39;ARRAY&#39; ? @{$spec} : ($spec);
 </span><span class="">  212: 	push @{$self-&gt;{&#39;_joins&#39;}}, @specs;
-</span><span class="survived-2 tooltip" data-tooltip="Return value mutation survived. Add tests asserting exact return values. Boolean logic mutation survived. Add tests covering both true and false paths.">  213: 	return $self;
+</span><span class="survived-2 tooltip" data-tooltip="Boolean logic mutation survived. Add tests covering both true and false paths. Return value mutation survived. Add tests asserting exact return values.">  213: 	return $self;
 </span>
 					<details class="mutant-details">
 					<summary>Mutants (Total: 2, Killed: 0, Survived: 2)</summary>
@@ -570,7 +570,7 @@ is( func(INPUT), EXPECTED, &#39;Verify correct return value&#39; );
 </span><span class="">  257: {
 </span><span class="">  258: 	my ($self, $n) = @_;
 </span><span class="">  259: 	$self-&gt;{&#39;_offset&#39;} = $n;
-</span><span class="survived-2 tooltip" data-tooltip="Return value mutation survived. Add tests asserting exact return values. Boolean logic mutation survived. Add tests covering both true and false paths.">  260: 	return $self;
+</span><span class="survived-2 tooltip" data-tooltip="Boolean logic mutation survived. Add tests covering both true and false paths. Return value mutation survived. Add tests asserting exact return values.">  260: 	return $self;
 </span>
 					<details class="mutant-details">
 					<summary>Mutants (Total: 2, Killed: 0, Survived: 2)</summary>
