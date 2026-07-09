@@ -936,9 +936,11 @@ sub selectall_arrayref {
 			}
 			return set_return($self->{'data'}, { type => 'arrayref'});
 		} elsif((scalar(keys %{$params}) == 1) && defined($params->{'entry'}) && !$self->{'no_entry'}) {
-			# exists() guard: fixate() locks all keys in the slurp hash
-			my $v = exists($self->{'data'}->{$params->{'entry'}}) ? $self->{'data'}->{$params->{'entry'}} : undef;
-			return set_return([$v], { type => 'arrayref' });
+			# exists() guard: fixate() locks all keys in the slurp hash; return []
+			# (not [undef]) when the key is missing so callers get an empty result
+			return set_return([], { type => 'arrayref' })
+				unless exists($self->{'data'}->{$params->{'entry'}});
+			return set_return([$self->{'data'}->{$params->{'entry'}}], { type => 'arrayref' });
 		} elsif(ref($self->{'data'}) eq 'HASH') {
 			# Scan in-memory hash for simple column criteria without touching DBI.
 			# fixate() locks hash keys, so use exists() to avoid throwing on unknown columns.
@@ -1067,6 +1069,9 @@ sub selectall_array
 			}
 			return @{$self->{'data'}};
 		} elsif((scalar(keys %{$params}) == 1) && defined($params->{'entry'}) && !$self->{'no_entry'}) {
+			# exists() guard: fixate() locks all keys; return empty list (not undef)
+			# for a missing entry so callers in list context get 0 elements not 1
+			return () unless exists($self->{'data'}->{$params->{'entry'}});
 			return $self->{'data'}->{$params->{'entry'}};
 		} elsif(ref($self->{'data'}) eq 'HASH') {
 			# Same as selectall_arrayref scan but returns a list
@@ -1840,6 +1845,9 @@ sub AUTOLOAD {
 	my @args;
 	# Avoid `each` — it carries hidden iterator state across calls
 	for my $k (sort keys %params) {
+		# Guard against SQL injection via column names — same rule as _build_where_conditions
+		Carp::croak(__PACKAGE__, ": unsafe column name '$k'")
+			unless $k =~ /^[a-zA-Z_][a-zA-Z0-9_.]*$/;
 		my $value = $params{$k};
 		$self->_debug(__PACKAGE__, ": AUTOLOAD adding key/value pair $k=>", defined($value) ? $value : 'NULL');
 		if(defined($value)) {
@@ -2101,11 +2109,13 @@ sub _match_criterion
 				return 0 unless defined($row_val) && $row_val >= $operand->[0] && $row_val <= $operand->[1];
 			} elsif($op eq '-like') {
 				return 0 unless defined($row_val);
-				(my $pat = $operand) =~ s/%/.*/g; $pat =~ s/_/./g;
+				# quotemeta literal chars before converting SQL wildcards to
+				# regex so that metacharacters in the pattern cannot crash the match
+				my $pat = join('', map { $_ eq '%' ? '.*' : $_ eq '_' ? '.' : quotemeta($_) } split(/([%_])/, $operand));
 				return 0 unless $row_val =~ /^$pat$/i;
 			} elsif($op eq '-not_like') {
 				return 0 unless defined($row_val);
-				(my $pat = $operand) =~ s/%/.*/g; $pat =~ s/_/./g;
+				my $pat = join('', map { $_ eq '%' ? '.*' : $_ eq '_' ? '.' : quotemeta($_) } split(/([%_])/, $operand));
 				return 0 if $row_val =~ /^$pat$/i;
 			} elsif($op eq '!=') {
 				if(!defined($operand)) {
