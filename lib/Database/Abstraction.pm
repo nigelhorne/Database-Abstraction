@@ -49,24 +49,22 @@ use Scalar::Util;
 our %defaults;
 use constant	DEFAULT_MAX_SLURP_SIZE => 16 * 1024;	# CSV files <= than this size are read into memory
 
-=encoding UTF-8
-
 =head1 NAME
 
 Database::Abstraction - Read-only Database Abstraction Layer (ORM)
 
 =head1 VERSION
 
-Version 0.35
+Version 0.36
 
 =cut
 
-our $VERSION = '0.35';
+our $VERSION = '0.36';
 
 =head1 DESCRIPTION
 
 C<Database::Abstraction> is a read-only ORM for Perl that gives a uniform
-interface over CSV, PSV, XML, SQLite, and BerkeleyDB files — without writing
+interface over CSV, PSV, XML, SQLite, and BerkeleyDB files - without writing
 any SQL.
 
 Key features:
@@ -94,7 +92,7 @@ combine tables with INNER, LEFT, RIGHT, FULL, or CROSS joins.
 
 B<Chained query builder.>  The C<query()> method returns a
 L<Database::Abstraction::Query> object for fluent, composable queries:
-C<< $db->query->where(…)->order_by(…)->limit(…)->all() >>.
+C<< $db->query->where(...)->order_by(...)->limit(...)->all() >>.
 
 =item *
 
@@ -105,7 +103,7 @@ returns full type/nullability metadata, using native driver introspection
 =item *
 
 B<DSN portability.>  Pass a C<dsn> (plus optional C<username>/C<password>)
-to connect to any DBI-supported database (SQLite, PostgreSQL, MySQL, …)
+to connect to any DBI-supported database (SQLite, PostgreSQL, MySQL, ...)
 instead of pointing at a local file.
 
 =item *
@@ -122,7 +120,7 @@ A CHI-compatible cache layer is also supported.
     package Database::Foo;
     use parent 'Database::Abstraction';
 
-    # 2. Open the database — file is auto-detected from the class name
+    # 2. Open the database - file is auto-detected from the class name
     #    (looks for foo.sql / foo.psv / foo.csv / foo.xml / foo.db)
     my $db = Database::Foo->new(directory => '/path/to/data');
 
@@ -178,7 +176,7 @@ A CHI-compatible cache layer is also supported.
     my $first = $db->query->where(name => 'Alice')->first();
     my $count = $db->query->where(status => 'active')->count();
 
-    # 7. Connect via DSN (PostgreSQL, MySQL, SQLite, …) ---------------
+    # 7. Connect via DSN (PostgreSQL, MySQL, SQLite, ...) ---------------
 
     my $db2 = Database::Foo->new(
         dsn      => 'dbi:Pg:dbname=mydb;host=db.example.com',
@@ -188,8 +186,8 @@ A CHI-compatible cache layer is also supported.
 
     # 8. Schema introspection -----------------------------------------
 
-    my $cols   = $db->columns();  # ['entry', 'name', 'score', …]
-    my $schema = $db->schema();   # { name => { type=>'TEXT', nullable=>1, … }, … }
+    my $cols   = $db->columns();  # ['entry', 'name', 'score', ...]
+    my $schema = $db->schema();   # { name => { type=>'TEXT', nullable=>1, ... }, ... }
 
 =head1 QUICK START EXAMPLE
 
@@ -238,7 +236,7 @@ Pipe-separated file, ending C<.psv>
 
 Comma (or custom) separated file, ending C<.csv> or C<.db>; can be
 gzipped.  B<Note:> the default separator is C<!> not C<,> for historical
-reasons — pass C<< sep_char => ',' >> for standard CSVs.
+reasons - pass C<< sep_char => ',' >> for standard CSVs.
 
 =item 4. C<XML>
 
@@ -285,8 +283,8 @@ Multiple operators on one column are ANDed:
 
 =head2 Set membership
 
-    name => { -in     => ['Alice', 'Bob'] }   # name IN (…)
-    name => { -not_in => ['Alice', 'Bob'] }   # name NOT IN (…)
+    name => { -in     => ['Alice', 'Bob'] }   # name IN (...)
+    name => { -not_in => ['Alice', 'Bob'] }   # name NOT IN (...)
 
 =head2 Range
 
@@ -385,7 +383,7 @@ sub import
 
 Create an object pointing to a read-only database.
 
-Accepts arguments as a hash, a hashref, or — as a shortcut — a single bare
+Accepts arguments as a hash, a hashref, or - as a shortcut - a single bare
 string which is taken to be C<directory>.
 
 =head3 Connection parameters
@@ -440,7 +438,8 @@ Name of the key column.  Default is C<entry>.
 
 =item * C<sep_char>
 
-Field separator for CSV/PSV files.  Default is C<!> — pass C<< sep_char => ',' >>
+Field separator for CSV/PSV files.
+Default is C<!> - pass C<< sep_char => ',' >>
 for standard comma-separated files.
 
 =item * C<max_slurp_size>
@@ -498,7 +497,7 @@ are used.
 =item *
 
 Slurp mode assumes the key column (C<entry>) is unique.  If it is not,
-searches will be incomplete — disable slurp mode by setting
+searches will be incomplete - disable slurp mode by setting
 C<< max_slurp_size => 0 >>.
 
 =item *
@@ -918,9 +917,9 @@ in scalar context, or C<< $db->query->limit(1)->all() >>, to fetch just one row.
 
     1. Parse criteria; extract and build any JOIN clause.
     2. If data is slurped AND no joins AND criteria are simple:
-       a. No criteria → return all rows as arrayref.
-       b. entry-only lookup → return [$data{entry}].
-       c. Otherwise → scan rows in-memory with _match_criterion.
+       a. No criteria -> return all rows as arrayref.
+       b. entry-only lookup -> return [$data{entry}].
+       c. Otherwise -> scan rows in-memory with _match_criterion.
     3. Otherwise build SQL: SELECT * FROM table [JOIN] [WHERE] ORDER BY id.
     4. Check cache; return cached arrayref on HIT.
     5. prepare_cached + execute; fetch all rows.
@@ -1080,7 +1079,7 @@ rather than a reference to an array.
     my @rows = $db->selectall_array(status => 'active');
 
 In B<scalar context> it applies C<LIMIT 1> and returns just the first
-matching hash reference — making it more efficient than C<selectall_arrayref>
+matching hash reference - making it more efficient than C<selectall_arrayref>
 when you only need one row.  In B<list context> all matching rows are returned.
 
 Accepts the same criteria and C<join> parameter as L</selectall_arrayref>.
@@ -1542,12 +1541,12 @@ The column list is determined by the backend:
 
 =over 4
 
-=item * B<Slurp mode> — sorted keys of the first row in memory.
+=item * B<Slurp mode> - sorted keys of the first row in memory.
 
-=item * B<SQLite / other DBI> — a zero-row C<SELECT *> exposes the driver's
+=item * B<SQLite / other DBI> - a zero-row C<SELECT *> exposes the driver's
 C<NAME> attribute.
 
-=item * B<BerkeleyDB> — always returns C<['entry', 'value']>.
+=item * B<BerkeleyDB> - always returns C<['entry', 'value']>.
 
 =back
 
@@ -1590,13 +1589,13 @@ Each key is a column name; each value is a hash reference with these keys:
 
 =over 4
 
-=item * C<type> — data type string (e.g. C<TEXT>, C<INTEGER>, C<REAL>)
+=item * C<type> - data type string (e.g. C<TEXT>, C<INTEGER>, C<REAL>)
 
-=item * C<nullable> — C<1> if the column may be NULL, C<0> if NOT NULL
+=item * C<nullable> - C<1> if the column may be NULL, C<0> if NOT NULL
 
-=item * C<default> — default value string, or C<undef>
+=item * C<default> - default value string, or C<undef>
 
-=item * C<pk> — C<1> if this column is (part of) the primary key, C<0> otherwise
+=item * C<pk> - C<1> if this column is (part of) the primary key, C<0> otherwise
 
 =back
 
@@ -1614,13 +1613,13 @@ The schema is determined by the backend:
 
 =over 4
 
-=item * B<SQLite> — C<PRAGMA table_info(table)>
+=item * B<SQLite> - C<PRAGMA table_info(table)>
 
-=item * B<Other DBI drivers> — C<< $dbh->column_info(...) >>
+=item * B<Other DBI drivers> - C<< $dbh->column_info(...) >>
 
-=item * B<Slurp mode> — inferred from the first row (all columns typed as C<TEXT>)
+=item * B<Slurp mode> - inferred from the first row (all columns typed as C<TEXT>)
 
-=item * B<BerkeleyDB> — always returns C<entry> (pk) and C<value>
+=item * B<BerkeleyDB> - always returns C<entry> (pk) and C<value>
 
 =back
 
@@ -1721,7 +1720,7 @@ sub query
 	return Database::Abstraction::Query->new(_db => $self);
 }
 
-=head2 AUTOLOAD — column shortcut
+=head2 AUTOLOAD - column shortcut
 
 Calling an unknown method whose name matches a column name performs a column
 lookup.  The method name is the column you want; the arguments are criteria.
@@ -1753,11 +1752,11 @@ has been disabled with C<< auto_load => 0 >>.
     2. Croak if auto_load => 0.
     3. Validate $column against /^[a-zA-Z_][a-zA-Z0-9_]*$/.
     4. If data is slurped:
-       a. List context, no params → map column over all rows (exists guard).
-       b. entry-only param → direct hash lookup (exists guard).
-       c. No params, scalar → first value in hash.
-       d. no_entry set → scan array for matching key/value pair.
-       e. Other params → scan keyed hash for matching column.
+       a. List context, no params -> map column over all rows (exists guard).
+       b. entry-only param -> direct hash lookup (exists guard).
+       c. No params, scalar -> first value in hash.
+       d. no_entry set -> scan array for matching key/value pair.
+       e. Other params -> scan keyed hash for matching column.
     5. If not slurped, build SQL:
        - List:   SELECT column FROM table [WHERE ...] ORDER BY column
        - Scalar: SELECT DISTINCT column FROM table [WHERE ...] LIMIT 1
@@ -2542,7 +2541,7 @@ same criteria has already populated it.
 
 =over 4
 
-=item * L<Database::Abstraction::Query> — chained query builder
+=item * L<Database::Abstraction::Query> - chained query builder
 
 =item * L<Configure an Object at Runtime|Object::Configure>
 

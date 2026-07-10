@@ -1,6 +1,6 @@
 Revision history for Database-Abstraction
 
-0.36
+0.36	Thu Jul  9 21:38:49 EDT 2026
 	[ Bug fixes ]
 	- Data::Reuse stale-address hazard: selectall_arrayref() and
 	  selectall_array() now call Data::Reuse::forget() immediately before
