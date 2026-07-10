@@ -308,11 +308,11 @@ Approximate LCSAJ segments: 61<br>
 </span><span class="">   16: 
 </span><span class="">   17: =head1 VERSION
 </span><span class="">   18: 
-</span><span class="">   19: Version 0.35
+</span><span class="">   19: Version 0.36
 </span><span class="">   20: 
 </span><span class="">   21: =cut
 </span><span class="">   22: 
-</span><span class="">   23: our $VERSION = &#39;0.35&#39;;
+</span><span class="">   23: our $VERSION = &#39;0.36&#39;;
 </span><span class="">   24: 
 </span><span class="">   25: =head1 SYNOPSIS
 </span><span class="">   26: 
@@ -417,12 +417,12 @@ Approximate LCSAJ segments: 61<br>
 </span><span class="">  125: 
 </span><span class="">  126: 	my $db = $args{&#39;_db&#39;}
 </span><span class="">  127: 		or croak(&#39;Database::Abstraction::Query: _db is required&#39;);
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  128: 
-</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  129: 	croak(&#39;Database::Abstraction::Query: _db must be a Database::Abstraction object&#39;)
+</span><span class="">  128: 
+</span><span class="">  129: 	croak(&#39;Database::Abstraction::Query: _db must be a Database::Abstraction object&#39;)
 </span><span class="">  130: 		unless blessed($db) &amp;&amp; $db-&gt;isa(&#39;Database::Abstraction&#39;);
 </span><span class="">  131: 
-</span><span class="">  132: 	return bless {
-</span><span class="">  133: 		_db       =&gt; $db,
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  132: 	return bless {
+</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  133: 		_db       =&gt; $db,
 </span><span class="">  134: 		_select   =&gt; &#39;*&#39;,
 </span><span class="">  135: 		_where    =&gt; {},
 </span><span class="">  136: 		_joins    =&gt; [],
@@ -442,12 +442,12 @@ Approximate LCSAJ segments: 61<br>
 </span><span class="">  150: 
 </span><span class="">  151: =cut
 </span><span class="">  152: 
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  153: sub select
-</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  154: {
+</span><span class="">  153: sub select
+</span><span class="">  154: {
 </span><span class="">  155: 	my ($self, $cols) = @_;
 </span><span class="">  156: 	$self-&gt;{&#39;_select&#39;} = defined($cols) ? $cols : &#39;*&#39;;
-</span><span class="">  157: 	return $self;
-</span><span class="">  158: }
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  157: 	return $self;
+</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  158: }
 </span><span class="">  159: 
 </span><span class="">  160: =head2 where
 </span><span class="">  161: 
@@ -471,12 +471,12 @@ Approximate LCSAJ segments: 61<br>
 </span><span class="">  179: sub where
 </span><span class="">  180: {
 </span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">181 → 183 → 186</span></span>  181: 	my $self = shift;
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  182: 	my %criteria = ref($_[0]) eq &#39;HASH&#39; ? %{$_[0]} : @_;
-</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  183: 	for my $k (keys %criteria) {
+</span><span class="">  182: 	my %criteria = ref($_[0]) eq &#39;HASH&#39; ? %{$_[0]} : @_;
+</span><span class="">  183: 	for my $k (keys %criteria) {
 </span><span class="">  184: 		$self-&gt;{&#39;_where&#39;}{$k} = $criteria{$k};
 </span><span class="">  185: 	}
-</span><span class="">  186: 	return $self;
-</span><span class="">  187: }
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  186: 	return $self;
+</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  187: }
 </span><span class="">  188: 
 </span><span class="">  189: =head2 join
 </span><span class="">  190: 
@@ -505,12 +505,12 @@ Approximate LCSAJ segments: 61<br>
 </span><span class="">  213: =cut
 </span><span class="">  214: 
 </span><span class="">  215: sub join	## no critic(ProhibitBuiltinHomonyms)
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  216: {
-</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  217: 	my ($self, $spec) = @_;
+</span><span class="">  216: {
+</span><span class="">  217: 	my ($self, $spec) = @_;
 </span><span class="">  218: 	my @specs = ref($spec) eq &#39;ARRAY&#39; ? @{$spec} : ($spec);
 </span><span class="">  219: 	push @{$self-&gt;{&#39;_joins&#39;}}, @specs;
-</span><span class="">  220: 	return $self;
-</span><span class="">  221: }
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  220: 	return $self;
+</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  221: }
 </span><span class="">  222: 
 </span><span class="">  223: =head2 order_by
 </span><span class="">  224: 
@@ -522,12 +522,12 @@ Approximate LCSAJ segments: 61<br>
 </span><span class="">  230: 
 </span><span class="">  231: =cut
 </span><span class="">  232: 
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  233: sub order_by
-</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  234: {
+</span><span class="">  233: sub order_by
+</span><span class="">  234: {
 </span><span class="">  235: 	my ($self, $col) = @_;
 </span><span class="">  236: 	$self-&gt;{&#39;_order_by&#39;} = $col;
-</span><span class="">  237: 	return $self;
-</span><span class="">  238: }
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  237: 	return $self;
+</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  238: }
 </span><span class="">  239: 
 </span><span class="">  240: =head2 limit
 </span><span class="">  241: 
@@ -537,12 +537,12 @@ Approximate LCSAJ segments: 61<br>
 </span><span class="">  245: 
 </span><span class="">  246: =cut
 </span><span class="">  247: 
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  248: sub limit
-</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  249: {
+</span><span class="">  248: sub limit
+</span><span class="">  249: {
 </span><span class="">  250: 	my ($self, $n) = @_;
 </span><span class="">  251: 	$self-&gt;{&#39;_limit&#39;} = $n;
-</span><span class="">  252: 	return $self;
-</span><span class="">  253: }
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  252: 	return $self;
+</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  253: }
 </span><span class="">  254: 
 </span><span class="">  255: =head2 offset
 </span><span class="">  256: 
@@ -552,28 +552,28 @@ Approximate LCSAJ segments: 61<br>
 </span><span class="">  260: 
 </span><span class="">  261: =cut
 </span><span class="">  262: 
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  263: sub offset
-</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  264: {
+</span><span class="">  263: sub offset
+</span><span class="">  264: {
 </span><span class="">  265: 	my ($self, $n) = @_;
 </span><span class="">  266: 	$self-&gt;{&#39;_offset&#39;} = $n;
-</span><span class="">  267: 	return $self;
-</span><span class="">  268: }
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  267: 	return $self;
+</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  268: }
 </span><span class="">  269: 
 </span><span class="">  270: # Apply Perl-side sort, offset, and limit to an arrayref of rows in place.
 </span><span class="">  271: # Used by the BerkeleyDB execution paths in all() and first().
 </span><span class="">  272: # order_by must be a single &quot;column [ASC|DESC]&quot; string (multi-column not supported).
-</span><span class="survived-1 tooltip" data-tooltip="Mutation survived. Add targeted tests to validate this branch.">  273: sub _apply_perl_sort_limit
+</span><span class="">  273: sub _apply_perl_sort_limit
+</span><span class="">  274: {
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot-uncovered">●</span><span class="lcsaj-tip-text">[NOT COVERED] 275 → 277 → 286</span></span>  275: 	my ($rows, $order_by, $offset, $limit) = @_;
+</span><span class="">  276: 
+</span><span class="survived-1 tooltip" data-tooltip="Mutation survived. Add targeted tests to validate this branch.">  277: 	if(defined $order_by) {
 </span>
 					<details class="mutant-details">
 					<summary>Mutants (Total: 1, Killed: 0, Survived: 1)</summary>
 					<ul>
-				<li><b>COND_INV_273_2: Invert condition if to unless</b><br>MEDIUM: Add tests asserting both true and false outcomes
+				<li><b>COND_INV_277_2: Invert condition if to unless</b><br>MEDIUM: Add tests asserting both true and false outcomes
 </li></ul></details>
-<span class="">  274: {
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot-uncovered">●</span><span class="lcsaj-tip-text">[NOT COVERED] 275 → 277 → 286</span></span>  275: 	my ($rows, $order_by, $offset, $limit) = @_;
-</span><span class="">  276: 
-</span><span class="">  277: 	if(defined $order_by) {
-</span><span class="">  278: 		my ($col, $dir) = ($order_by =~ /^(\S+)(?:\s+(ASC|DESC))?$/i);
+<span class="">  278: 		my ($col, $dir) = ($order_by =~ /^(\S+)(?:\s+(ASC|DESC))?$/i);
 </span><span class="">  279: 		$dir //= &#39;ASC&#39;;
 </span><span class="">  280: 		@{$rows} = sort {
 </span><span class="">  281: 			$dir =~ /DESC/i
@@ -596,29 +596,29 @@ Approximate LCSAJ segments: 61<br>
 </span><span class="">  298: 
 </span><span class="">  299: 	# Ensure the underlying table connection is open
 </span><span class="">  300: 	$db-&gt;_open_table({});
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  301: 
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="">  302: 	my $select = $count_only ? &#39;COUNT(*)&#39; : $self-&gt;{&#39;_select&#39;};
+</span><span class="">  301: 
+</span><span class="">  302: 	my $select = $count_only ? &#39;COUNT(*)&#39; : $self-&gt;{&#39;_select&#39;};
 </span><span class="">  303: 	my $query  = &quot;SELECT $select FROM $table&quot;;
 </span><span class="">  304: 
-</span><span class="">  305: 	if(@{$self-&gt;{&#39;_joins&#39;}}) {
-</span><span class="">  306: 		$query .= &#39; &#39; . $db-&gt;_build_joins($self-&gt;{&#39;_joins&#39;});
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  305: 	if(@{$self-&gt;{&#39;_joins&#39;}}) {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="">  306: 		$query .= &#39; &#39; . $db-&gt;_build_joins($self-&gt;{&#39;_joins&#39;});
 </span><span class="">  307: 	}
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  308: 
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">309 → 312 → 322</span></span>  309: 	my ($where, $wargs) = $db-&gt;_build_where($self-&gt;{&#39;_where&#39;});
+</span><span class="">  308: 
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">309 → 312 → 322</span></span>  309: 	my ($where, $wargs) = $db-&gt;_build_where($self-&gt;{&#39;_where&#39;});
 </span><span class="">  310: 	my @args = @{$wargs};
 </span><span class="">  311: 
-</span><span class="">  312: 	if(@{$self-&gt;{&#39;_joins&#39;}}) {
-</span><span class="">  313: 		$query .= &quot; WHERE $where&quot; if $where;
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  312: 	if(@{$self-&gt;{&#39;_joins&#39;}}) {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="">  313: 		$query .= &quot; WHERE $where&quot; if $where;
 </span><span class="">  314: 	} elsif(($db-&gt;{&#39;type&#39;} eq &#39;CSV&#39;) &amp;&amp; !$db-&gt;{&#39;no_entry&#39;}) {
 </span><span class="">  315: 		my $id = $db-&gt;{&#39;id&#39;};
 </span><span class="">  316: 		$query .= &quot; WHERE $id IS NOT NULL AND $id NOT LIKE &#39;#%&#39;&quot;;
 </span><span class="">  317: 		$query .= &quot; AND ($where)&quot; if $where;
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  318: 	} else {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="">  319: 		$query .= &quot; WHERE $where&quot; if $where;
+</span><span class="">  318: 	} else {
+</span><span class="">  319: 		$query .= &quot; WHERE $where&quot; if $where;
 </span><span class="">  320: 	}
 </span><span class="">  321: 
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">322 → 322 → 328</span></span>  322: 	unless($count_only) {
-</span><span class="">  323: 		$query .= &quot; ORDER BY $self-&gt;{&#39;_order_by&#39;}&quot; if defined $self-&gt;{&#39;_order_by&#39;};
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">322 → 322 → 328</span></span>  322: 	unless($count_only) {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="">  323: 		$query .= &quot; ORDER BY $self-&gt;{&#39;_order_by&#39;}&quot; if defined $self-&gt;{&#39;_order_by&#39;};
 </span><span class="">  324: 		$query .= &quot; LIMIT $self-&gt;{&#39;_limit&#39;}&quot;       if defined $self-&gt;{&#39;_limit&#39;};
 </span><span class="">  325: 		$query .= &quot; OFFSET $self-&gt;{&#39;_offset&#39;}&quot;     if defined $self-&gt;{&#39;_offset&#39;};
 </span><span class="">  326: 	}
@@ -640,17 +640,21 @@ Approximate LCSAJ segments: 61<br>
 </span><span class="">  342: {
 </span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">343 → 349 → 357</span></span>  343: 	my $self = shift;
 </span><span class="">  344: 	my $db   = $self-&gt;{&#39;_db&#39;};
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  345: 
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="">  346: 	# Ensure _open() fires before checking the backend type.
+</span><span class="">  345: 
+</span><span class="">  346: 	# Ensure _open() fires before checking the backend type.
 </span><span class="">  347: 	$db-&gt;_open_table({});
 </span><span class="">  348: 
-</span><span class="">  349: 	if($db-&gt;{&#39;berkeley&#39;}) {
-</span><span class="survived-2 tooltip" data-tooltip="Return value mutation survived. Add tests asserting exact return values. Boolean logic mutation survived. Add tests covering both true and false paths.">  350: 		croak(ref($db), &#39;: query-&gt;all() with JOINs is not supported on BerkeleyDB&#39;)
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  349: 	if($db-&gt;{&#39;berkeley&#39;}) {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="">  350: 		croak(ref($db), &#39;: query-&gt;all() with JOINs is not supported on BerkeleyDB&#39;)
+</span><span class="">  351: 			if @{$self-&gt;{&#39;_joins&#39;}};
+</span><span class="">  352: 		my $rows = $db-&gt;selectall_arrayref({%{$self-&gt;{&#39;_where&#39;}}});
+</span><span class="">  353: 		_apply_perl_sort_limit($rows, $self-&gt;{&#39;_order_by&#39;}, $self-&gt;{&#39;_offset&#39;}, $self-&gt;{&#39;_limit&#39;});
+</span><span class="survived-2 tooltip" data-tooltip="Return value mutation survived. Add tests asserting exact return values. Boolean logic mutation survived. Add tests covering both true and false paths.">  354: 		return $rows;
 </span>
 					<details class="mutant-details">
 					<summary>Mutants (Total: 2, Killed: 0, Survived: 2)</summary>
 					<ul>
-				<li><b>BOOL_NEGATE_350_3: Negate boolean return expression</b><br>MEDIUM: Add tests asserting both true and false outcomes
+				<li><b>BOOL_NEGATE_354_3: Negate boolean return expression</b><br>MEDIUM: Add tests asserting both true and false outcomes
 
 								<div class="suggested-test">
 								<div class="suggest-label">🧪 Suggested Test</div>
@@ -658,7 +662,7 @@ Approximate LCSAJ segments: 61<br>
 ok( !func(INPUT), &#39;Verify boolean branch behaviour&#39; );
 </pre>
 								</div>
-							</li><li><b>RETURN_UNDEF_350_3: Replace return expression with undef</b><br>LOW: Mutation survived, but impact may be minor
+							</li><li><b>RETURN_UNDEF_354_3: Replace return expression with undef</b><br>LOW: Mutation survived, but impact may be minor
 
 								<div class="suggested-test">
 								<div class="suggest-label">🧪 Suggested Test</div>
@@ -667,11 +671,7 @@ is( func(INPUT), EXPECTED, &#39;Verify correct return value&#39; );
 </pre>
 								</div>
 							</li></ul></details>
-<span class="">  351: 			if @{$self-&gt;{&#39;_joins&#39;}};
-</span><span class="">  352: 		my $rows = $db-&gt;selectall_arrayref({%{$self-&gt;{&#39;_where&#39;}}});
-</span><span class="">  353: 		_apply_perl_sort_limit($rows, $self-&gt;{&#39;_order_by&#39;}, $self-&gt;{&#39;_offset&#39;}, $self-&gt;{&#39;_limit&#39;});
-</span><span class="">  354: 		return $rows;
-</span><span class="">  355: 	}
+<span class="">  355: 	}
 </span><span class="">  356: 
 </span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">357 → 364 → 367</span></span>  357: 	my ($query, $args, $table) = $self-&gt;_build_sql(0);
 </span><span class="">  358: 	$db-&gt;_debug(&quot;Query-&gt;all: $query&quot;);
@@ -679,12 +679,12 @@ is( func(INPUT), EXPECTED, &#39;Verify correct return value&#39; );
 </span><span class="">  360: 	my $sth = $db-&gt;{$table}-&gt;prepare_cached($query);
 </span><span class="">  361: 	$sth-&gt;execute(@{$args}) or croak(&quot;$query: @{$args}&quot;);
 </span><span class="">  362: 
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  363: 	my @rows;
-</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  364: 	while(my $row = $sth-&gt;fetchrow_hashref()) {
+</span><span class="">  363: 	my @rows;
+</span><span class="">  364: 	while(my $row = $sth-&gt;fetchrow_hashref()) {
 </span><span class="">  365: 		push @rows, $row;
 </span><span class="">  366: 	}
-</span><span class="">  367: 	return \@rows;
-</span><span class="">  368: }
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  367: 	return \@rows;
+</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  368: }
 </span><span class="">  369: 
 </span><span class="">  370: =head2 first
 </span><span class="">  371: 
@@ -700,23 +700,27 @@ is( func(INPUT), EXPECTED, &#39;Verify correct return value&#39; );
 </span><span class="">  381: sub first
 </span><span class="">  382: {
 </span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">383 → 388 → 396</span></span>  383: 	my $self = shift;
-</span><span class="survived-1 tooltip" data-tooltip="Mutation survived. Add targeted tests to validate this branch.">  384: 	my $db   = $self-&gt;{&#39;_db&#39;};
+</span><span class="">  384: 	my $db   = $self-&gt;{&#39;_db&#39;};
+</span><span class="">  385: 
+</span><span class="">  386: 	$db-&gt;_open_table({});
+</span><span class="">  387: 
+</span><span class="survived-1 tooltip" data-tooltip="Mutation survived. Add targeted tests to validate this branch.">  388: 	if($db-&gt;{&#39;berkeley&#39;}) {
 </span>
 					<details class="mutant-details">
 					<summary>Mutants (Total: 1, Killed: 0, Survived: 1)</summary>
 					<ul>
-				<li><b>COND_INV_384_2: Invert condition if to unless</b><br>MEDIUM: Add tests asserting both true and false outcomes
+				<li><b>COND_INV_388_2: Invert condition if to unless</b><br>MEDIUM: Add tests asserting both true and false outcomes
 </li></ul></details>
-<span class="">  385: 
-</span><span class="">  386: 	$db-&gt;_open_table({});
-</span><span class="">  387: 
-</span><span class="">  388: 	if($db-&gt;{&#39;berkeley&#39;}) {
-</span><span class="survived-2 tooltip" data-tooltip="Return value mutation survived. Add tests asserting exact return values. Boolean logic mutation survived. Add tests covering both true and false paths.">  389: 		croak(ref($db), &#39;: query-&gt;first() with JOINs is not supported on BerkeleyDB&#39;)
+<span class="">  389: 		croak(ref($db), &#39;: query-&gt;first() with JOINs is not supported on BerkeleyDB&#39;)
+</span><span class="">  390: 			if @{$self-&gt;{&#39;_joins&#39;}};
+</span><span class="">  391: 		my $rows = $db-&gt;selectall_arrayref({%{$self-&gt;{&#39;_where&#39;}}});
+</span><span class="">  392: 		_apply_perl_sort_limit($rows, $self-&gt;{&#39;_order_by&#39;}, $self-&gt;{&#39;_offset&#39;}, undef);
+</span><span class="survived-2 tooltip" data-tooltip="Return value mutation survived. Add tests asserting exact return values. Boolean logic mutation survived. Add tests covering both true and false paths.">  393: 		return $rows-&gt;[0];
 </span>
 					<details class="mutant-details">
 					<summary>Mutants (Total: 2, Killed: 0, Survived: 2)</summary>
 					<ul>
-				<li><b>BOOL_NEGATE_389_3: Negate boolean return expression</b><br>MEDIUM: Add tests asserting both true and false outcomes
+				<li><b>BOOL_NEGATE_393_3: Negate boolean return expression</b><br>MEDIUM: Add tests asserting both true and false outcomes
 
 								<div class="suggested-test">
 								<div class="suggest-label">🧪 Suggested Test</div>
@@ -724,7 +728,7 @@ is( func(INPUT), EXPECTED, &#39;Verify correct return value&#39; );
 ok( !func(INPUT), &#39;Verify boolean branch behaviour&#39; );
 </pre>
 								</div>
-							</li><li><b>RETURN_UNDEF_389_3: Replace return expression with undef</b><br>LOW: Mutation survived, but impact may be minor
+							</li><li><b>RETURN_UNDEF_393_3: Replace return expression with undef</b><br>LOW: Mutation survived, but impact may be minor
 
 								<div class="suggested-test">
 								<div class="suggest-label">🧪 Suggested Test</div>
@@ -733,11 +737,7 @@ is( func(INPUT), EXPECTED, &#39;Verify correct return value&#39; );
 </pre>
 								</div>
 							</li></ul></details>
-<span class="">  390: 			if @{$self-&gt;{&#39;_joins&#39;}};
-</span><span class="">  391: 		my $rows = $db-&gt;selectall_arrayref({%{$self-&gt;{&#39;_where&#39;}}});
-</span><span class="">  392: 		_apply_perl_sort_limit($rows, $self-&gt;{&#39;_order_by&#39;}, $self-&gt;{&#39;_offset&#39;}, undef);
-</span><span class="">  393: 		return $rows-&gt;[0];
-</span><span class="">  394: 	}
+<span class="">  394: 	}
 </span><span class="">  395: 
 </span><span class="">  396: 	my $saved = $self-&gt;{&#39;_limit&#39;};
 </span><span class="">  397: 	$self-&gt;{&#39;_limit&#39;} = 1;
@@ -747,12 +747,12 @@ is( func(INPUT), EXPECTED, &#39;Verify correct return value&#39; );
 </span><span class="">  401: 	$db-&gt;_debug(&quot;Query-&gt;first: $query&quot;);
 </span><span class="">  402: 
 </span><span class="">  403: 	my $sth = $db-&gt;{$table}-&gt;prepare_cached($query);
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  404: 	$sth-&gt;execute(@{$args}) or croak(&quot;$query: @{$args}&quot;);
-</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  405: 
+</span><span class="">  404: 	$sth-&gt;execute(@{$args}) or croak(&quot;$query: @{$args}&quot;);
+</span><span class="">  405: 
 </span><span class="">  406: 	my $row = $sth-&gt;fetchrow_hashref();
 </span><span class="">  407: 	$sth-&gt;finish();
-</span><span class="">  408: 	return $row;
-</span><span class="">  409: }
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  408: 	return $row;
+</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  409: }
 </span><span class="">  410: 
 </span><span class="">  411: =head2 count
 </span><span class="">  412: 
@@ -767,21 +767,25 @@ is( func(INPUT), EXPECTED, &#39;Verify correct return value&#39; );
 </span><span class="">  421: sub count
 </span><span class="">  422: {
 </span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">423 → 428 → 434</span></span>  423: 	my $self = shift;
-</span><span class="survived-1 tooltip" data-tooltip="Mutation survived. Add targeted tests to validate this branch.">  424: 	my $db   = $self-&gt;{&#39;_db&#39;};
+</span><span class="">  424: 	my $db   = $self-&gt;{&#39;_db&#39;};
+</span><span class="">  425: 
+</span><span class="">  426: 	$db-&gt;_open_table({});
+</span><span class="">  427: 
+</span><span class="survived-1 tooltip" data-tooltip="Mutation survived. Add targeted tests to validate this branch.">  428: 	if($db-&gt;{&#39;berkeley&#39;}) {
 </span>
 					<details class="mutant-details">
 					<summary>Mutants (Total: 1, Killed: 0, Survived: 1)</summary>
 					<ul>
-				<li><b>COND_INV_424_2: Invert condition if to unless</b><br>MEDIUM: Add tests asserting both true and false outcomes
+				<li><b>COND_INV_428_2: Invert condition if to unless</b><br>MEDIUM: Add tests asserting both true and false outcomes
 </li></ul></details>
-<span class="">  425: 
-</span><span class="">  426: 	$db-&gt;_open_table({});
-</span><span class="survived-2 tooltip" data-tooltip="Return value mutation survived. Add tests asserting exact return values. Boolean logic mutation survived. Add tests covering both true and false paths.">  427: 
+<span class="">  429: 		croak(ref($db), &#39;: query-&gt;count() with JOINs is not supported on BerkeleyDB&#39;)
+</span><span class="">  430: 			if @{$self-&gt;{&#39;_joins&#39;}};
+</span><span class="survived-2 tooltip" data-tooltip="Return value mutation survived. Add tests asserting exact return values. Boolean logic mutation survived. Add tests covering both true and false paths.">  431: 		return $db-&gt;count({%{$self-&gt;{&#39;_where&#39;}}});
 </span>
 					<details class="mutant-details">
 					<summary>Mutants (Total: 2, Killed: 0, Survived: 2)</summary>
 					<ul>
-				<li><b>BOOL_NEGATE_427_3: Negate boolean return expression</b><br>MEDIUM: Add tests asserting both true and false outcomes
+				<li><b>BOOL_NEGATE_431_3: Negate boolean return expression</b><br>MEDIUM: Add tests asserting both true and false outcomes
 
 								<div class="suggested-test">
 								<div class="suggest-label">🧪 Suggested Test</div>
@@ -789,7 +793,7 @@ is( func(INPUT), EXPECTED, &#39;Verify correct return value&#39; );
 ok( !func(INPUT), &#39;Verify boolean branch behaviour&#39; );
 </pre>
 								</div>
-							</li><li><b>RETURN_UNDEF_427_3: Replace return expression with undef</b><br>LOW: Mutation survived, but impact may be minor
+							</li><li><b>RETURN_UNDEF_431_3: Replace return expression with undef</b><br>LOW: Mutation survived, but impact may be minor
 
 								<div class="suggested-test">
 								<div class="suggest-label">🧪 Suggested Test</div>
@@ -798,22 +802,18 @@ is( func(INPUT), EXPECTED, &#39;Verify correct return value&#39; );
 </pre>
 								</div>
 							</li></ul></details>
-<span class="">  428: 	if($db-&gt;{&#39;berkeley&#39;}) {
-</span><span class="">  429: 		croak(ref($db), &#39;: query-&gt;count() with JOINs is not supported on BerkeleyDB&#39;)
-</span><span class="">  430: 			if @{$self-&gt;{&#39;_joins&#39;}};
-</span><span class="">  431: 		return $db-&gt;count({%{$self-&gt;{&#39;_where&#39;}}});
-</span><span class="">  432: 	}
+<span class="">  432: 	}
 </span><span class="">  433: 
 </span><span class="">  434: 	my ($query, $args, $table) = $self-&gt;_build_sql(1);
 </span><span class="">  435: 	$db-&gt;_debug(&quot;Query-&gt;count: $query&quot;);
 </span><span class="">  436: 
 </span><span class="">  437: 	my $sth = $db-&gt;{$table}-&gt;prepare_cached($query);
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  438: 	$sth-&gt;execute(@{$args}) or croak(&quot;$query: @{$args}&quot;);
-</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  439: 
+</span><span class="">  438: 	$sth-&gt;execute(@{$args}) or croak(&quot;$query: @{$args}&quot;);
+</span><span class="">  439: 
 </span><span class="">  440: 	my $row = $sth-&gt;fetchrow_arrayref();
 </span><span class="">  441: 	$sth-&gt;finish();
-</span><span class="">  442: 	return $row ? $row-&gt;[0] : 0;
-</span><span class="">  443: }
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  442: 	return $row ? $row-&gt;[0] : 0;
+</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  443: }
 </span><span class="">  444: 
 </span><span class="">  445: =head1 SEE ALSO
 </span><span class="">  446: 
