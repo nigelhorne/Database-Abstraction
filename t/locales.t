@@ -26,7 +26,7 @@ use_ok('Database::test1');
 my $data_dir = File::Spec->catfile($Bin, File::Spec->updir(), 't', 'data');
 
 # Strip the Carp-appended "at FILE line N.\n" so messages compare cleanly
-sub trim_loc { my $m = shift // ''; $m =~ s/ at \S+ line \d+\.?\n?$//; $m }
+sub trim_loc { my $m = shift // ''; $m =~ s/ at \S+ line \d+\.?.*$//s; $m }
 
 my @locales = ('en_US.UTF-8', 'de_DE.UTF-8', 'ja_JP.UTF-8');
 
