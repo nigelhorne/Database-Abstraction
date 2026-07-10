@@ -17,7 +17,7 @@ WriteMakefile(
 	VERSION_FROM	=> 'lib/Database/Abstraction.pm',
 	ABSTRACT_FROM	=> 'lib/Database/Abstraction.pm',
 	((defined($ExtUtils::MakeMaker::VERSION) && ($ExtUtils::MakeMaker::VERSION >= 6.3002))
-		? ('LICENSE'=> 'GPL')
+		? ('LICENSE'=> 'gpl_2')
 		: ()),
 	'LIBS' => [''],	# e.g., '-lm'
 	'DEFINE' => '',	# e.g., '-DHAVE_SOMETHING'
@@ -39,11 +39,11 @@ WriteMakefile(
 		'DBD::SQLite::Constants' => 0,
 		'ExtUtils::MakeMaker' => 6.64,	# 6.64 for TEST_REQUIRES
 		'File::Spec' => 0,
-		'File::pfopen' => 0.03,
 		'File::Temp' => 0,
 		'Log::Abstraction' => 0.26,
 		'Object::Configure' => 0.16,
 		'Params::Get' => 0.13,
+		'Return::Set' => 0,
 		'Scalar::Util' => 0,
 	}, TEST_REQUIRES => {
 		'DBD::CSV' => 0,

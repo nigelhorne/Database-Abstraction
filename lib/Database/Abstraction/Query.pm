@@ -10,7 +10,7 @@ use warnings;
 use Carp;
 use Scalar::Util qw(blessed);
 
-our $VERSION = '0.01';
+our $VERSION = '0.35';
 
 =encoding UTF-8
 

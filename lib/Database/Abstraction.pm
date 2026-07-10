@@ -40,7 +40,6 @@ use DBD::SQLite::Constants qw/:file_open/;	# For SQLITE_OPEN_READONLY
 use Fcntl;	# For O_RDONLY
 use Cwd;
 use File::Spec;
-use File::pfopen 0.03;	# For $mode and list context
 use File::Temp;
 use List::Util qw(all);
 use Log::Abstraction 0.26;
@@ -689,7 +688,16 @@ sub _open
 		$self->{'type'} = 'BerkeleyDB';
 	} else {
 		my $fin;
-		($fin, $slurp_file) = File::pfopen::pfopen($dir, $dbname, 'csv.gz:db.gz', '<');
+		# File::pfopen splits $path on ':' which breaks Windows drive letters
+		# (C:\foo becomes ['C', '\foo']).  Since we always have a single directory
+		# we use File::Spec->catfile directly — same behaviour, portable.
+		for my $ext (qw(csv.gz db.gz)) {
+			my $candidate = File::Spec->catfile($dir, "$dbname.$ext");
+			next unless -r $candidate;
+			open($fin, '<', $candidate) or next;
+			$slurp_file = $candidate;
+			last;
+		}
 		if(defined($slurp_file) && (-r $slurp_file)) {
 			require Gzip::Faster;
 			Gzip::Faster->import();
@@ -701,13 +709,20 @@ sub _open
 			$slurp_file = $fin->filename();
 			$self->{'_temp_fh'} = $fin;	# Keep object alive; auto-unlinks at DESTROY
 		} else {
-			($fin, $slurp_file) = File::pfopen::pfopen($dir, $dbname, 'psv', '<');
-			if(defined($fin)) {
+			my $psv = File::Spec->catfile($dir, "$dbname.psv");
+			if(-r $psv && open($fin, '<', $psv)) {
 				# Pipe separated file
+				$slurp_file = $psv;
 				$params->{'sep_char'} = '|';
 			} else {
-				# CSV file
-				($fin, $slurp_file) = File::pfopen::pfopen($dir, $dbname, 'csv:db', '<');
+				# CSV or BerkeleyDB-extension file
+				for my $ext (qw(csv db)) {
+					my $candidate = File::Spec->catfile($dir, "$dbname.$ext");
+					next unless -r $candidate;
+					open($fin, '<', $candidate) or next;
+					$slurp_file = $candidate;
+					last;
+				}
 			}
 		}
 		if(my $filename = $self->{'filename'} || $defaults{'filename'}) {
