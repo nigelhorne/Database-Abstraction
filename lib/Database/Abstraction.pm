@@ -21,7 +21,6 @@ package Database::Abstraction;
 # TODO:	The maximum number to return should be tuneable (as a LIMIT)
 # TODO:	Add full CRUD support
 # TODO:	It would be better for the default sep_char to be ',' rather than '!'
-# FIXME:	t/xml.t fails in slurping mode
 # TODO:	Other databases e.g., Redis, noSQL, remote databases such as MySQL, PostgreSQL
 # TODO: The no_entry/entry terminology is confusing.  Replace with no_id/id_column
 # TODO: Add support for DBM::Deep
@@ -34,9 +33,8 @@ use autodie qw(:all);
 use boolean;
 use Carp;
 use Class::Abstract;
-use Data::Dumper;
 use Data::Reuse;
-use DBD::SQLite::Constants qw/:file_open/;	# For SQLITE_OPEN_READONLY
+use DBI;
 use Fcntl;	# For O_RDONLY
 use Cwd;
 use File::Spec;
@@ -329,14 +327,12 @@ hashrefs) describing the join:
 
 =head2 init
 
-Initializes the abstraction class and its subclasses with optional arguments for configuration.
+Set class-level defaults shared by all instances.
 
     Database::Abstraction::init(directory => '../data');
 
-See the documentation for new to see what variables can be set.
-
-Returns a reference to a hash of the current values.
-Therefore when given with no arguments you can get the current default values:
+Accepts the same parameters as L</new>.  Returns a reference to the
+current defaults hash, so you can read them back:
 
     my $defaults = Database::Abstraction::init();
     print $defaults->{'directory'}, "\n";
@@ -670,8 +666,9 @@ sub _open
 		# SQLite file
 		require DBI && DBI->import() unless DBI->can('connect');
 
+		require DBD::SQLite::Constants;
 		$dbh = DBI->connect("dbi:SQLite:dbname=$slurp_file", undef, undef, {
-			sqlite_open_flags => SQLITE_OPEN_READONLY,
+			sqlite_open_flags => DBD::SQLite::Constants::SQLITE_OPEN_READONLY(),
 		});
 	}
 	if($dbh) {
@@ -914,9 +911,8 @@ Pass a C<join> key to combine with another table:
 Results are returned in the cache (if configured) and the returned array
 reference is made read-only unless C<no_fixate> was set.
 
-B<Note:> because this returns an array reference, no C<LIMIT> is applied.
-Use L</selectall_array> in scalar context, or L</query> with C<< ->limit() >>,
-when you want C<LIMIT 1>.
+B<Note:> this always returns all matching rows.  Use L</selectall_array>
+in scalar context, or C<< $db->query->limit(1)->all() >>, to fetch just one row.
 
 =head3 PSEUDOCODE
 
@@ -969,7 +965,7 @@ sub selectall_arrayref {
 			if(ref($self->{'data'}) eq 'HASH') {
 				$self->_debug("$table: returning ", scalar keys %{$self->{'data'}}, ' entries');
 				if(scalar keys %{$self->{'data'}} <= 10) {
-					$self->_debug(Dumper($self->{'data'}));
+					$self->_debug(do { require Data::Dumper; Data::Dumper::Dumper($self->{'data'}) });
 				}
 				my @rc = values %{$self->{'data'}};
 				return set_return(\@rc, { type => 'arrayref' });
@@ -1441,7 +1437,7 @@ sub fetchrow_hashref {
 	if($c) {
 		if($rc) {
 			$self->_debug("stash $key=>$rc in the cache for ", $self->{'cache_duration'});
-			$self->_debug("returns ", Data::Dumper->new([$rc])->Dump());
+			$self->_debug("returns ", do { require Data::Dumper; Data::Dumper->new([$rc])->Dump() });
 		} else {
 			$self->_debug("Stash $key=>undef in the cache for ", $self->{'cache_duration'});
 		}

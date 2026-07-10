@@ -33,13 +33,14 @@ WriteMakefile(
 		'Carp' => 0,
 		'Class::Abstract' => 0,
 		'Cwd' => 0,
-		'Data::Dumper' => 0,
-		'Data::Reuse' => 0,	# Fails installation tests on recent Perls, RT#100461
+		'DBI' => 1.6,
+		'Data::Reuse' => 0,	# Required for result-set memory deduplication; see also RT#100461
 		# 'Error' => 0,
 		'DBD::SQLite::Constants' => 0,
 		'ExtUtils::MakeMaker' => 6.64,	# 6.64 for TEST_REQUIRES
 		'File::Spec' => 0,
 		'File::Temp' => 0,
+		'List::Util' => 1.33,
 		'Log::Abstraction' => 0.26,
 		'Object::Configure' => 0.16,
 		'Params::Get' => 0.13,
@@ -85,13 +86,10 @@ WriteMakefile(
 				web => 'https://github.com/nigelhorne/Database-Abstraction',
 				# license    => 'http://dev.perl.org/licenses/',
 			}, bugtracker => {
-				web => 'https://rt.cpan.org/Public/Dist/Display.html?Name=Database-Abstraction',
-				url => 'https://rt.cpan.org/Public/Dist/Display.html?Name=Database-Abstraction',
-				# web => 'https://github.com/nigelhorne/Database-Abstraction/issues',
-				# url => 'https://github.com/nigelhorne/Database-Abstraction/issues',
-				mailto => 'bug-Database-Abstraction@rt.cpan.org'
+				web    => 'https://rt.cpan.org/Public/Dist/Display.html?Name=Database-Abstraction',
+				mailto => 'bug-Database-Abstraction@rt.cpan.org',
 			}
 		},
 	},
-	MIN_PERL_VERSION	=> '5.008'
+	MIN_PERL_VERSION	=> '5.010'
 );

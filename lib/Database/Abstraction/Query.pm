@@ -10,13 +10,17 @@ use warnings;
 use Carp;
 use Scalar::Util qw(blessed);
 
-our $VERSION = '0.35';
-
-=encoding UTF-8
-
 =head1 NAME
 
 Database::Abstraction::Query - Fluent, chainable query builder for Database::Abstraction
+
+=head1 VERSION
+
+Version 0.35
+
+=cut
+
+our $VERSION = '0.35';
 
 =head1 SYNOPSIS
 
@@ -79,7 +83,7 @@ C<offset>) all return C<$self>, so calls can be chained in any order.
 
 B<Terminal methods> (C<all>, C<first>, C<count>) assemble the SQL, execute
 it, and return the result.  Each terminal method can be called on the same
-builder object independently — calling C<first()> does not modify the stored
+builder object independently - calling C<first()> does not modify the stored
 state (it temporarily sets LIMIT 1 internally).
 
 =item *
@@ -158,7 +162,7 @@ sub select
     $q->where(status => 'active');
     $q->where(score  => { '>'  => 8     });
     $q->where(name   => { -in  => [...] });
-    $q->where(-or    => [ {…}, {…}     ]);
+    $q->where(-or    => [ {...}, {...}     ]);
 
 Add one or more criteria to the query.  Multiple calls are merged with
 AND semantics.  Accepts a flat list of key/value pairs or a single hashref.
@@ -196,11 +200,11 @@ Append one or more JOIN specs.  Each spec is a hashref with:
 
 =over 4
 
-=item * C<table> — the table to join (required)
+=item * C<table> - the table to join (required)
 
-=item * C<on> — the join condition, verbatim SQL (required)
+=item * C<on> - the join condition, verbatim SQL (required)
 
-=item * C<type> — join type: C<INNER> (default), C<LEFT>, C<RIGHT>, C<FULL>, C<CROSS>
+=item * C<type> - join type: C<INNER> (default), C<LEFT>, C<RIGHT>, C<FULL>, C<CROSS>
 
 =back
 
@@ -440,7 +444,7 @@ sub count
 
 =head1 SEE ALSO
 
-L<Database::Abstraction> — the parent module and its L<Database::Abstraction/QUERY CRITERIA> section.
+L<Database::Abstraction> - the parent module and its L<Database::Abstraction/QUERY CRITERIA> section.
 
 =head1 AUTHOR
 

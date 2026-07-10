@@ -1,16 +1,17 @@
 # Generated from Makefile.PL using makefilepl2cpanfile
 
-requires 'perl', '5.008';
+requires 'perl', '5.010';
 
 requires 'Carp';
 requires 'Class::Abstract';
 requires 'Cwd';
+requires 'DBI', '1.6';
 requires 'DBD::SQLite::Constants';
-requires 'Data::Dumper';
 requires 'Data::Reuse';
 requires 'ExtUtils::MakeMaker', '6.64';
 requires 'File::Spec';
 requires 'File::Temp';
+requires 'List::Util', '1.33';
 requires 'Log::Abstraction', '0.26';
 requires 'Object::Configure', '0.16';
 requires 'Params::Get', '0.13';

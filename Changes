@@ -1,6 +1,27 @@
 Revision history for Database-Abstraction
 
-0.36	
+0.36
+	[ Bug fixes ]
+	- Data::Reuse stale-address hazard: selectall_arrayref() and
+	  selectall_array() now call Data::Reuse::forget() immediately before
+	  fixate() to clear stale address→canonical mappings that could cause
+	  one row's data to be silently substituted for another's on repeated
+	  DBI calls (intermittent wrong-row returns in join queries)
+	- Windows-portable file detection: replaced File::pfopen (which splits
+	  the path on ':' and breaks Windows drive letters) with
+	  File::Spec->catfile + -r checks in _open_table()
+	- t/locales.t: trim_loc() regex now uses /s flag so it correctly strips
+	  multi-line Carp::confess stack traces, not just single-line croak output
+
+	[ Security ]
+	- Input validation / SQL injection guards: id column name (new()),
+	  dbname and filename (_open()), and join table name (_build_joins())
+	  are now validated against strict identifier regexes; invalid values
+	  croak with a descriptive message before any SQL is constructed
+	- _like_match(): replaced regex-based LIKE translation (%->.*) with an
+	  O(m*n) dynamic-programming matcher in slurp mode, eliminating
+	  catastrophic backtracking on patterns such as %a%a%a%a%b
+
 	[ Enhancements ]
 	- Prepared statement caching: all DBI prepare() calls replaced with
 	  prepare_cached() for statement-handle reuse across queries
@@ -25,6 +46,8 @@ Revision history for Database-Abstraction
 	  ->select()->where()->join()->order_by()->limit()->offset()->all()/
 	  first()/count()
 	- Use Class::Abstract to ensure it's not instantiated directly
+	- DBD::SQLite::Constants and Data::Dumper are now loaded lazily (only
+	  when the relevant code path is actually exercised)
 
 0.35	Mon Jun  8 08:25:03 EDT 2026
 	[ Bug fixes ]
