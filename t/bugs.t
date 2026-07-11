@@ -21,6 +21,9 @@ if($@) {
 }
 
 use lib 't/lib';
+use Database::test1;
+use Database::test3;
+use Database::test5;
 
 my $data_dir = File::Spec->catfile($Bin, File::Spec->updir(), 't', 'data');
 
@@ -31,7 +34,7 @@ my $data_dir = File::Spec->catfile($Bin, File::Spec->updir(), 't', 'data');
 #   accesses must use exists() before dereferencing a locked key.
 # -------------------------------------------------------------------------
 
-use_ok('Database::test1');
+pass('Database::test1 loaded');
 my $t1 = new_ok('Database::test1' => [$data_dir]);
 
 # Slurped data should be accessible without throwing on any key access
@@ -130,7 +133,7 @@ throws_ok { $noa->number('one') } qr/AUTOLOAD disabled/i, 'BUG4: auto_load => 0 
 
 # We can't easily trigger the XML die paths without crafting XML files,
 # so we test that the XML success path still works (regression guard).
-use_ok('Database::test3');
+pass('Database::test3 loaded');
 my $t3 = Database::test3->new(directory => $data_dir);
 ok(defined($t3), 'BUG5: XML load still works after die->croak fix');
 
@@ -140,7 +143,7 @@ ok(defined($t3), 'BUG5: XML load still works after die->croak fix');
 #   that column name, not the string literal 'entry'.
 # -------------------------------------------------------------------------
 
-use_ok('Database::test5');
+pass('Database::test5 loaded');
 my $t5 = Database::test5->new(directory => $data_dir);
 
 # In list context AUTOLOAD builds a SELECT with the correct id column guard
