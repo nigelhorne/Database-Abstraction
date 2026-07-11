@@ -1,5 +1,13 @@
 Revision history for Database-Abstraction
 
+0.37
+	[ Bug fixes ]
+	- t/{csv,csv_id,schema,locales,no_entry,bugs}.t: replaced use_ok() with
+	  compile-time use + pass() to prevent "Too late to run CHECK block"
+	  warnings from Sub::Private (used by Log::Abstraction); use_ok() wraps
+	  its argument in a runtime string eval, past the CHECK phase, which
+	  caused Test::NoWarnings failures in those six test files
+
 0.36	Thu Jul  9 21:38:49 EDT 2026
 	[ Bug fixes ]
 	- Data::Reuse stale-address hazard: selectall_arrayref() and
