@@ -20,7 +20,7 @@ https://pjcj.net
 <h1>Branch Coverage</h1>
 <table>
 <tr><td class="h" align="right">File:</td><td align="left">blib/lib/Database/Abstraction.pm</td></tr>
-<tr><td class="h" align="right">Coverage:</td><td align="left" class="c0">73.9%</td></tr>
+<tr><td class="h" align="right">Coverage:</td><td align="left" class="c0">74.0%</td></tr>
 </table>
 <div><br/></div>
 <table>
@@ -110,7 +110,7 @@ https://pjcj.net
 <tr><td class="h"><a id="L1038">1038</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $sth-&gt;execute(@query_args)</td></tr>
 <tr><td class="h"><a id="L1042">1042</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if scalar keys %{$href;}</td></tr>
 <tr><td class="h"><a id="L1044">1044</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if $c</td></tr>
-<tr><td class="h"><a id="L1046">1046</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">unless ($$self{&quot;no_fixate&quot;})</td></tr>
+<tr><td class="h"><a id="L1046">1046</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($rc and not $$self{&quot;no_fixate&quot;})</td></tr>
 <tr><td class="h"><a id="L1095">1095</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&quot;berkeley&quot;})</td></tr>
 <tr><td class="h"><a id="L1098">1098</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">wantarray ? :</td></tr>
 <tr><td class="h"><a id="L1106">1106</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $join_spec = delete $params-&gt;{&#39;join&#39;})</td></tr>
@@ -258,7 +258,7 @@ https://pjcj.net
 <tr><td class="h"><a id="L1949">1949</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $sth-&gt;execute(@args)</td></tr>
 <tr><td class="h"><a id="L1951">1951</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (wantarray)</td></tr>
 <tr><td class="h"><a id="L1953">1953</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($cache)</td></tr>
-<tr><td class="h"><a id="L1956">1956</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">unless $$self{&quot;no_fixate&quot;}</td></tr>
+<tr><td class="h"><a id="L1956">1956</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if scalar @rc and not $$self{&quot;no_fixate&quot;}</td></tr>
 <tr><td class="h"><a id="L1961">1961</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($cache)</td></tr>
 <tr><td class="h"><a id="L1970">1970</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if (defined $^V and $^V ge &quot;v5.14.0&quot;)</td></tr>
 <tr><td class="h"><a id="L1971">1971</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ${^GLOBAL_PHASE} eq &quot;DESTRUCT&quot;</td></tr>
@@ -333,8 +333,8 @@ https://pjcj.net
 <tr><td class="h"><a id="L2286">2286</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (my $dbh = $$self{$table})</td></tr>
 <tr><td class="h"><a id="L2302">2302</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless do {
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BEGIN {
-&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;autodie::Scope::GuardStack/guard4&#39;} = &#39;autodie::Scope::Guard=CODE(0x55c21c3ec538)&#39;;
-&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;no Fatal&#39;} = &#39;HASH(0x55c21b7204a0)&#39;;
+&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;autodie::Scope::GuardStack/guard4&#39;} = &#39;autodie::Scope::Guard=CODE(0x555bad0d8a50)&#39;;
+&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;no Fatal&#39;} = &#39;HASH(0x555bac40cd68)&#39;;
 }
 &#11;open $fh, &quot;&lt;&quot;, $file
 }</td></tr>
