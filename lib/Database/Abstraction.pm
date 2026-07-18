@@ -1043,7 +1043,7 @@ sub selectall_arrayref {
 		}
 		$c->set($key, $rc, $self->{'cache_duration'}) if $c;
 
-		if(!$self->{'no_fixate'}) {
+		if($rc && !$self->{'no_fixate'}) {
 			# forget() clears stale address→canonical mappings from prior calls;
 			# fixate() then deduplicates values within this result set only.
 			# Without forget(), freed hashref addresses from previous fixate calls
@@ -1953,7 +1953,7 @@ sub AUTOLOAD {
 		if($cache) {
 			$cache->set($key, \@rc, $self->{'cache_duration'});	# Store a ref to the array
 		}
-		Data::Reuse::fixate(@rc) if(!$self->{'no_fixate'});
+		Data::Reuse::fixate(@rc) if(scalar(@rc) && !$self->{'no_fixate'});
 		return @rc;
 	}
 	my $rc = $sth->fetchrow_array();	# Return the first match only
