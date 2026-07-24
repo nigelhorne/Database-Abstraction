@@ -25,6 +25,7 @@ package Database::Abstraction;
 # TODO: The no_entry/entry terminology is confusing.  Replace with no_id/id_column
 # TODO: Add support for DBM::Deep
 # TODO: Log queries and the time that they took to execute per database
+# TODO: Use File::Slurp::Remote, when in Slurp mode, to support remote databases
 
 use warnings;
 use strict;
@@ -45,6 +46,7 @@ use Object::Configure 0.16;
 use Params::Get 0.13;
 use Return::Set qw(set_return);
 use Scalar::Util;
+use Sub::Private;
 
 our %defaults;
 use constant	DEFAULT_MAX_SLURP_SIZE => 16 * 1024;	# CSV files <= than this size are read into memory
@@ -598,7 +600,7 @@ sub set_logger
 # Read the data into memory or establish a connection to the database file.
 # column_names allows the column names to be overridden on CSV files
 
-sub _open
+sub _open :Private
 {
 	# Enforce that _open is only reachable from within this class hierarchy;
 	# caller() returns the calling package name as a plain string.
