@@ -1363,7 +1363,7 @@ sub fetchrow_hashref {
 	# ::diag($self->{'type'});
 	if($self->{'data'} && (!$self->{'no_entry'}) && (scalar keys(%{$params}) == 1) && defined($params->{'entry'}) && !$self->_has_complex_criteria($params)) {
 		$self->_debug('Fast return from slurped data');
-		# Use exists() — fixate() locks the outer hash; accessing a missing key throws
+		# Use exists(), fixate() locks the outer hash; accessing a missing key throws
 		return exists($self->{'data'}->{$params->{'entry'}}) ? $self->{'data'}->{$params->{'entry'}} : undef;
 	}
 
