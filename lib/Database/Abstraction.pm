@@ -46,7 +46,7 @@ use Object::Configure 0.16;
 use Params::Get 0.13;
 use Return::Set qw(set_return);
 use Scalar::Util;
-use Sub::Private;
+use Sub::Protected;
 
 our %defaults;
 use constant	DEFAULT_MAX_SLURP_SIZE => 16 * 1024;	# CSV files <= than this size are read into memory
@@ -600,7 +600,7 @@ sub set_logger
 # Read the data into memory or establish a connection to the database file.
 # column_names allows the column names to be overridden on CSV files
 
-sub _open :Private
+sub _open :Protected
 {
 	# Enforce that _open is only reachable from within this class hierarchy;
 	# caller() returns the calling package name as a plain string.
