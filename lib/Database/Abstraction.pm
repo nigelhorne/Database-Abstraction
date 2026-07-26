@@ -658,8 +658,6 @@ sub _open :Protected
 
 	# DSN-based connection bypasses file detection entirely
 	if(my $dsn = $self->{'dsn'} || $defaults{'dsn'}) {
-		require DBI && DBI->import() unless DBI->can('connect');
-
 		my $dialect = 'generic';
 		if    ($dsn =~ /^dbi:SQLite:/i) { $dialect = 'sqlite'   }
 		elsif ($dsn =~ /^dbi:Pg:/i)     { $dialect = 'postgres' }
@@ -742,8 +740,6 @@ sub _open :Protected
 	# Look at various places to find the file and derive the file type from the file's name
 	if(-r $slurp_file) {
 		# SQLite file
-		require DBI && DBI->import() unless DBI->can('connect');
-
 		require DBD::SQLite::Constants;
 		$dbh = DBI->connect("dbi:SQLite:dbname=$slurp_file", undef, undef, {
 			sqlite_open_flags => DBD::SQLite::Constants::SQLITE_OPEN_READONLY(),
@@ -800,26 +796,27 @@ sub _open :Protected
 		# File::pfopen splits $path on ':' which breaks Windows drive letters
 		# (C:\foo becomes ['C', '\foo']).  Since we always have a single directory
 		# we use File::Spec->catfile directly — same behaviour, portable.
+		my $gz_file;
 		for my $ext (qw(csv.gz db.gz)) {
 			my $candidate = File::Spec->catfile($dir, "$dbname.$ext");
 			next unless -r $candidate;
-			open($fin, '<', $candidate) or next;
-			$slurp_file = $candidate;
+			open($fin, '<', $candidate);
+			$gz_file = $candidate;
 			last;
 		}
-		if(defined($slurp_file) && (-r $slurp_file)) {
+		if($gz_file) {
 			require Gzip::Faster;
-			Gzip::Faster->import();
 
 			close($fin);
 			$fin = File::Temp->new(SUFFIX => '.csv', UNLINK => 1);
-			print $fin gunzip_file($slurp_file);
+			print $fin Gzip::Faster::gunzip_file($gz_file);
 			$fin->flush();
 			$slurp_file = $fin->filename();
 			$self->{'_temp_fh'} = $fin;	# Keep object alive; auto-unlinks at DESTROY
 		} else {
 			my $psv = File::Spec->catfile($dir, "$dbname.psv");
-			if(-r $psv && open($fin, '<', $psv)) {
+			if(-r $psv) {
+				open($fin, '<', $psv);
 				# Pipe separated file
 				$slurp_file = $psv;
 				$params->{'sep_char'} = '|';
@@ -828,7 +825,7 @@ sub _open :Protected
 				for my $ext (qw(csv db)) {
 					my $candidate = File::Spec->catfile($dir, "$dbname.$ext");
 					next unless -r $candidate;
-					open($fin, '<', $candidate) or next;
+					open($fin, '<', $candidate);
 					$slurp_file = $candidate;
 					last;
 				}
@@ -903,11 +900,10 @@ sub _open :Protected
 					$self->{'data'} = ();
 				} else {
 					require Text::xSV::Slurp;
-					Text::xSV::Slurp->import();
 
 					$self->_debug('slurp in');
 
-					my $dataref = xsv_slurp(
+					my $dataref = Text::xSV::Slurp::xsv_slurp(
 						shape => 'aoh',
 						text_csv => {
 							sep_char => $sep_char,
@@ -942,9 +938,8 @@ sub _open :Protected
 			if(-r $slurp_file) {
 				if((-s $slurp_file) <= $max_slurp_size) {
 					require XML::Simple;
-					XML::Simple->import();
 
-					my $xml = XMLin($slurp_file);
+					my $xml = XML::Simple::XMLin($slurp_file);
 					my @keys = keys %{$xml};
 					my $key = $keys[0];
 					my @data;
@@ -2453,7 +2448,7 @@ sub _is_berkeley_db {
 	if($is_db) {
 		# Step 2: Attempt to open as Berkeley DB
 
-		require DB_File && DB_File->import();
+		require DB_File;
 
 		my %bdb;
 		if(tie %bdb, 'DB_File', $file, O_RDONLY, 0644, $DB_File::DB_HASH) {

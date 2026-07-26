@@ -6,6 +6,7 @@ package Database::Abstraction::Query;
 
 use strict;
 use warnings;
+use autodie qw(:all);
 
 use Carp;
 use Scalar::Util qw(blessed);
