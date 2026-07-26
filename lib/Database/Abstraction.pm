@@ -2048,12 +2048,12 @@ sub _has_complex_criteria
 # $struct must be the hashref or arrayref to fixate.
 sub _fixate :Private
 {
-    my (undef, $struct) = @_;
-    return unless defined $struct;
-    local $SIG{__WARN__} = sub {
-        warn @_ unless $_[0] =~ /\AUse of uninitialized value.*\bin hash slice\b/;
-    };
-    &Data::Reuse::fixate($struct);
+	my (undef, $struct) = @_;
+	return unless defined $struct;
+	local $SIG{__WARN__} = sub {
+		warn @_ unless $_[0] =~ /\AUse of uninitialized value.*\bin hash slice\b/;
+	};
+	&Data::Reuse::fixate($struct);
 }
 
 sub _build_where
