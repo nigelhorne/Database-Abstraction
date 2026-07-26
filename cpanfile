@@ -17,7 +17,7 @@ requires 'Object::Configure', '0.16';
 requires 'Params::Get', '0.13';
 requires 'Return::Set';
 requires 'Scalar::Util';
-requires 'Sub::Private';
+requires 'Sub::Protected';
 requires 'autodie';
 requires 'boolean';
 requires 'strict';
