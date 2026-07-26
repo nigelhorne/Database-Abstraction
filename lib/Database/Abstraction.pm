@@ -1047,11 +1047,6 @@ sub selectall_arrayref {
 		$c->set($key, $rc, $self->{'cache_duration'}) if $c;
 
 		if($rc && !$self->{'no_fixate'}) {
-			# forget() clears stale address→canonical mappings from prior calls;
-			# fixate() then deduplicates values within this result set only.
-			# Without forget(), freed hashref addresses from previous fixate calls
-			# can collide with new DBI hashrefs and return wrong canonical rows.
-			Data::Reuse::forget();
 			$self->_fixate($rc);
 		}
 
@@ -1202,7 +1197,6 @@ sub selectall_array
 
 		if($rc) {
 			if(!$self->{'no_fixate'}) {
-				Data::Reuse::forget();
 				$self->_fixate($rc);
 			}
 			return @{$rc};
@@ -2051,6 +2045,15 @@ sub _fixate :Private
 {
 	my (undef, $struct) = @_;
 	return unless defined $struct;
+	# Clear stale address→canonical mappings from prior fixate calls before
+	# fixating $struct.  Without this, freed hashref addresses from a previous
+	# object's slurp or DBI result can be reused by the allocator for new
+	# hashrefs; fixate() would then find the stale entry and alias the new
+	# hashref to the wrong canonical, silently substituting one row's data for
+	# another.  This is the same stale-address hazard that affects DBI paths
+	# (see selectall_arrayref / selectall_array) but also affects the slurp
+	# fixate when earlier objects go out of scope before a new slurp runs.
+	Data::Reuse::forget();
 	local $SIG{__WARN__} = sub {
 		warn @_ unless $_[0] =~ /\AUse of uninitialized value.*\bin hash slice\b/;
 	};

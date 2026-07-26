@@ -20,6 +20,17 @@ Revision history for Database-Abstraction
 	- t/bugs.t BUG10: regression guard for the above warning across all
 	  three fixate code-paths (slurp, selectall_arrayref DBI,
 	  selectall_array DBI)
+	- _fixate(): move Data::Reuse::forget() inside the wrapper so it covers
+	  all four fixate call-sites including the slurp path; the slurp fixate
+	  was previously exempt on the grounds that slurped hashrefs are long-lived
+	  and don't create stale entries themselves, but it was still vulnerable to
+	  stale entries left by earlier objects whose hashrefs were freed after going
+	  out of scope — the memory allocator can reuse those addresses for new slurp
+	  hashrefs, causing fixate() to alias them to wrong canonicals (root cause of
+	  an intermittent t/unit.t failure where $db->number('one') occasionally
+	  returned 2 instead of 1); the explicit Data::Reuse::forget() calls that
+	  previously preceded _fixate() in selectall_arrayref and selectall_array
+	  are now redundant and have been removed
 
 0.36	Thu Jul  9 21:38:49 EDT 2026
 	[ Bug fixes ]
