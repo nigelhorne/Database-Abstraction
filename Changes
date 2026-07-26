@@ -2,17 +2,17 @@ Revision history for Database-Abstraction
 
 0.37
 	[ Enhancements ]
+	- DBM::Deep backend: files with .dbm or .deep extension are detected
+	  (after SQLite, before BerkeleyDB) and slurped into the in-memory hash
+	  at open time via DBM::Deep->new(read_only=>1); all existing slurp
+	  fast-paths (selectall_arrayref, selectall_array, fetchrow_hashref,
+	  AUTOLOAD, columns, schema) work unchanged; type is set to 'Deep'
 	- DBM::Deep magic-byte detection: _is_deep_db() checks the first 4 bytes
 	  for 'DPDB' (0x44 0x50 0x44 0x42, the standard DBM::Deep signature) or
 	  'DPDP' (0x44 0x50 0x44 0x50); in _open() the .db candidate is probed
 	  for Deep magic before the BerkeleyDB check, so .db files that are
 	  actually DBM::Deep are correctly identified without requiring a .dbm
 	  or .deep extension
-	- DBM::Deep backend: files with .dbm or .deep extension are detected
-	  (after SQLite, before BerkeleyDB) and slurped into the in-memory hash
-	  at open time via DBM::Deep->new(read_only=>1); all existing slurp
-	  fast-paths (selectall_arrayref, selectall_array, fetchrow_hashref,
-	  AUTOLOAD, columns, schema) work unchanged; type is set to 'Deep'
 	- count() general in-memory scan: added a third fast-path branch that
 	  fires when $self->{'data'} is set AND there is no DBI handle (i.e.
 	  Deep backend); allows count(col => $val) without DBI; SQL-backed

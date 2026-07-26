@@ -723,7 +723,7 @@ sub _open :Protected
 				# Inject the outer key as the id column so criteria on that column work.
 				push @data, (Scalar::Util::reftype($row) // '') eq 'HASH'
 					? { $id => $k, %{$row} }
-					: { $id => $k, value => "$row" };
+					: { $id => $k, value => $row };
 			}
 			$self->{'data'} = @data ? \@data : undef;
 		} else {
@@ -735,7 +735,7 @@ sub _open :Protected
 				my $row = $deep->{$k};
 				$data{$k} = (Scalar::Util::reftype($row) // '') eq 'HASH'
 					? { $id => $k, %{$row} }
-					: { $id => $k, value => "$row" };
+					: { $id => $k, value => $row };
 			}
 			$self->{'data'} = %data ? \%data : undef;
 		}
