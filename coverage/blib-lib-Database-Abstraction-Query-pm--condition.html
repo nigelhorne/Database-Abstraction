@@ -20,7 +20,7 @@ https://pjcj.net
 <h1>Condition Coverage</h1>
 <table>
 <tr><td class="h" align="right">File:</td><td align="left">blib/lib/Database/Abstraction/Query.pm</td></tr>
-<tr><td class="h" align="right">Coverage:</td><td align="left" class="c0">26.3%</td></tr>
+<tr><td class="h" align="right">Coverage:</td><td align="left" class="c0">32.4%</td></tr>
 </table>
 <div><br/></div>
 <table>
@@ -33,6 +33,12 @@ https://pjcj.net
 <tr><td class="h"></td><td class="c0">0</td><td><div><table><tr><th>A</th><th>dec</th></tr><tr align="center"><td class="c0">0</td><td class="c0">0</td></tr><tr align="center"><td class="c0">1</td><td class="c0">1</td></tr></table></div></td><td class="s">$$a{$col} // &quot;&quot;</td></tr>
 <tr><td class="h"><a id="L296">296</a></td><td class="c0">33</td><td><div><table><tr><th>A</th><th>B</th><th>dec</th></tr><tr align="center"><td class="c0">0</td><td class="c0">0</td><td class="c0">0</td></tr><tr align="center"><td class="c3">0</td><td class="c3">1</td><td class="c3">1</td></tr><tr align="center"><td class="c0">1</td><td class="c0">X</td><td class="c0">1</td></tr></table></div></td><td class="s">$$db{&#39;table&#39;} || ref $db</td></tr>
 <tr><td class="h"><a id="L312">312</a></td><td class="c0">67</td><td><div><table><tr><th>A</th><th>B</th><th>dec</th></tr><tr align="center"><td class="c3">0</td><td class="c3">X</td><td class="c3">0</td></tr><tr align="center"><td class="c0">1</td><td class="c0">0</td><td class="c0">0</td></tr><tr align="center"><td class="c3">1</td><td class="c3">1</td><td class="c3">1</td></tr></table></div></td><td class="s">$$db{&quot;type&quot;} eq &quot;CSV&quot; and not $$db{&quot;no_entry&quot;}</td></tr>
+<tr><td class="h"><a id="L349">349</a></td><td class="c0">33</td><td><div><table><tr><th>A</th><th>B</th><th>dec</th></tr><tr align="center"><td class="c3">0</td><td class="c3">0</td><td class="c3">0</td></tr><tr align="center"><td class="c0">0</td><td class="c0">1</td><td class="c0">1</td></tr><tr align="center"><td class="c0">1</td><td class="c0">X</td><td class="c0">1</td></tr></table></div></td><td class="s">$$db{&quot;berkeley&quot;} or ($$db{&quot;type&quot;} // &quot;&quot;) eq &quot;Deep&quot;</td></tr>
+<tr><td class="h"></td><td class="c0">50</td><td><div><table><tr><th>A</th><th>dec</th></tr><tr align="center"><td class="c0">0</td><td class="c0">0</td></tr><tr align="center"><td class="c3">1</td><td class="c3">1</td></tr></table></div></td><td class="s">$$db{&quot;type&quot;} // &quot;&quot;</td></tr>
+<tr><td class="h"><a id="L389">389</a></td><td class="c0">33</td><td><div><table><tr><th>A</th><th>B</th><th>dec</th></tr><tr align="center"><td class="c3">0</td><td class="c3">0</td><td class="c3">0</td></tr><tr align="center"><td class="c0">0</td><td class="c0">1</td><td class="c0">1</td></tr><tr align="center"><td class="c0">1</td><td class="c0">X</td><td class="c0">1</td></tr></table></div></td><td class="s">$$db{&quot;berkeley&quot;} or ($$db{&quot;type&quot;} // &quot;&quot;) eq &quot;Deep&quot;</td></tr>
+<tr><td class="h"></td><td class="c0">50</td><td><div><table><tr><th>A</th><th>dec</th></tr><tr align="center"><td class="c0">0</td><td class="c0">0</td></tr><tr align="center"><td class="c3">1</td><td class="c3">1</td></tr></table></div></td><td class="s">$$db{&quot;type&quot;} // &quot;&quot;</td></tr>
+<tr><td class="h"><a id="L430">430</a></td><td class="c0">33</td><td><div><table><tr><th>A</th><th>B</th><th>dec</th></tr><tr align="center"><td class="c3">0</td><td class="c3">0</td><td class="c3">0</td></tr><tr align="center"><td class="c0">0</td><td class="c0">1</td><td class="c0">1</td></tr><tr align="center"><td class="c0">1</td><td class="c0">X</td><td class="c0">1</td></tr></table></div></td><td class="s">$$db{&quot;berkeley&quot;} or ($$db{&quot;type&quot;} // &quot;&quot;) eq &quot;Deep&quot;</td></tr>
+<tr><td class="h"></td><td class="c0">50</td><td><div><table><tr><th>A</th><th>dec</th></tr><tr align="center"><td class="c0">0</td><td class="c0">0</td></tr><tr align="center"><td class="c3">1</td><td class="c3">1</td></tr></table></div></td><td class="s">$$db{&quot;type&quot;} // &quot;&quot;</td></tr>
 </table>
 </body>
 </html>

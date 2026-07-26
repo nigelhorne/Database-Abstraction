@@ -20,7 +20,7 @@ https://pjcj.net
 <h1>Branch Coverage</h1>
 <table>
 <tr><td class="h" align="right">File:</td><td align="left">blib/lib/Database/Abstraction/Query.pm</td></tr>
-<tr><td class="h" align="right">Coverage:</td><td align="left" class="c0">58.3%</td></tr>
+<tr><td class="h" align="right">Coverage:</td><td align="left" class="c0">53.0%</td></tr>
 </table>
 <div><br/></div>
 <table>
@@ -45,16 +45,19 @@ https://pjcj.net
 <tr><td class="h"><a id="L323">323</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if defined $$self{&quot;_order_by&quot;}</td></tr>
 <tr><td class="h"><a id="L324">324</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if defined $$self{&quot;_limit&quot;}</td></tr>
 <tr><td class="h"><a id="L325">325</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if defined $$self{&quot;_offset&quot;}</td></tr>
-<tr><td class="h"><a id="L349">349</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($$db{&quot;berkeley&quot;})</td></tr>
-<tr><td class="h"><a id="L351">351</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if @{$$self{&quot;_joins&quot;};}</td></tr>
-<tr><td class="h"><a id="L361">361</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $sth-&gt;execute(@{$args;})</td></tr>
-<tr><td class="h"><a id="L388">388</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($$db{&quot;berkeley&quot;})</td></tr>
-<tr><td class="h"><a id="L390">390</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if @{$$self{&quot;_joins&quot;};}</td></tr>
-<tr><td class="h"><a id="L404">404</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $sth-&gt;execute(@{$args;})</td></tr>
-<tr><td class="h"><a id="L428">428</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($$db{&quot;berkeley&quot;})</td></tr>
-<tr><td class="h"><a id="L430">430</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if @{$$self{&quot;_joins&quot;};}</td></tr>
-<tr><td class="h"><a id="L438">438</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $sth-&gt;execute(@{$args;})</td></tr>
-<tr><td class="h"><a id="L442">442</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">$row ? :</td></tr>
+<tr><td class="h"><a id="L349">349</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($$db{&quot;berkeley&quot;} or ($$db{&quot;type&quot;} // &quot;&quot;) eq &quot;Deep&quot;)</td></tr>
+<tr><td class="h"><a id="L350">350</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">$$db{&#39;berkeley&#39;} ? :</td></tr>
+<tr><td class="h"><a id="L352">352</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if @{$$self{&quot;_joins&quot;};}</td></tr>
+<tr><td class="h"><a id="L362">362</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $sth-&gt;execute(@{$args;})</td></tr>
+<tr><td class="h"><a id="L389">389</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($$db{&quot;berkeley&quot;} or ($$db{&quot;type&quot;} // &quot;&quot;) eq &quot;Deep&quot;)</td></tr>
+<tr><td class="h"><a id="L390">390</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">$$db{&#39;berkeley&#39;} ? :</td></tr>
+<tr><td class="h"><a id="L392">392</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if @{$$self{&quot;_joins&quot;};}</td></tr>
+<tr><td class="h"><a id="L406">406</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $sth-&gt;execute(@{$args;})</td></tr>
+<tr><td class="h"><a id="L430">430</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($$db{&quot;berkeley&quot;} or ($$db{&quot;type&quot;} // &quot;&quot;) eq &quot;Deep&quot;)</td></tr>
+<tr><td class="h"><a id="L431">431</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">$$db{&#39;berkeley&#39;} ? :</td></tr>
+<tr><td class="h"><a id="L433">433</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if @{$$self{&quot;_joins&quot;};}</td></tr>
+<tr><td class="h"><a id="L441">441</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $sth-&gt;execute(@{$args;})</td></tr>
+<tr><td class="h"><a id="L445">445</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">$row ? :</td></tr>
 </table>
 </body>
 </html>
