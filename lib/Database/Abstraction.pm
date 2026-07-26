@@ -23,7 +23,6 @@ package Database::Abstraction;
 # TODO:	It would be better for the default sep_char to be ',' rather than '!'
 # TODO:	Other databases e.g., Redis, noSQL, remote databases such as MySQL, PostgreSQL
 # TODO: The no_entry/entry terminology is confusing.  Replace with no_id/id_column
-# TODO: Add support for DBM::Deep
 # TODO: Log queries and the time that they took to execute per database
 # TODO: Use File::Slurp::Remote, when in Slurp mode, to support remote databases
 
@@ -67,7 +66,7 @@ our $VERSION = '0.36';
 =head1 DESCRIPTION
 
 C<Database::Abstraction> is a read-only ORM for Perl that gives a uniform
-interface over CSV, PSV, XML, SQLite, and BerkeleyDB files - without writing
+interface over CSV, PSV, XML, SQLite, DBM::Deep, and BerkeleyDB files - without writing
 any SQL.
 
 Key features:
@@ -231,21 +230,27 @@ The module probes the C<directory> for files in this priority order:
 
 File ending C<.sql>
 
-=item 2. C<PSV>
+=item 2. C<Deep>
+
+DBM::Deep file ending C<.dbm> or C<.deep>.  The entire file is slurped
+into a plain Perl hash on open; all in-memory fast-paths apply.
+Requires L<DBM::Deep> (loaded lazily).
+
+=item 3. C<PSV>
 
 Pipe-separated file, ending C<.psv>
 
-=item 3. C<CSV>
+=item 4. C<CSV>
 
 Comma (or custom) separated file, ending C<.csv> or C<.db>; can be
 gzipped.  B<Note:> the default separator is C<!> not C<,> for historical
 reasons - pass C<< sep_char => ',' >> for standard CSVs.
 
-=item 4. C<XML>
+=item 5. C<XML>
 
 File ending C<.xml>
 
-=item 5. C<BerkeleyDB>
+=item 6. C<BerkeleyDB>
 
 Binary key-value file ending C<.db>
 
@@ -671,6 +676,19 @@ sub _open :Protected
 
 	$self->_debug("_open: try to open $slurp_file");
 
+	# Probe for DBM::Deep files (.dbm or .deep) before the CSV/BerkeleyDB fallback.
+	# Loaded lazily so the DBM::Deep module is not required for other backends.
+	my $deep_file;
+	for my $ext (qw(dbm deep)) {
+		my $candidate = File::Spec->catfile($dir, "$dbname.$ext");
+		if(-r $candidate) { $deep_file = $candidate; last }
+	}
+	# Also detect DBM::Deep files by magic bytes (covers .db files and arbitrary extensions).
+	if(!$deep_file) {
+		my $db_candidate = File::Spec->catfile($dir, "$dbname.db");
+		$deep_file = $db_candidate if -r $db_candidate && $self->_is_deep_db($db_candidate);
+	}
+
 	# Look at various places to find the file and derive the file type from the file's name
 	if(-r $slurp_file) {
 		# SQLite file
@@ -690,6 +708,40 @@ sub _open :Protected
 		$dbh->sqlite_busy_timeout(100000);	# 10s
 		$self->_debug("read in $table from SQLite $slurp_file");
 		$self->{'type'} = 'DBI';
+	} elsif($deep_file) {
+		# DBM::Deep file (.dbm or .deep) — slurp the entire tied hash into a plain
+		# Perl hash so all existing in-memory fast-paths work without modification.
+		require DBM::Deep;
+		my $deep = DBM::Deep->new({ file => $deep_file, read_only => 1 });
+		my $id = $self->{'id'};
+		if($self->{'no_entry'}) {
+			# Not keyed — produce an ordered arrayref of row hashrefs, same as CSV no_entry.
+			my @data;
+			for my $k (sort keys %{$deep}) {
+				my $row = $deep->{$k};
+				# Use reftype (not ref) so blessed DBM::Deep::Hash objects are recognised.
+				# Inject the outer key as the id column so criteria on that column work.
+				push @data, (Scalar::Util::reftype($row) // '') eq 'HASH'
+					? { $id => $k, %{$row} }
+					: { $id => $k, value => "$row" };
+			}
+			$self->{'data'} = @data ? \@data : undef;
+		} else {
+			# Keyed on the primary-key column (default: 'entry') for O(1) lookups.
+			# Each row hash must contain the id column (like CSV rows), so that
+			# selectall_arrayref and AUTOLOAD can access it by name.
+			my %data;
+			for my $k (keys %{$deep}) {
+				my $row = $deep->{$k};
+				$data{$k} = (Scalar::Util::reftype($row) // '') eq 'HASH'
+					? { $id => $k, %{$row} }
+					: { $id => $k, value => "$row" };
+			}
+			$self->{'data'} = %data ? \%data : undef;
+		}
+		$slurp_file = $deep_file;
+		$self->_debug("read in $table from DBM::Deep $deep_file");
+		$self->{'type'} = 'Deep';
 	} elsif($self->_is_berkeley_db(File::Spec->catfile($dir, "$dbname.db"))) {
 		$self->_debug("$table is a BerkeleyDB file");
 		$self->{'type'} = 'BerkeleyDB';
@@ -1264,6 +1316,18 @@ sub count
 		} elsif((scalar(keys %{$params}) == 1) && defined($params->{'entry'}) && !$self->{'no_entry'}) {
 			# exists() guard: fixate() locks all keys in the slurp hash
 			return (exists($self->{'data'}->{$params->{'entry'}}) && $self->{'data'}->{$params->{'entry'}}) ? 1 : 0;
+		} elsif(!$self->_has_complex_criteria($params) && !$self->{$table}) {
+			# General in-memory scan for simple column criteria.
+			# Only taken when there is no DBI handle ($self->{$table} is undef),
+			# i.e. slurp-only backends like Deep.  CSV/XML/SQLite have a DBI handle
+			# and must fall through to the SQL path so that column-name validation
+			# fires in _build_where_conditions.
+			$self->_debug("$table: count in-memory scan");
+			my @rows = ref($self->{'data'}) eq 'HASH' ? values %{$self->{'data'}} : @{$self->{'data'}};
+			return scalar grep {
+				my $row = $_;
+				all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params->{$_}) } keys %{$params}
+			} @rows;
 		}
 	}
 
@@ -2387,6 +2451,23 @@ sub _is_berkeley_db_12
 
 	# Berkeley DB magic numbers
 	return($header eq '6115' || $header eq '1561');	# Btree
+}
+
+# Determine whether a given file is a DBM::Deep file by checking its magic bytes.
+# The standard DBM::Deep magic is 'DPDB' (0x44 0x50 0x44 0x42); 'DPDP' (0x44 0x50 0x44 0x50)
+# is also accepted for compatibility with files created by alternative tooling.
+# Returns 1 if the first 4 bytes match a known DBM::Deep signature, 0 otherwise.
+sub _is_deep_db {
+	my ($self, $file) = @_;
+
+	my $fh;
+	do { no autodie qw(open); open $fh, '<', $file } or return 0;
+	binmode $fh;
+	my $n = read($fh, my $magic, 4);
+	close $fh;
+	return 0 unless defined($n) && $n == 4;
+
+	return($magic eq 'DPDB' || $magic eq 'DPDP');
 }
 
 # Log and remember a message

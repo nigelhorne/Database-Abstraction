@@ -346,8 +346,9 @@ sub all
 	# Ensure _open() fires before checking the backend type.
 	$db->_open_table({});
 
-	if($db->{'berkeley'}) {
-		croak(ref($db), ': query->all() with JOINs is not supported on BerkeleyDB')
+	if($db->{'berkeley'} || ($db->{'type'} // '') eq 'Deep') {
+		my $backend = $db->{'berkeley'} ? 'BerkeleyDB' : 'Deep';
+		croak(ref($db), ": query->all() with JOINs is not supported on $backend")
 			if @{$self->{'_joins'}};
 		my $rows = $db->selectall_arrayref({%{$self->{'_where'}}});
 		_apply_perl_sort_limit($rows, $self->{'_order_by'}, $self->{'_offset'}, $self->{'_limit'});
@@ -385,8 +386,9 @@ sub first
 
 	$db->_open_table({});
 
-	if($db->{'berkeley'}) {
-		croak(ref($db), ': query->first() with JOINs is not supported on BerkeleyDB')
+	if($db->{'berkeley'} || ($db->{'type'} // '') eq 'Deep') {
+		my $backend = $db->{'berkeley'} ? 'BerkeleyDB' : 'Deep';
+		croak(ref($db), ": query->first() with JOINs is not supported on $backend")
 			if @{$self->{'_joins'}};
 		my $rows = $db->selectall_arrayref({%{$self->{'_where'}}});
 		_apply_perl_sort_limit($rows, $self->{'_order_by'}, $self->{'_offset'}, undef);
@@ -425,8 +427,9 @@ sub count
 
 	$db->_open_table({});
 
-	if($db->{'berkeley'}) {
-		croak(ref($db), ': query->count() with JOINs is not supported on BerkeleyDB')
+	if($db->{'berkeley'} || ($db->{'type'} // '') eq 'Deep') {
+		my $backend = $db->{'berkeley'} ? 'BerkeleyDB' : 'Deep';
+		croak(ref($db), ": query->count() with JOINs is not supported on $backend")
 			if @{$self->{'_joins'}};
 		return $db->count({%{$self->{'_where'}}});
 	}
