@@ -536,7 +536,15 @@ sub new {
 	} elsif($class eq __PACKAGE__) {
 		croak("$class: abstract class");
 	} elsif(Scalar::Util::blessed($class)) {
-		# If $class is an object, clone it with new arguments
+		# If $class is an object, clone it with new arguments.
+		# Validate 'id' before merging — the id validation block below is
+		# skipped by this early return, so a hostile clone arg like
+		# id => "entry); DROP TABLE t--" would otherwise bypass all guards
+		# and be interpolated directly into ORDER BY / COUNT() SQL.
+		if(defined $args{'id'}) {
+			croak(ref($class), ": unsafe id column name '$args{id}'")
+				unless $args{'id'} =~ /^[a-zA-Z_][a-zA-Z0-9_]*$/;
+		}
 		return bless { %{$class}, %args }, ref($class);
 	}
 

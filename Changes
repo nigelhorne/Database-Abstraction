@@ -1,6 +1,15 @@
 Revision history for Database-Abstraction
 
 0.37
+	[ Security ]
+	- new() clone path: validate 'id' argument before bless in the clone
+	  branch; previously the early return at line 540 bypassed the id
+	  validation block at lines 558-562, allowing $obj->new(id => "x); DROP
+	  TABLE t--") to produce an object whose $self->{'id'} was directly
+	  interpolated (unbound) into ORDER BY, COUNT(), and CSV-comment-filter
+	  SQL clauses; fix adds the same /^[a-zA-Z_][a-zA-Z0-9_]*$/ guard
+	  inside the clone branch before bless
+
 	[ Bug fixes ]
 	- t/{csv,csv_id,schema,locales,no_entry,bugs}.t: replaced use_ok() with
 	  compile-time use + pass() to prevent "Too late to run CHECK block"

@@ -882,18 +882,25 @@ subtest 'SEC12: DSN with hostile content causes a safe error, not silent success
 	} qr/./,
 	  'SEC12.1 bogus DSN driver causes a croak, not silent failure';
 
-	# 12.2 DSN pointing at /etc/passwd — SQLite attempts to open it as a DB.
+	# 12.2 DSN pointing at a non-SQLite file — SQLite attempts to open it as a DB.
 	#      It is not a valid SQLite file so the query must return 0 rows or throw.
-	#      In neither case should passwd file contents be exposed.
+	#      We use a temp file with arbitrary binary content rather than /etc/passwd
+	#      to avoid macOS TCC prompts: SQLite's WAL mode tries to create journal
+	#      files alongside the target, so pointing at /etc/ triggers an admin dialog.
 	{
+		my $tmp = File::Temp->new(SUFFIX => '.db', UNLINK => 1);
+		print $tmp "NOT A SQLITE DATABASE\x00\x01\x02\x03\n" x 10;
+		$tmp->flush();
+		my $non_sqlite_path = $tmp->filename();
+
 		my $got_rows = eval {
-			my $db = Database::sec12->new(dsn => 'dbi:SQLite:dbname=/etc/passwd');
+			my $db = Database::sec12->new(dsn => "dbi:SQLite:dbname=$non_sqlite_path");
 			my $r = $db->selectall_arrayref();
 			scalar @{$r // []}
 		};
 		# If it threw (expected) OR returned 0 rows — both are safe outcomes.
 		ok(!defined($got_rows) || $got_rows == 0,
-			'SEC12.2 DSN pointing at /etc/passwd returns 0 rows or throws (no data leak)');
+			'SEC12.2 DSN pointing at a non-SQLite file returns 0 rows or throws');
 	}
 
 	pass('SEC12 completed without Perl crash');
