@@ -8,13 +8,13 @@ Makefile.PL
 MANIFEST			This list of files
 MANIFEST.SKIP
 README.md
-scripts/generate_index.pl
 t/00-load.t
 t/10-compile.t
 t/20-new.t
 t/30-basics.t
 t/bugs.t
 t/carp.t
+t/cgi_security.t
 t/chi.t
 t/comment-spelling.t
 t/csv.t
