@@ -8,6 +8,12 @@ Revision history for Database-Abstraction
 	  its argument in a runtime string eval, past the CHECK phase, which
 	  caused Test::NoWarnings failures in those six test files
 	- Don't attempt to fixate empty data
+	- t/bugs.t BUG10: added regression guard for "Use of uninitialized value
+	  in hash slice" emitted by Data::Reuse::fixate() on certain older
+	  Data::Alias / Perl version combinations when processing row hashrefs
+	  whose column values include undef (e.g. CSV rows with blank fields
+	  after blank_is_undef processing); the test exercises all three fixate
+	  call-sites — slurp, selectall_arrayref DBI, selectall_array DBI
 
 0.36	Thu Jul  9 21:38:49 EDT 2026
 	[ Bug fixes ]
