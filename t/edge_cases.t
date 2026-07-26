@@ -259,8 +259,108 @@ subtest 'EC6: _match_criterion regex injection via -like' => sub {
 # EC7-EC9 — SQLite-backed section (skipped if DBD::SQLite unavailable)
 # ===========================================================================
 
+# ===========================================================================
+# EC10 — undef / NULL values in the middle of result arrays (CSV slurp mode)
+# Purpose: verify that undef column values at any position in the result set
+# do not cause crashes, are returned faithfully by all query methods, are
+# correctly excluded by 'distinct', and are correctly matched (or skipped)
+# by IS NULL / concrete-value criteria.
+# Fixture: test1.csv has an 'empty' row whose 'number' column is blank →
+# undef after blank_is_undef / empty_is_undef CSV options applied at slurp.
+# ===========================================================================
+
+subtest 'EC10: undef mid-array — CSV slurp path' => sub {
+	plan tests => 24;
+
+	my $db = Database::test1->new({ directory => $DATA_DIR });
+
+	# ---- selectall_arrayref ------------------------------------------------
+
+	# EC10.1 — all rows returned, including the undef-column row
+	my $all;
+	lives_ok { $all = $db->selectall_arrayref() }
+		'EC10.1 selectall_arrayref does not throw when undef-column row is present';
+	is(scalar(@{$all}), 4, 'EC10.1 returns all 4 rows including the undef-column row');
+
+	# EC10.2 — the undef column value is faithfully preserved
+	my ($empty_row) = grep { defined($_->{'entry'}) && $_->{'entry'} eq 'empty' } @{$all};
+	ok(defined($empty_row),              'EC10.2 undef-column row is present in selectall_arrayref result');
+	ok(!defined($empty_row->{'number'}), 'EC10.2 undef column value is preserved in result row');
+
+	# EC10.3 — IS NULL criterion matches the undef-column row
+	my $null_rows;
+	lives_ok { $null_rows = $db->selectall_arrayref(number => undef) }
+		'EC10.3 selectall_arrayref(number => undef) does not throw';
+	is(scalar(@{$null_rows}), 1, 'EC10.3 IS NULL criterion selects exactly the 1 undef-number row');
+
+	# EC10.4 — concrete-value criterion excludes the undef-column row
+	my $val_rows = $db->selectall_arrayref(number => 2);
+	is(scalar(@{$val_rows}), 1, 'EC10.4 number=2 criterion returns 1 row and skips the undef row');
+
+	# ---- fetchrow_hashref --------------------------------------------------
+
+	# EC10.5 — fetchrow_hashref for the undef-column row
+	my $row;
+	lives_ok { $row = $db->fetchrow_hashref(entry => 'empty') }
+		'EC10.5 fetchrow_hashref for undef-column row does not throw';
+	ok(defined($row),              'EC10.5 returns a defined hashref for the undef-column entry');
+	ok(!defined($row->{'number'}), 'EC10.5 number column is undef in the returned hashref');
+
+	# ---- selectall_array ---------------------------------------------------
+
+	# EC10.6 — selectall_array returns all rows with undef preserved
+	my @arr;
+	lives_ok { @arr = $db->selectall_array() }
+		'EC10.6 selectall_array does not throw with undef mid-array';
+	is(scalar(@arr), 4, 'EC10.6 selectall_array returns all 4 rows');
+	my ($arr_empty) = grep { defined($_->{'entry'}) && $_->{'entry'} eq 'empty' } @arr;
+	ok(!defined($arr_empty->{'number'}), 'EC10.6 undef column value preserved in selectall_array result');
+
+	# ---- count -------------------------------------------------------------
+
+	# EC10.7 — count correctly includes and filters undef-column rows
+	is($db->count(),                4, 'EC10.7 count() includes undef-column rows');
+	is($db->count(number => undef), 1, 'EC10.7 count(number => undef) matches the 1 undef row');
+	is($db->count(number => 2),     1, 'EC10.7 count(number => 2) excludes the undef row');
+
+	# ---- AUTOLOAD list context ---------------------------------------------
+
+	# EC10.8-9 — list context returns all column values including undef
+	my @numbers;
+	lives_ok { @numbers = $db->number() }
+		'EC10.8 AUTOLOAD list context with undef mid-array does not throw';
+	is(scalar(@numbers), 4, 'EC10.8 AUTOLOAD list context returns all 4 values including undef');
+	is(scalar(grep { !defined($_) } @numbers), 1,
+		'EC10.9 exactly one undef value present in AUTOLOAD list result');
+
+	# ---- AUTOLOAD distinct -------------------------------------------------
+
+	# EC10.10-12 — distinct excludes undef values in slurp mode
+	# The slurp path uses: grep { defined } before deduplication (see CLAUDE.md)
+	my @distinct;
+	lives_ok { @distinct = $db->number(distinct => 1) }
+		'EC10.10 AUTOLOAD distinct with undef in data does not throw';
+	is(scalar(grep { !defined($_) } @distinct), 0,
+		'EC10.11 distinct result contains no undef values (slurp grep-defined filter applied)');
+	is(scalar(@distinct), 3, 'EC10.12 distinct returns exactly 3 defined values, not 4');
+
+	# ---- AUTOLOAD scalar context -------------------------------------------
+
+	# EC10.13 — scalar context for entry with undef column returns undef
+	my $undef_val = $db->number(entry => 'empty');
+	ok(!defined($undef_val), 'EC10.13 AUTOLOAD scalar returns undef for undef-column row');
+
+	# EC10.14 — scalar context for entry with defined column returns the value
+	my $defined_val = $db->number(entry => 'one');
+	is($defined_val, 1, 'EC10.14 AUTOLOAD scalar returns correct defined value');
+};
+
+# ===========================================================================
+# EC11-EC13 — SQLite-backed section (skipped if DBD::SQLite unavailable)
+# ===========================================================================
+
 SKIP: {
-	skip 'DBD::SQLite not available', 3 unless $HAVE_SQLITE;
+	skip 'DBD::SQLite not available', 4 unless $HAVE_SQLITE;
 
 	{
 		package Database::ec_sql;
@@ -475,6 +575,78 @@ SKIP: {
 		lives_ok {
 			$rows = $db_sql->selectall_arrayref(join => []);
 		} 'EC9.8 empty join arrayref does not crash';
+	};
+
+	# -------------------------------------------------------------------------
+	# EC11 — undef / NULL values in the middle of result arrays (SQLite SQL path)
+	# Three rows: first(defined), mid(NULL), last(defined).  NULL is row 2 so it
+	# appears in the middle of any ordered result set.  All public query methods
+	# are exercised to ensure NULL mid-array does not cause crashes or data loss.
+	# -------------------------------------------------------------------------
+	subtest 'EC11: undef mid-array — SQLite SQL path' => sub {
+		plan tests => 16;
+
+		{
+			package Database::ec_null;
+			use parent 'Database::Abstraction';
+		}
+
+		my $null_dir  = tempdir(CLEANUP => 1);
+		my $null_file = File::Spec->catfile($null_dir, 'ec_null.sql');
+		my $null_dsn  = "dbi:SQLite:dbname=$null_file";
+
+		my $setup2 = DBI->connect($null_dsn, undef, undef, { RaiseError => 1 });
+		$setup2->do(q{CREATE TABLE ec_null (id INTEGER PRIMARY KEY, label TEXT)});
+		$setup2->do(q{INSERT INTO ec_null VALUES (1, 'first')});
+		$setup2->do(q{INSERT INTO ec_null VALUES (2,  NULL)});    # NULL in the middle
+		$setup2->do(q{INSERT INTO ec_null VALUES (3, 'last')});
+		$setup2->disconnect();
+
+		my $db_null = Database::ec_null->new(dsn => $null_dsn, no_entry => 1);
+
+		# EC11.1 — selectall_arrayref returns all 3 rows including the NULL row
+		my $all_null = $db_null->selectall_arrayref();
+		is(scalar(@{$all_null}), 3, 'EC11.1 selectall_arrayref returns all 3 rows');
+		my ($null_row) = grep { defined($_->{'id'}) && $_->{'id'} == 2 } @{$all_null};
+		ok(defined($null_row),             'EC11.2 NULL row (id=2) is present in results');
+		ok(!defined($null_row->{'label'}), 'EC11.2 NULL column is undef in result row');
+
+		# EC11.3 — IS NULL criterion selects only the NULL-column row
+		my $is_null = $db_null->selectall_arrayref(label => undef);
+		is(scalar(@{$is_null}), 1, 'EC11.3 IS NULL criterion returns exactly the 1 NULL row');
+
+		# EC11.4 — concrete-value criterion excludes the NULL-column row
+		my $concrete = $db_null->selectall_arrayref(label => 'first');
+		is(scalar(@{$concrete}), 1, 'EC11.4 label="first" returns 1 row, excludes NULL row');
+
+		# EC11.5 — fetchrow_hashref for the NULL-column row
+		my $null_fetched = $db_null->fetchrow_hashref(id => 2);
+		ok(defined($null_fetched),              'EC11.5 fetchrow_hashref returns defined hashref for NULL row');
+		ok(!defined($null_fetched->{'label'}),  'EC11.5 NULL column is undef in fetchrow_hashref result');
+
+		# EC11.6 — selectall_array returns all rows with NULL preserved
+		my @null_arr = $db_null->selectall_array();
+		is(scalar(@null_arr), 3, 'EC11.6 selectall_array returns all 3 rows');
+		my ($null_arr_row) = grep { defined($_->{'id'}) && $_->{'id'} == 2 } @null_arr;
+		ok(!defined($null_arr_row->{'label'}), 'EC11.6 NULL column preserved in selectall_array result');
+
+		# EC11.7 — count correctly counts all rows and NULL-column rows
+		is($db_null->count(),               3, 'EC11.7 count() == 3 including the NULL-column row');
+		is($db_null->count(label => undef), 1, 'EC11.7 count(label => undef) == 1');
+		is($db_null->count(label => 'last'), 1, 'EC11.7 count(label => "last") == 1');
+
+		# EC11.8 — AUTOLOAD list context returns all values including undef
+		# SQL path: SELECT label FROM ec_null ORDER BY label → (NULL, first, last)
+		my @labels;
+		lives_ok { @labels = $db_null->label() }
+			'EC11.8 AUTOLOAD list context with NULL mid-array does not throw';
+		is(scalar(@labels), 3, 'EC11.8 AUTOLOAD list context returns 3 values including undef');
+		is(scalar(grep { !defined($_) } @labels), 1,
+			'EC11.8 exactly one undef value in AUTOLOAD list context result');
+
+		# EC11.9 — AUTOLOAD scalar with id criterion returns undef for the NULL row
+		my $null_label = $db_null->label(id => 2);
+		ok(!defined($null_label), 'EC11.9 AUTOLOAD scalar returns undef for the NULL-column row');
 	};
 }   # end SKIP block
 
