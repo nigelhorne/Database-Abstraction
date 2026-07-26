@@ -1774,6 +1774,7 @@ sub AUTOLOAD {
 	my ($column) = $AUTOLOAD =~ /::(\w+)$/;
 
 	return if($column eq 'DESTROY');
+	return if($column =~ /^_/);	# never treat private method names as column lookups
 
 	my $self = shift or return;
 
@@ -1956,7 +1957,7 @@ sub AUTOLOAD {
 		if($cache) {
 			$cache->set($key, \@rc, $self->{'cache_duration'});	# Store a ref to the array
 		}
-		$self->_fixate(\@rc) if(scalar(@rc) && !$self->{'no_fixate'});
+		Database::Abstraction::_fixate($self, \@rc) if(scalar(@rc) && !$self->{'no_fixate'});
 		return @rc;
 	}
 	my $rc = $sth->fetchrow_array();	# Return the first match only
