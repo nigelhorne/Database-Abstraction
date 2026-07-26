@@ -175,8 +175,14 @@ is($dao->schema(), $schema, 'schema() is cached');
 my $name_val = $dao->name(entry => 'one');
 is($name_val, 'Alice', 'AUTOLOAD name(entry=>one) returns Alice');
 
+$name_val = $dao->name('one');
+is($name_val, 'Alice', 'AUTOLOAD name(one) returns Alice');
+
 my $score_val = $dao->score(entry => 'two');
 is($score_val, 20, 'AUTOLOAD score(entry=>two) returns 20');
+
+$score_val = $dao->score('two');
+is($score_val, 20, 'AUTOLOAD score(two) returns 20');
 
 # List context — all values for a column
 my @names = $dao->name();
