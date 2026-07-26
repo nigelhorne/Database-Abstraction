@@ -2,6 +2,16 @@ Revision history for Database-Abstraction
 
 0.37
 	[ Enhancements ]
+	- Remote file support: new host => 'server' (or 'user@host') constructor
+	  parameter; when present, all candidate file extensions are fetched from
+	  the remote machine via File::Slurp::Remote (SSH/SCP) into a local
+	  File::Temp directory before the existing extension-based probe runs;
+	  all backends (CSV, PSV, XML, SQLite, DBM::Deep) work transparently;
+	  File::Temp::Dir object stored in _remote_tmpdir is auto-cleaned in
+	  DESTROY; host name validated in new() against a strict identifier regex
+	  (prevents shell injection); the local -d directory check is skipped
+	  when host is given (directory is a remote path); File::Slurp::Remote
+	  is loaded lazily (only when host is given)
 	- DBM::Deep backend: files with .dbm or .deep extension are detected
 	  (after SQLite, before BerkeleyDB) and slurped into the in-memory hash
 	  at open time via DBM::Deep->new(read_only=>1); all existing slurp

@@ -24,7 +24,7 @@ package Database::Abstraction;
 # TODO:	Other databases e.g., Redis, noSQL, remote databases such as MySQL, PostgreSQL
 # TODO: The no_entry/entry terminology is confusing.  Replace with no_id/id_column
 # TODO: Log queries and the time that they took to execute per database
-# TODO: Use File::Slurp::Remote, when in Slurp mode, to support remote databases
+# File::Slurp::Remote is loaded lazily in _open() when host => '...' is given.
 
 use warnings;
 use strict;
@@ -429,6 +429,17 @@ name derived from the class name).
 Override the full filename (relative to C<directory>).  Takes precedence
 over C<dbname>.
 
+=item * C<host>
+
+Remote hostname (or C<user@host>) from which to fetch the data file(s) via
+SSH/SCP.  When present, each candidate filename is fetched with
+L<File::Slurp::Remote> into a local temporary directory; the existing
+extension-based file-type detection then runs against that directory.
+C<directory> is treated as the remote path (no local canonicalization is
+applied).  Using C<filename> together with C<host> avoids probing multiple
+extensions and is therefore more efficient.  L<File::Slurp::Remote> must be
+installed; it is loaded lazily (only when C<host> is given).
+
 =back
 
 =head3 Behaviour parameters
@@ -565,7 +576,10 @@ sub new {
 	unless($args{'dsn'} || $defaults{'dsn'}) {
 		croak("$class: where are the files?") unless($args{'directory'} || $defaults{'directory'});
 
-		croak("$class: ", $args{'directory'} || $defaults{'directory'}, ' is not a directory') unless(-d ($args{'directory'} || $defaults{'directory'}));
+		# Skip the local -d check when host is given: the directory is on the remote machine.
+		unless($args{'host'} || $defaults{'host'}) {
+			croak("$class: ", $args{'directory'} || $defaults{'directory'}, ' is not a directory') unless(-d ($args{'directory'} || $defaults{'directory'}));
+		}
 	}
 
 	# Validate the primary-key column name to prevent SQL injection via ORDER BY / WHERE
@@ -573,6 +587,10 @@ sub new {
 		if(defined $src->{'id'}) {
 			croak("$class: unsafe id column name '$src->{id}'")
 				unless $src->{'id'} =~ /^[a-zA-Z_][a-zA-Z0-9_]*$/;
+		}
+		if(defined $src->{'host'}) {
+			croak("$class: unsafe host '$src->{host}'")
+				unless $src->{'host'} =~ /^(?:[a-zA-Z0-9][a-zA-Z0-9._-]*\@)?[a-zA-Z0-9][a-zA-Z0-9._-]*$/;
 		}
 	}
 
@@ -668,10 +686,35 @@ sub _open :Protected
 		return $self;
 	}
 
-	my $dir = Cwd::abs_path($self->{'directory'} || $defaults{'directory'});
 	my $dbname = $self->{'dbname'} || $defaults{'dbname'} || $table;
 	Carp::croak(ref($self), ": unsafe dbname '$dbname'")
 		unless $dbname =~ /^[a-zA-Z0-9_.-]+$/ && $dbname !~ /\.\./;
+
+	# When a remote host is given, fetch all candidate files into a local temp
+	# directory via File::Slurp::Remote (SSH/SCP).  The existing extension-based
+	# probe then runs on that temp directory unchanged.
+	my $dir;
+	if(my $host = $self->{'host'} || $defaults{'host'}) {
+		require File::Slurp::Remote;
+		my $remote_dir = $self->{'directory'} || $defaults{'directory'};
+		my $tmpdir_obj = File::Temp->newdir(CLEANUP => 1);
+		$self->{'_remote_tmpdir'} = $tmpdir_obj;	# auto-cleans on DESTROY
+		my $tmpdir = $tmpdir_obj->dirname();
+		for my $ext (qw(sql dbm deep db csv.gz db.gz psv csv xml)) {
+			my $remote_file = "$remote_dir/$dbname.$ext";
+			my $content = eval { scalar File::Slurp::Remote::read_remote_file($host, $remote_file) };
+			next unless defined($content) && length($content);
+			my $local = File::Spec->catfile($tmpdir, "$dbname.$ext");
+			open(my $fh, '>', $local);
+			binmode $fh;
+			print $fh $content;
+			close $fh;
+			$self->_debug("fetched remote $host:$remote_file");
+		}
+		$dir = $tmpdir;
+	} else {
+		$dir = Cwd::abs_path($self->{'directory'} || $defaults{'directory'});
+	}
 	my $slurp_file = File::Spec->catfile($dir, "$dbname.sql");
 
 	$self->_debug("_open: try to open $slurp_file");
@@ -2042,8 +2085,9 @@ sub DESTROY
 	}
 	my $self = shift;
 
-	# Clean up temporary file — deleting the File::Temp object triggers auto-unlink
+	# Clean up temporary files — deleting File::Temp objects triggers auto-unlink/rmdir
 	delete $self->{'_temp_fh'};
+	delete $self->{'_remote_tmpdir'};
 
 	# Clean up database handles
 	my $table_name = $self->{'table'} || ref($self);

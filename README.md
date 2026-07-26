@@ -308,6 +308,17 @@ string which is taken to be `directory`.
     Override the full filename (relative to `directory`).  Takes precedence
     over `dbname`.
 
+- `host`
+
+    Remote hostname (or `user@host`) from which to fetch the data file(s) via
+    SSH/SCP.  When present, each candidate filename is fetched with
+    [File::Slurp::Remote](https://metacpan.org/pod/File%3A%3ASlurp%3A%3ARemote) into a local temporary directory; the existing
+    extension-based file-type detection then runs against that directory.
+    `directory` is treated as the remote path (no local canonicalization is
+    applied).  Using `filename` together with `host` avoids probing multiple
+    extensions and is therefore more efficient.  [File::Slurp::Remote](https://metacpan.org/pod/File%3A%3ASlurp%3A%3ARemote) must be
+    installed; it is loaded lazily (only when `host` is given).
+
 ### Behaviour parameters
 
 - `no_entry`
