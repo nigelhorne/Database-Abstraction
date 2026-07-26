@@ -2437,8 +2437,7 @@ sub _quote_identifier
 
 # Determine whether a given file is a valid Berkeley DB file.
 # It combines a fast preliminary check with a more thorough validation step for accuracy.
-# It looks for the magic number at both byte 0 and byte 12
-# TODO: Combine _db_0 and _db_12 as they are very similar routines
+# It looks for the magic number at both byte 0 and byte 12.
 sub _is_berkeley_db {
 	my ($self, $file) = @_;
 
@@ -2448,7 +2447,7 @@ sub _is_berkeley_db {
 	do { no autodie qw(open); open $fh, '<', $file } or return 0;
 	binmode $fh;
 
-	my $is_db = (($self->_is_berkeley_db_0($fh)) || ($self->_is_berkeley_db_12($fh)));
+	my $is_db = $self->_has_bdb_magic($fh);
 	close $fh;
 
 	if($is_db) {
@@ -2466,42 +2465,21 @@ sub _is_berkeley_db {
 	return 0;
 }
 
-# Determine whether a given file is a valid Berkeley DB file.
-# It combines a fast preliminary check with a more thorough validation step for accuracy.
-sub _is_berkeley_db_0
-{
+# Check for Berkeley DB magic bytes at offsets 0 and 12.
+# Returns true if either location contains a recognised BDB magic number.
+sub _has_bdb_magic {
 	my ($self, $fh) = @_;
 
-	# Read the first 4 bytes (magic number)
-	read($fh, my $magic_bytes, 4) == 4 or return 0;
+	# Offset 0: 32-bit magic number in both endian forms
+	read($fh, my $buf, 4) == 4 or return 0;
+	my %magic = map { $_ => 1 } (0x00061561, 0x00053162, 0x00042253, 0x00052444);
+	return 1 if $magic{unpack('N', $buf)} || $magic{unpack('V', $buf)};
 
-	# Unpack both big-endian and little-endian values
-	my $magic_be = unpack('N', $magic_bytes);	# Big-endian
-	my $magic_le = unpack('V', $magic_bytes);	# Little-endian
-
-	# Known Berkeley DB magic numbers (in both endian formats)
-	my %known_magic = map { $_ => 1 } (
-		0x00061561,	# Btree
-		0x00053162,	# Hash
-		0x00042253,	# Queue
-		0x00052444,	# Recno
-	);
-
-	return($known_magic{$magic_be} || $known_magic{$magic_le});
-}
-
-sub _is_berkeley_db_12
-{
-	my ($self, $fh) = @_;
-	my $header;
-
+	# Offset 12: Btree magic prefix (fallback for some BDB file variants)
 	seek $fh, 12, 0 or return 0;
-	read($fh, $header, 4) or return 0;
-
-	$header = substr(unpack('H*', $header), 0, 4);
-
-	# Berkeley DB magic numbers
-	return($header eq '6115' || $header eq '1561');	# Btree
+	read($fh, $buf, 4) or return 0;
+	my $hex12 = substr(unpack('H*', $buf), 0, 4);
+	return($hex12 eq '6115' || $hex12 eq '1561');
 }
 
 # Return true if $host refers to the current machine (localhost, loopback, or

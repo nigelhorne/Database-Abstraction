@@ -378,7 +378,7 @@ note '--- A11: _quote_identifier()';
 	is($q, '"my_col"', '_quote_identifier(): fallback uses ANSI double-quotes');
 }
 
-# ---- A12: _is_berkeley_db / _is_berkeley_db_0 / _is_berkeley_db_12 ------
+# ---- A12: _is_berkeley_db / _has_bdb_magic --------------------------------
 note '--- A12: BerkeleyDB magic-number probes';
 {
 	my $db = Database::test1->new($DATA_DIR);
@@ -394,25 +394,25 @@ note '--- A12: BerkeleyDB magic-number probes';
 	ok(!$db->_is_berkeley_db($tmpfile->filename()),
 		'_is_berkeley_db(): text file → 0');
 
-	# _is_berkeley_db_0: handles a file handle with < 4 bytes → returns 0
+	# _has_bdb_magic: file with < 4 bytes → offset-0 read guard fires → 0
 	{
 		my $tiny = File::Temp->new();
 		print {$tiny} 'XY';
 		$tiny->flush();
 		open my $fh, '<', $tiny->filename();	## no critic
 		binmode $fh;
-		ok(!$db->_is_berkeley_db_0($fh), '_is_berkeley_db_0(): <4 bytes → 0');
+		ok(!$db->_has_bdb_magic($fh), '_has_bdb_magic(): <4 bytes → 0');
 		close $fh;
 	}
 
-	# _is_berkeley_db_12: handles a file too short for seek → returns 0
+	# _has_bdb_magic: 4 non-magic bytes at offset 0, file too short for offset 12 → 0
 	{
 		my $tiny2 = File::Temp->new();
-		print {$tiny2} 'X';
+		print {$tiny2} 'XYZW';	# 4 bytes, no BDB magic
 		$tiny2->flush();
 		open my $fh, '<', $tiny2->filename();	## no critic
 		binmode $fh;
-		ok(!$db->_is_berkeley_db_12($fh), '_is_berkeley_db_12(): too short → 0');
+		ok(!$db->_has_bdb_magic($fh), '_has_bdb_magic(): non-magic 4 bytes, offset-12 empty → 0');
 		close $fh;
 	}
 }
