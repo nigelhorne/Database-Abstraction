@@ -576,8 +576,10 @@ sub new {
 	unless($args{'dsn'} || $defaults{'dsn'}) {
 		croak("$class: where are the files?") unless($args{'directory'} || $defaults{'directory'});
 
-		# Skip the local -d check when host is given: the directory is on the remote machine.
-		unless($args{'host'} || $defaults{'host'}) {
+		# Skip the local -d check only for genuinely remote hosts.
+		# localhost / 127.0.0.1 / current hostname are treated as local.
+		my $given_host = $args{'host'} // $defaults{'host'};
+		unless($given_host && !$class->_is_local_host($given_host)) {
 			croak("$class: ", $args{'directory'} || $defaults{'directory'}, ' is not a directory') unless(-d ($args{'directory'} || $defaults{'directory'}));
 		}
 	}
@@ -590,7 +592,7 @@ sub new {
 		}
 		if(defined $src->{'host'}) {
 			croak("$class: unsafe host '$src->{host}'")
-				unless $src->{'host'} =~ /^(?:[a-zA-Z0-9][a-zA-Z0-9._-]*\@)?[a-zA-Z0-9][a-zA-Z0-9._-]*$/;
+				unless $src->{'host'} =~ /^(?:[a-zA-Z0-9][a-zA-Z0-9._-]*\@)?[a-zA-Z0-9:][a-zA-Z0-9._:-]*$/;
 		}
 	}
 
@@ -691,27 +693,32 @@ sub _open :Protected
 		unless $dbname =~ /^[a-zA-Z0-9_.-]+$/ && $dbname !~ /\.\./;
 
 	# When a remote host is given, fetch all candidate files into a local temp
-	# directory via File::Slurp::Remote (SSH/SCP).  The existing extension-based
-	# probe then runs on that temp directory unchanged.
+	# directory via File::Slurp::Remote (SSH/SCP).  localhost / 127.0.0.1 / the
+	# current machine's hostname are treated as local (no SSH, no temp dir).
 	my $dir;
 	if(my $host = $self->{'host'} || $defaults{'host'}) {
-		require File::Slurp::Remote;
-		my $remote_dir = $self->{'directory'} || $defaults{'directory'};
-		my $tmpdir_obj = File::Temp->newdir(CLEANUP => 1);
-		$self->{'_remote_tmpdir'} = $tmpdir_obj;	# auto-cleans on DESTROY
-		my $tmpdir = $tmpdir_obj->dirname();
-		for my $ext (qw(sql dbm deep db csv.gz db.gz psv csv xml)) {
-			my $remote_file = "$remote_dir/$dbname.$ext";
-			my $content = eval { scalar File::Slurp::Remote::read_remote_file($host, $remote_file) };
-			next unless defined($content) && length($content);
-			my $local = File::Spec->catfile($tmpdir, "$dbname.$ext");
-			open(my $fh, '>', $local);
-			binmode $fh;
-			print $fh $content;
-			close $fh;
-			$self->_debug("fetched remote $host:$remote_file");
+		if($self->_is_local_host($host)) {
+			$self->_debug("host '$host' is local; reading directory directly");
+			$dir = Cwd::abs_path($self->{'directory'} || $defaults{'directory'});
+		} else {
+			require File::Slurp::Remote;
+			my $remote_dir = $self->{'directory'} || $defaults{'directory'};
+			my $tmpdir_obj = File::Temp->newdir(CLEANUP => 1);
+			$self->{'_remote_tmpdir'} = $tmpdir_obj;	# auto-cleans on DESTROY
+			my $tmpdir = $tmpdir_obj->dirname();
+			for my $ext (qw(sql dbm deep db csv.gz db.gz psv csv xml)) {
+				my $remote_file = "$remote_dir/$dbname.$ext";
+				my $content = eval { scalar File::Slurp::Remote::read_remote_file($host, $remote_file) };
+				next unless defined($content) && length($content);
+				my $local = File::Spec->catfile($tmpdir, "$dbname.$ext");
+				open(my $fh, '>', $local);
+				binmode $fh;
+				print $fh $content;
+				close $fh;
+				$self->_debug("fetched remote $host:$remote_file");
+			}
+			$dir = $tmpdir;
 		}
-		$dir = $tmpdir;
 	} else {
 		$dir = Cwd::abs_path($self->{'directory'} || $defaults{'directory'});
 	}
@@ -2495,6 +2502,29 @@ sub _is_berkeley_db_12
 
 	# Berkeley DB magic numbers
 	return($header eq '6115' || $header eq '1561');	# Btree
+}
+
+# Return true if $host refers to the current machine (localhost, loopback, or
+# the machine's own hostname).  Strips an optional user@ prefix first.
+# Used by new() and _open() to decide whether to use local file access instead
+# of File::Slurp::Remote, so the caller never loads that module unnecessarily.
+sub _is_local_host {
+	my ($self, $host) = @_;
+
+	# Strip optional user@ prefix
+	(my $bare = $host) =~ s/^[^@]*\@//;
+
+	return 1 if $bare =~ /^(?:localhost|127\.0\.0\.1|::1)$/i;
+
+	require Sys::Hostname;
+	my $me = lc(Sys::Hostname::hostname());
+	my $lc_bare = lc($bare);
+	return 1 if $lc_bare eq $me;
+
+	# Match on short hostname: 'mybox' matches 'mybox.example.com' and vice-versa
+	(my $me_short   = $me)      =~ s/\..*//;
+	(my $bare_short = $lc_bare) =~ s/\..*//;
+	return($bare_short eq $me_short);
 }
 
 # Determine whether a given file is a DBM::Deep file by checking its magic bytes.

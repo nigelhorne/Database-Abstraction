@@ -12,6 +12,14 @@ Revision history for Database-Abstraction
 	  (prevents shell injection); the local -d directory check is skipped
 	  when host is given (directory is a remote path); File::Slurp::Remote
 	  is loaded lazily (only when host is given)
+	- Local-host short-circuit: when host => 'localhost', '127.0.0.1', '::1',
+	  or the current machine's hostname (short or FQDN) is given, _open()
+	  reads the directory directly without loading or calling File::Slurp::Remote;
+	  implemented by _is_local_host() which strips optional user@ prefix then
+	  matches loopback literals and Sys::Hostname::hostname() (both short and
+	  FQDN forms); new() restores the local -d directory check for local hosts;
+	  host validation regex extended to allow ':' so IPv6 addresses (::1, etc.)
+	  are accepted
 	- DBM::Deep backend: files with .dbm or .deep extension are detected
 	  (after SQLite, before BerkeleyDB) and slurped into the in-memory hash
 	  at open time via DBM::Deep->new(read_only=>1); all existing slurp

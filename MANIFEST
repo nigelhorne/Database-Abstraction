@@ -65,6 +65,7 @@ t/portability.t
 t/psv.t
 t/query_builder.t
 t/remote.t
+t/remote_local.t
 t/schema.t
 t/strict.t
 t/tabs.t
