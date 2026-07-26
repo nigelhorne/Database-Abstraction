@@ -20,7 +20,7 @@ https://pjcj.net
 <h1>Branch Coverage</h1>
 <table>
 <tr><td class="h" align="right">File:</td><td align="left">blib/lib/Database/Abstraction.pm</td></tr>
-<tr><td class="h" align="right">Coverage:</td><td align="left" class="c0">71.1%</td></tr>
+<tr><td class="h" align="right">Coverage:</td><td align="left" class="c0">71.6%</td></tr>
 </table>
 <div><br/></div>
 <table>
@@ -41,7 +41,7 @@ https://pjcj.net
 <tr><td class="h"><a id="L553">553</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $args{&quot;directory&quot;} or $defaults{&quot;directory&quot;}</td></tr>
 <tr><td class="h"><a id="L555">555</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless -d ($args{&#39;directory&#39;} || $defaults{&#39;directory&#39;})</td></tr>
 <tr><td class="h"><a id="L560">560</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $$src{&quot;id&quot;})</td></tr>
-<tr><td class="h"><a id="L562">562</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $$src{&quot;id&quot;} =~ /^[a-zA-Z_][a-zA-Z0-9_]*$/</td></tr>
+<tr><td class="h"><a id="L562">562</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $$src{&quot;id&quot;} =~ /^[a-zA-Z_][a-zA-Z0-9_]*$/</td></tr>
 <tr><td class="h"><a id="L589">589</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $logger = $$params{&quot;logger&quot;})</td></tr>
 <tr><td class="h"><a id="L590">590</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (&amp;Scalar::Util::blessed($logger)) { }</td></tr>
 <tr><td class="h"><a id="L608">608</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $c and $c-&gt;isa(__PACKAGE__)</td></tr>
@@ -208,7 +208,7 @@ https://pjcj.net
 <tr><td class="h"><a id="L1659">1659</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($driver eq &#39;SQLite&#39;) { }</td></tr>
 <tr><td class="h"><a id="L1673">1673</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($sth)</td></tr>
 <tr><td class="h"><a id="L1770">1770</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if $column eq &quot;DESTROY&quot;</td></tr>
-<tr><td class="h"><a id="L1771">1771</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if $column =~ /^_/</td></tr>
+<tr><td class="h"><a id="L1771">1771</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $column =~ /^_/</td></tr>
 <tr><td class="h"><a id="L1773">1773</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless my $self = shift()</td></tr>
 <tr><td class="h"><a id="L1775">1775</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless ref $self</td></tr>
 <tr><td class="h"><a id="L1778">1778</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if exists $self-&gt;{&#39;auto_load&#39;} and not $$self{&quot;auto_load&quot;}</td></tr>
@@ -269,7 +269,7 @@ https://pjcj.net
 <tr><td class="h"><a id="L1986">1986</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&quot;berkeley&quot;})</td></tr>
 <tr><td class="h"><a id="L2005">2005</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">ref $join_spec eq &#39;ARRAY&#39; ? :</td></tr>
 <tr><td class="h"><a id="L2011">2011</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless my $jtable = $$j{&quot;table&quot;}</td></tr>
-<tr><td class="h"><a id="L2012">2012</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $jtable =~ /^[a-zA-Z_][a-zA-Z0-9_.]*$/</td></tr>
+<tr><td class="h"><a id="L2012">2012</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $jtable =~ /^[a-zA-Z_][a-zA-Z0-9_.]*$/</td></tr>
 <tr><td class="h"><a id="L2014">2014</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless my $on = $$j{&quot;on&quot;}</td></tr>
 <tr><td class="h"><a id="L2015">2015</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $valid_types{$type}</td></tr>
 <tr><td class="h"><a id="L2027">2027</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $params</td></tr>
@@ -334,8 +334,8 @@ https://pjcj.net
 <tr><td class="h"><a id="L2309">2309</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (my $dbh = $$self{$table})</td></tr>
 <tr><td class="h"><a id="L2325">2325</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless do {
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BEGIN {
-&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;autodie::Scope::GuardStack/guard5&#39;} = &#39;autodie::Scope::Guard=CODE(0x55702356b0c8)&#39;;
-&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;no Fatal&#39;} = &#39;HASH(0x55702356b050)&#39;;
+&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;autodie::Scope::GuardStack/guard5&#39;} = &#39;autodie::Scope::Guard=CODE(0x55dfe94df7c8)&#39;;
+&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;no Fatal&#39;} = &#39;HASH(0x55dfe94df750)&#39;;
 }
 &#11;open $fh, &quot;&lt;&quot;, $file
 }</td></tr>

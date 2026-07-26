@@ -649,7 +649,7 @@ Approximate LCSAJ segments: 61<br>
 </span><span class="">  351: 			if @{$self-&gt;{&#39;_joins&#39;}};
 </span><span class="">  352: 		my $rows = $db-&gt;selectall_arrayref({%{$self-&gt;{&#39;_where&#39;}}});
 </span><span class="">  353: 		_apply_perl_sort_limit($rows, $self-&gt;{&#39;_order_by&#39;}, $self-&gt;{&#39;_offset&#39;}, $self-&gt;{&#39;_limit&#39;});
-</span><span class="survived-2 tooltip" data-tooltip="Return value mutation survived. Add tests asserting exact return values. Boolean logic mutation survived. Add tests covering both true and false paths.">  354: 		return $rows;
+</span><span class="survived-2 tooltip" data-tooltip="Boolean logic mutation survived. Add tests covering both true and false paths. Return value mutation survived. Add tests asserting exact return values.">  354: 		return $rows;
 </span>
 					<details class="mutant-details">
 					<summary>Mutants (Total: 2, Killed: 0, Survived: 2)</summary>
@@ -780,7 +780,7 @@ is( func(INPUT), EXPECTED, &#39;Verify correct return value&#39; );
 </li></ul></details>
 <span class="">  429: 		croak(ref($db), &#39;: query-&gt;count() with JOINs is not supported on BerkeleyDB&#39;)
 </span><span class="">  430: 			if @{$self-&gt;{&#39;_joins&#39;}};
-</span><span class="survived-2 tooltip" data-tooltip="Return value mutation survived. Add tests asserting exact return values. Boolean logic mutation survived. Add tests covering both true and false paths.">  431: 		return $db-&gt;count({%{$self-&gt;{&#39;_where&#39;}}});
+</span><span class="survived-2 tooltip" data-tooltip="Boolean logic mutation survived. Add tests covering both true and false paths. Return value mutation survived. Add tests asserting exact return values.">  431: 		return $db-&gt;count({%{$self-&gt;{&#39;_where&#39;}}});
 </span>
 					<details class="mutant-details">
 					<summary>Mutants (Total: 2, Killed: 0, Survived: 2)</summary>
