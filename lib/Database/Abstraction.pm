@@ -46,6 +46,7 @@ use Object::Configure 0.16;
 use Params::Get 0.13;
 use Return::Set qw(set_return);
 use Scalar::Util;
+use Sub::Private;
 use Sub::Protected;
 
 our %defaults;
@@ -2045,7 +2046,7 @@ sub _has_complex_criteria
 # versions when the source hash contains undef values (NULL columns).
 # Data::Reuse still fixates correctly; the warning is a false positive.
 # $struct must be the hashref or arrayref to fixate.
-sub _fixate
+sub _fixate :Private
 {
     my (undef, $struct) = @_;
     return unless defined $struct;
