@@ -882,7 +882,7 @@ sub _open :Protected
 	}
 
 	# ref() must be called on the variable, not on the result of 'eq'
-	Data::Reuse::fixate(%{$self->{'data'}}) if($self->{'data'} && (ref($self->{'data'}) eq 'HASH'));
+	$self->_fixate($self->{'data'}) if($self->{'data'} && (ref($self->{'data'}) eq 'HASH'));
 
 	$self->{$table} = $dbh;
 	my @statb = stat($slurp_file);
@@ -1051,7 +1051,7 @@ sub selectall_arrayref {
 			# Without forget(), freed hashref addresses from previous fixate calls
 			# can collide with new DBI hashrefs and return wrong canonical rows.
 			Data::Reuse::forget();
-			Data::Reuse::fixate(@{$rc});
+			$self->_fixate($rc);
 		}
 
 		return $rc;
@@ -1202,7 +1202,7 @@ sub selectall_array
 		if($rc) {
 			if(!$self->{'no_fixate'}) {
 				Data::Reuse::forget();
-				Data::Reuse::fixate(@{$rc});
+				$self->_fixate($rc);
 			}
 			return @{$rc};
 		}
@@ -1955,7 +1955,7 @@ sub AUTOLOAD {
 		if($cache) {
 			$cache->set($key, \@rc, $self->{'cache_duration'});	# Store a ref to the array
 		}
-		Data::Reuse::fixate(@rc) if(scalar(@rc) && !$self->{'no_fixate'});
+		$self->_fixate(\@rc) if(scalar(@rc) && !$self->{'no_fixate'});
 		return @rc;
 	}
 	my $rc = $sth->fetchrow_array();	# Return the first match only
@@ -2039,6 +2039,22 @@ sub _has_complex_criteria
 # Build the WHERE clause body (everything after "WHERE") from a criteria hash.
 # Handles -or / -and groupings then delegates per-column work to _build_where_conditions.
 # Returns ($sql_fragment, \@bind_values).
+# Wrapper around Data::Reuse::fixate() that suppresses the spurious
+# "Use of uninitialized value in hash slice" warning.  Data::Alias's XS
+# hash-aliasing code does not fully initialise key SVs on older Perl
+# versions when the source hash contains undef values (NULL columns).
+# Data::Reuse still fixates correctly; the warning is a false positive.
+# $struct must be the hashref or arrayref to fixate.
+sub _fixate
+{
+    my (undef, $struct) = @_;
+    return unless defined $struct;
+    local $SIG{__WARN__} = sub {
+        warn @_ unless $_[0] =~ /\AUse of uninitialized value.*\bin hash slice\b/;
+    };
+    &Data::Reuse::fixate($struct);
+}
+
 sub _build_where
 {
 	my ($self, $params) = @_;
