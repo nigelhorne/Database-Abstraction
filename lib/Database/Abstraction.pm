@@ -4,11 +4,6 @@ package Database::Abstraction;
 # Copyright (C) 2015-2026, Nigel Horne
 
 # Usage is subject to licence terms.
-# The licence terms of this software are as follows:
-# Personal single user, single computer use: GPL2
-# All other users (for example, Commercial, Charity, Educational, Government)
-#	must apply in writing for a licence for use from Nigel Horne at the
-#	above e-mail.
 
 # TODO:	Switch "entry" to off by default, and enable by passing 'entry'
 #	though that wouldn't be so nice for AUTOLOAD
@@ -24,7 +19,6 @@ package Database::Abstraction;
 # TODO:	Other databases e.g., Redis, noSQL, remote databases such as MySQL, PostgreSQL
 # TODO: The no_entry/entry terminology is confusing.  Replace with no_id/id_column
 # TODO: Log queries and the time that they took to execute per database
-# File::Slurp::Remote is loaded lazily in _open() when host => '...' is given.
 
 use warnings;
 use strict;
@@ -48,6 +42,8 @@ use Scalar::Util;
 use Sub::Private;
 use Sub::Protected;
 
+# File::Slurp::Remote is loaded lazily in _open() when host => '...' is given.
+
 our %defaults;
 use constant	DEFAULT_MAX_SLURP_SIZE => 16 * 1024;	# CSV files <= than this size are read into memory
 
@@ -64,11 +60,11 @@ Database::Abstraction - Read-only Database Abstraction Layer (ORM)
 
 =head1 VERSION
 
-Version 0.36
+Version 0.37
 
 =cut
 
-our $VERSION = '0.36';
+our $VERSION = '0.37';
 
 =head1 DESCRIPTION
 

@@ -1,6 +1,6 @@
 Revision history for Database-Abstraction
 
-0.37
+0.37	Mon Jul 27 16:58:13 EDT 2026
 	[ Enhancements ]
 	- Remote file support: new host => 'server' (or 'user@host') constructor
 	  parameter; when present, all candidate file extensions are fetched from
