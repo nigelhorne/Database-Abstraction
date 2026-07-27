@@ -679,4 +679,298 @@ SKIP: {
 		'EC12b: schema() on ARRAY-slurp data returns non-empty hashref');
 }
 
+# ===========================================================================
+# EC13 — Query builder boundary conditions
+# Purpose: exercise the chained Query builder under edge inputs — zero limit,
+# over-offset, multiple chained where() (AND semantics), empty where({}),
+# and first() with ordering — to confirm each boundary path behaves as
+# documented without croaking or returning garbage.
+# ===========================================================================
+
+SKIP: {
+	skip 'DBD::SQLite not available', 1 unless $HAVE_SQLITE;
+
+	{
+		package Database::ec13;
+		use parent 'Database::Abstraction';
+	}
+
+	my $ec13_dir  = tempdir(CLEANUP => 1);
+	my $ec13_file = File::Spec->catfile($ec13_dir, 'ec13.sql');
+	my $ec13_dsn  = "dbi:SQLite:dbname=$ec13_file";
+
+	my $ec13_dbh = DBI->connect($ec13_dsn, undef, undef, { RaiseError => 1 });
+	$ec13_dbh->do(q{CREATE TABLE ec13 (id INTEGER PRIMARY KEY, name TEXT, score REAL)});
+	$ec13_dbh->do(q{INSERT INTO ec13 VALUES (1, 'Alpha',   10.0)});
+	$ec13_dbh->do(q{INSERT INTO ec13 VALUES (2, 'Beta',    20.0)});
+	$ec13_dbh->do(q{INSERT INTO ec13 VALUES (3, 'Gamma',   30.0)});
+	$ec13_dbh->do(q{INSERT INTO ec13 VALUES (4, 'Delta',   40.0)});
+	$ec13_dbh->do(q{INSERT INTO ec13 VALUES (5, 'Epsilon', 50.0)});
+	$ec13_dbh->disconnect();
+
+	my $qb_db = Database::ec13->new(dsn => $ec13_dsn, no_entry => 1);
+
+	subtest 'EC13: query builder boundary conditions' => sub {
+		plan tests => 10;
+
+		# EC13.1 — limit(0) must return an empty arrayref, not crash
+		my $rows;
+		lives_ok { $rows = $qb_db->query()->limit(0)->all() }
+			'EC13.1 query()->limit(0)->all() does not throw';
+		is(scalar(@{$rows}), 0, 'EC13.1 limit(0) returns 0 rows');
+
+		# EC13.2 — offset far beyond row count must silently return empty
+		lives_ok { $rows = $qb_db->query()->limit(5)->offset(10_000)->all() }
+			'EC13.2 offset beyond row count does not throw';
+		is(scalar(@{$rows}), 0, 'EC13.2 offset beyond row count returns 0 rows');
+
+		# EC13.3 — two chained where() must apply AND semantics using DIFFERENT keys.
+		# Note: two where() calls on the SAME key overwrite (hash merge), so the
+		# AND test must use distinct keys to prove both conditions are retained.
+		# id <= 3 → Alpha(1),Beta(2),Gamma(3); score >= 20 → Beta(2),Gamma(3),Delta(4),Epsilon(5)
+		# Intersection (AND): Beta(2), Gamma(3) = 2 rows
+		$rows = $qb_db->query()
+			->where({ id    => { '<=' => 3    } })
+			->where({ score => { '>=' => 20.0 } })
+			->all();
+		is(scalar(@{$rows}), 2,
+			'EC13.3 two chained where() on different keys apply AND semantics (2 rows)');
+
+		# EC13.4 — empty where({}) must not filter any rows (all 5 pass)
+		$rows = $qb_db->query()->where({})->all();
+		is(scalar(@{$rows}), 5, 'EC13.4 where({}) returns all 5 rows unfiltered');
+
+		# EC13.5 — order_by(ASC) + limit(1) + first() returns lowest-score row
+		my $first;
+		lives_ok { $first = $qb_db->query()->order_by('score ASC')->limit(1)->first() }
+			'EC13.5 first() with order_by does not throw';
+		is($first->{'name'}, 'Alpha',
+			'EC13.5 first() with ASC score order returns the Alpha row (score 10.0)');
+
+		# EC13.6 — query builder count() with a where() filter
+		# score > 30.0 → Delta(40) + Epsilon(50) = 2 rows
+		my $cnt = $qb_db->query()->where({ score => { '>' => 30.0 } })->count();
+		is($cnt, 2, 'EC13.6 query builder count() with where filter returns 2');
+
+		# EC13.7 — offset equal to row count is an exact boundary: must return 0 rows.
+		# SQLite requires LIMIT when using OFFSET; supply a large limit to avoid
+		# a syntax error while still exercising the offset boundary condition.
+		$rows = $qb_db->query()->limit(99_999)->offset(5)->all();
+		is(scalar(@{$rows}), 0, 'EC13.7 offset == row count (5) with large limit returns 0 rows');
+	};
+}
+
+# ===========================================================================
+# EC14 — id / filename injection guards (including clone-path bypass fix)
+# Purpose: new() validates the 'id' column name at construction time for
+# both direct and clone (blessed-object) invocations.  _open() validates
+# 'filename' before using it to build a filesystem path.  Hostile values
+# must croak loudly before any DBI or filesystem call.
+# ===========================================================================
+
+subtest 'EC14: id / filename injection guards' => sub {
+	plan tests => 9;
+
+	{
+		package Database::ec14;
+		use parent 'Database::Abstraction';
+	}
+
+	# EC14.1 — a safe, valid identifier is accepted without error
+	lives_ok { Database::ec14->new(directory => $DATA_DIR, id => 'entry') }
+		'EC14.1 safe id column name accepted at new()';
+
+	# EC14.2 — semicolon: classic statement-terminator injection
+	throws_ok {
+		Database::ec14->new(directory => $DATA_DIR, id => 'col;DROP TABLE ec14--')
+	} qr/unsafe id column name/i,
+		'EC14.2 semicolon in id column name croaks at new()';
+
+	# EC14.3 — space: allows keyword injection via identifier interpolation
+	throws_ok {
+		Database::ec14->new(directory => $DATA_DIR, id => 'col OR 1=1')
+	} qr/unsafe id column name/i,
+		'EC14.3 space in id column name croaks at new()';
+
+	# EC14.4 — empty string fails the leading [a-zA-Z_] anchor
+	throws_ok {
+		Database::ec14->new(directory => $DATA_DIR, id => '')
+	} qr/unsafe id column name/i,
+		'EC14.4 empty string id croaks at new()';
+
+	# EC14.5 — leading digit: not a valid SQL identifier
+	throws_ok {
+		Database::ec14->new(directory => $DATA_DIR, id => '1bad_col')
+	} qr/unsafe id column name/i,
+		'EC14.5 leading-digit id column name croaks at new()';
+
+	# EC14.6 — clone path: new() called on a blessed instance must validate id.
+	# Before the fix the clone branch returned early before the validation block,
+	# allowing SQL injection via $self->{'id'} in ORDER BY / COUNT() / CSV comment-filter.
+	my $base_obj = Database::ec14->new(directory => $DATA_DIR, id => 'entry');
+	throws_ok { $base_obj->new(id => 'clone;injection') }
+		qr/unsafe id column name/i,
+		'EC14.6 clone-path new() validates id (historical injection bypass is fixed)';
+
+	# EC14.7 — path traversal in filename: slash rejected by [a-zA-Z0-9_.-]+ regex
+	throws_ok {
+		Database::ec14->new(directory => $DATA_DIR, filename => '../etc/passwd')->count()
+	} qr/unsafe (?:filename|dbname)/i,
+		'EC14.7 path traversal "../etc/passwd" in filename croaks at _open()';
+
+	# EC14.8 — slash inside filename: same regex guard
+	throws_ok {
+		Database::ec14->new(directory => $DATA_DIR, filename => 'subdir/test1')->count()
+	} qr/unsafe (?:filename|dbname)/i,
+		'EC14.8 slash in filename "subdir/test1" croaks at _open()';
+
+	# EC14.9 — standalone ".." has its own explicit rejection guard beyond the
+	# regex (the regex allows individual dots; ".." is caught separately)
+	throws_ok {
+		Database::ec14->new(directory => $DATA_DIR, filename => '..')->count()
+	} qr/unsafe (?:filename|dbname)/i,
+		'EC14.9 ".." as filename is explicitly rejected by the double-dot guard';
+};
+
+# ===========================================================================
+# EC15 — Filesystem hostility
+# Purpose: character-device files and dangling symbolic links given as
+# 'directory' must be rejected as cleanly as a plain regular file.
+# A symlink that resolves to a real directory must still be accepted.
+# ===========================================================================
+
+subtest 'EC15: filesystem hostility' => sub {
+
+	# EC15.1-2 — symlink tests (skipped on platforms without symlink support)
+	SKIP: {
+		my $ec15_dir = tempdir(CLEANUP => 1);
+		my $dangle   = File::Spec->catfile($ec15_dir, 'dangle');
+
+		# Create a dangling symlink; skip the whole block if symlink() fails
+		skip 'symlink() not supported on this platform', 2
+			unless eval {
+				symlink(File::Spec->catfile($ec15_dir, 'nonexistent'), $dangle);
+				1;
+			};
+
+		# Dangling symlink: -d returns false → "not a directory" croak
+		throws_ok { Database::test1->new(directory => $dangle)->count() }
+			qr/not a directory/i,
+			'EC15.1 dangling symlink as directory croaks "not a directory"';
+
+		# A symlink resolving to a real directory must not be over-rejected
+		my $real_dir  = tempdir(CLEANUP => 1);
+		my $good_link = File::Spec->catfile($ec15_dir, 'goodlink');
+		symlink($real_dir, $good_link);
+		my $sym_obj = eval { Database::test1->new(directory => $good_link) };
+		ok(defined($sym_obj),
+			'EC15.2 symlink to a real directory is accepted by new()');
+	}
+
+	# EC15.3 — /dev/null is a character device, not a directory
+	SKIP: {
+		skip '/dev/null not present on this platform', 1 unless -e '/dev/null';
+		throws_ok { Database::test1->new(directory => '/dev/null')->count() }
+			qr/not a directory/i,
+			'EC15.3 /dev/null (char device) as directory croaks "not a directory"';
+	}
+
+	# EC15.4 — /dev/urandom: another character device, same guard must fire
+	SKIP: {
+		skip '/dev/urandom not present on this platform', 1 unless -e '/dev/urandom';
+		throws_ok { Database::test1->new(directory => '/dev/urandom')->count() }
+			qr/not a directory/i,
+			'EC15.4 /dev/urandom (char device) as directory croaks "not a directory"';
+	}
+
+	done_testing();
+};
+
+# ===========================================================================
+# EC16 — Pathological criteria values
+# Purpose: criteria values containing NUL bytes, shell metacharacters,
+# SQL injection payloads, or extreme lengths must not crash the module or
+# produce spurious rows.  In slurp mode they pass through _match_criterion
+# as plain string comparisons; in SQL mode DBI bind-params neutralise them.
+# ===========================================================================
+
+subtest 'EC16: pathological criteria values — slurp path' => sub {
+	plan tests => 8;
+
+	my $db = Database::test1->new({ directory => $DATA_DIR });
+	$db->count();   # force slurp into memory
+
+	# EC16.1 — NUL byte: _match_criterion string comparison must not crash
+	my $result;
+	lives_ok { $result = $db->selectall_arrayref(entry => "\x00") }
+		'EC16.1 NUL byte in criteria value does not throw';
+	is(scalar(@{$result}), 0, 'EC16.1 NUL byte criteria matches 0 rows');
+
+	# EC16.2 — 10_000-char string: must not trigger O(n^2) processing
+	my $long_val = 'x' x 10_000;
+	lives_ok { $result = $db->selectall_arrayref(entry => $long_val) }
+		'EC16.2 10_000-char criteria value does not throw or hang';
+	is(scalar(@{$result}), 0, 'EC16.2 very long criteria value matches 0 rows');
+
+	# EC16.3 — shell metacharacters: treated as a literal string, not executed
+	lives_ok { $result = $db->selectall_arrayref(entry => '$(rm -rf /)') }
+		'EC16.3 shell metacharacters in criteria value do not throw';
+	is(scalar(@{$result}), 0, 'EC16.3 shell metacharacters in criteria value match 0 rows');
+
+	# EC16.4 — SQL injection string as criteria value: slurp path uses plain
+	# string comparison (no SQL engine), so injection payload is a literal;
+	# SQL path uses DBI bind-params which also neutralise it.  Either way: 0 rows.
+	lives_ok { $result = $db->selectall_arrayref(entry => "' OR '1'='1") }
+		'EC16.4 SQL injection string in criteria value does not throw';
+	is(scalar(@{$result}), 0,
+		'EC16.4 SQL injection string matches 0 rows (not interpreted as SQL)');
+};
+
+# ===========================================================================
+# EC17 — selectall_array list vs scalar context
+# Purpose: selectall_array() is context-sensitive — list context returns a
+# flat list of hashrefs; scalar context returns the first hashref only.
+# Both behaviors must be correct when results are empty (missing key): list
+# must give 0 elements; scalar must give undef, not an empty arrayref.
+# ===========================================================================
+
+subtest 'EC17: selectall_array context sensitivity' => sub {
+	plan tests => 7;
+
+	my $db = Database::test1->new({ directory => $DATA_DIR });
+
+	# EC17.1 — list context returns all rows as a flat list of hashrefs
+	my @all = $db->selectall_array();
+	is(scalar(@all), $ROWS_TOTAL,
+		'EC17.1 list context returns all rows');
+	ok(ref($all[0]) eq 'HASH',
+		'EC17.1 each element in list context is a hashref');
+
+	# EC17.2 — scalar context with a specific entry criterion uses the single-entry
+	# fast-track (line 1224 of Abstraction.pm) which returns the row hashref directly;
+	# the no-criteria path returns values() in the calling context (count in scalar).
+	my $one_row = $db->selectall_array(entry => $ENTRY_ONE);
+	ok(ref($one_row) eq 'HASH',
+		'EC17.2 scalar context with specific entry returns the matching hashref');
+
+	# EC17.3 — list context for a missing entry key returns 0 elements,
+	# not a 1-element list containing undef
+	my @missing = $db->selectall_array(entry => 'NO_SUCH_KEY_XYZ');
+	is(scalar(@missing), 0,
+		'EC17.3 missing entry in list context returns 0 elements (not undef)');
+
+	# EC17.4 — scalar context for a missing entry key returns undef
+	my $missing_scalar = $db->selectall_array(entry => 'NO_SUCH_KEY_XYZ');
+	ok(!defined($missing_scalar),
+		'EC17.4 missing entry in scalar context returns undef');
+
+	# EC17.5-6 — matching entry criterion: 1-element list in list context,
+	# correct column value in the returned row
+	my @one = $db->selectall_array(entry => $ENTRY_ONE);
+	is(scalar(@one), 1,
+		'EC17.5 matching entry in list context returns 1-element list');
+	is($one[0]{'number'}, $NUM_ONE,
+		'EC17.6 returned row contains the correct column value');
+};
+
 done_testing();
