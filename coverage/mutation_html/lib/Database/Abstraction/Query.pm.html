@@ -244,7 +244,7 @@ pre details.mutant-details ul {
 <div class="nav"><a href="../Abstraction.pm.html">⬅ Previous</a> <a href="../../../../index.html">Index</a>
 </div><div class='summary'>
 <strong>Structural Coverage (Approximate)</strong><p>
-TER1 (Statement): 97.96%<br>
+TER1 (Statement): 97.95%<br>
 TER2 (Branch): 86.49%<br>
 TER3 (LCSAJ): 100.0% (10/10)<br>
 Approximate LCSAJ segments: 75<br>
@@ -612,12 +612,12 @@ Approximate LCSAJ segments: 75<br>
 </span><span class="">  314: {
 </span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">315 → 327 → 331</span></span>  315: 	my ($self, $count_only) = @_;
 </span><span class="">  316: 
-</span><span class="">  317: 	my $db    = $self-&gt;{&#39;_db&#39;};
-</span><span class="">  318: 	my $table = $db-&gt;{&#39;table&#39;} || ref($db);
-</span><span class="">  319: 	$table =~ s/\A.*:://;
-</span><span class="">  320: 
-</span><span class="">  321: 	# Ensure the underlying table connection is open
-</span><span class="">  322: 	$db-&gt;_open_table({});
+</span><span class="">  317: 	my $db = $self-&gt;{&#39;_db&#39;};
+</span><span class="">  318: 
+</span><span class="">  319: 	# _open_table populates $db-&gt;{&#39;_table_name&#39;} as a side-effect, so call it
+</span><span class="">  320: 	# first and then read the cache directly &acirc;&#128;&#148; avoids a second ref()+regex.
+</span><span class="">  321: 	$db-&gt;_open_table({});
+</span><span class="">  322: 	my $table = $db-&gt;{&#39;_table_name&#39;};
 </span><span class="">  323: 
 </span><span class="">  324: 	my $select = $count_only ? &#39;COUNT(*)&#39; : $self-&gt;{&#39;_select&#39;};
 </span><span class="">  325: 	my $query  = &quot;SELECT $select FROM $table&quot;;
