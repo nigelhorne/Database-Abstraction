@@ -51,6 +51,13 @@ use Sub::Protected;
 our %defaults;
 use constant	DEFAULT_MAX_SLURP_SIZE => 16 * 1024;	# CSV files <= than this size are read into memory
 
+# Compiled once at module load; reused in every identifier-safety check.
+# Using \A/\z (true string anchors) rather than ^/$ which match around \n.
+# SAFE_IDENTIFIER: bare SQL identifier — letters, digits, underscore.
+# SAFE_QUALIFIED:  allows a single dot for table.column notation in JOINs.
+my $SAFE_IDENTIFIER = qr/\A[a-zA-Z_][a-zA-Z0-9_]*\z/;
+my $SAFE_QUALIFIED  = qr/\A[a-zA-Z_][a-zA-Z0-9_.]*\z/;
+
 =head1 NAME
 
 Database::Abstraction - Read-only Database Abstraction Layer (ORM)
@@ -559,7 +566,7 @@ sub new {
 		# and be interpolated directly into ORDER BY / COUNT() SQL.
 		if(defined $args{'id'}) {
 			croak(ref($class), ": unsafe id column name '$args{id}'")
-				unless $args{'id'} =~ /^[a-zA-Z_][a-zA-Z0-9_]*$/;
+				unless $args{'id'} =~ $SAFE_IDENTIFIER;
 		}
 		return bless { %{$class}, %args }, ref($class);
 	}
@@ -588,11 +595,12 @@ sub new {
 	for my $src (\%defaults, \%args) {
 		if(defined $src->{'id'}) {
 			croak("$class: unsafe id column name '$src->{id}'")
-				unless $src->{'id'} =~ /^[a-zA-Z_][a-zA-Z0-9_]*$/;
+				unless $src->{'id'} =~ $SAFE_IDENTIFIER;
 		}
 		if(defined $src->{'host'}) {
 			croak("$class: unsafe host '$src->{host}'")
-				unless $src->{'host'} =~ /^(?:[a-zA-Z0-9][a-zA-Z0-9._-]*\@)?[a-zA-Z0-9:][a-zA-Z0-9._:-]*$/;
+				# \z (not $) so a trailing newline cannot sneak past the anchor.
+				unless $src->{'host'} =~ /\A(?:[a-zA-Z0-9][a-zA-Z0-9._-]*\@)?[a-zA-Z0-9:][a-zA-Z0-9._:-]*\z/;
 		}
 	}
 
@@ -647,7 +655,7 @@ sub _open :Protected
 	my $max_slurp_size = $params->{'max_slurp_size'} || $self->{'max_slurp_size'};
 
 	my $table = $self->{'table'} || ref($self);
-	$table =~ s/.*:://;
+	$table =~ s/\A.*:://;
 
 	$self->_trace(ref($self), ": _open $table");
 
@@ -1405,7 +1413,10 @@ sub count
 		# in cache, derive the count from that array rather than hitting the DB.
 		# The key is built to match what selectall_arrayref would store.
 		$key = ref($self) . '::' . $query;
-		$key =~ s/COUNT\((.+?)\)/$1/;
+		# [^)]+ is a negated character class: O(n) with zero backtracking.
+		# The former lazy .+? could scan past the first ) in pathological SQL;
+		# [^)]+ is also semantically correct (COUNT(expr) never contains ) ).
+		$key =~ s/COUNT\(([^)]+)\)/$1/;
 		$key .= ' array';
 		if(defined($query_args[0])) {
 			$key .= ' ' . join(', ', @query_args);
@@ -1601,7 +1612,9 @@ sub execute
 	my $query = $args->{'query'};
 
 	# Append "FROM <table>" if missing
-	$query .= " FROM $table" unless $query =~ /\sFROM\s/i;
+	# \bFROM\b catches the keyword at any word boundary (space, tab, newline),
+	# unlike the former \sFROM\s which missed forms like "col\tFROM" or leading FROM.
+	$query .= " FROM $table" unless $query =~ /\bFROM\b/i;
 
 	# Log the query if a logger is available
 	$self->_debug("execute $query");
@@ -1900,7 +1913,7 @@ sub AUTOLOAD {
 	Carp::croak(__PACKAGE__, ": AUTOLOAD disabled (auto_load => 0)") if(exists($self->{'auto_load'}) && !$self->{'auto_load'});
 
 	# Validate column name - only allow safe column name
-	Carp::croak(__PACKAGE__, ": Invalid column name: $column") unless $column =~ /^[a-zA-Z_][a-zA-Z0-9_]*$/;
+	Carp::croak(__PACKAGE__, ": Invalid column name: $column") unless $column =~ $SAFE_IDENTIFIER;
 
 	my $table = $self->_open_table();
 
@@ -2024,7 +2037,7 @@ sub AUTOLOAD {
 	for my $k (sort keys %params) {
 		# Guard against SQL injection via column names — same rule as _build_where_conditions
 		Carp::croak(__PACKAGE__, ": unsafe column name '$k'")
-			unless $k =~ /^[a-zA-Z_][a-zA-Z0-9_.]*$/;
+			unless $k =~ $SAFE_QUALIFIED;
 		my $value = $params{$k};
 		$self->_debug(__PACKAGE__, ": AUTOLOAD adding key/value pair $k=>", defined($value) ? $value : 'NULL');
 		if(defined($value)) {
@@ -2098,7 +2111,7 @@ sub DESTROY
 
 	# Clean up database handles
 	my $table_name = $self->{'table'} || ref($self);
-	$table_name =~ s/.*:://;
+	$table_name =~ s/\A.*:://;
 
 	if(my $dbh = delete $self->{$table_name}) {
 		$dbh->disconnect() if $dbh->can('disconnect');
@@ -2133,7 +2146,7 @@ sub _build_joins
 		my $type  = uc($j->{'type'}  // 'INNER');
 		my $jtable = $j->{'table'} or Carp::croak('join: missing "table"');
 		Carp::croak("join: unsafe table name '$jtable'")
-			unless $jtable =~ /^[a-zA-Z_][a-zA-Z0-9_.]*$/;
+			unless $jtable =~ $SAFE_QUALIFIED;
 		my $on     = $j->{'on'}    or Carp::croak('join: missing "on" condition');
 		Carp::croak("Invalid JOIN type: $type") unless $valid_types{$type};
 		push @clauses, "$type JOIN $jtable ON ($on)";
@@ -2178,7 +2191,12 @@ sub _fixate :Private
 	# fixate when earlier objects go out of scope before a new slurp runs.
 	Data::Reuse::forget();
 	local $SIG{__WARN__} = sub {
-		warn @_ unless $_[0] =~ /\AUse of uninitialized value.*\bin hash slice\b/;
+		# Two index() calls replace the former /.*\b/ — no backtracking at all.
+		# The prefix check is constant-time; the suffix scan is O(n) but stops
+		# at the first match rather than first matching greedily then retreating.
+		warn @_ unless
+			index($_[0], 'Use of uninitialized value') == 0
+			&& index($_[0], 'in hash slice') >= 0;
 	};
 	&Data::Reuse::fixate($struct);
 }
@@ -2245,7 +2263,7 @@ sub _build_where_conditions
 
 		# Guard against SQL injection via column names; allow table.column notation for JOINs
 		Carp::croak("_build_where_conditions: unsafe column name '$col'")
-			unless $col =~ /^[a-zA-Z_][a-zA-Z0-9_.]*$/;
+			unless $col =~ $SAFE_QUALIFIED;
 
 		if(ref($val) eq 'HASH') {
 			for my $op (sort keys %{$val}) {
@@ -2271,7 +2289,9 @@ sub _build_where_conditions
 						push @clauses, "$col != ?";
 						push @args, $operand;
 					}
-				} elsif($op =~ /^(?:>|<|>=|<=)$/) {
+				# [<>]=? matches >, <, >=, <= as a single character class — no alternation
+				# overhead, no backtracking, and self-documenting.
+				} elsif($op =~ /\A[<>]=?\z/) {
 					push @clauses, "$col $op ?";
 					push @args, $operand;
 				} else {
@@ -2411,7 +2431,7 @@ sub _open_table
 
 	# Get table name (remove package name prefix if present)
 	my $table = $params->{'table'} || $self->{'table'} || ref($self);
-	$table =~ s/.*:://;
+	$table =~ s/\A.*:://;
 
 	# Open a connection if it's not already open.
 	# BerkeleyDB never sets $self->{$table} (no DBI handle) or $self->{'data'},
@@ -2428,7 +2448,7 @@ sub _quote_identifier
 	my ($self, $name) = @_;
 
 	my $table = $self->{'table'} || ref($self);
-	$table =~ s/.*:://;
+	$table =~ s/\A.*:://;
 	if(my $dbh = $self->{$table}) {
 		return $dbh->quote_identifier($name);
 	}
@@ -2492,7 +2512,8 @@ sub _is_local_host {
 	# Strip optional user@ prefix
 	(my $bare = $host) =~ s/^[^@]*\@//;
 
-	return 1 if $bare =~ /^(?:localhost|127\.0\.0\.1|::1)$/i;
+	# \z anchors at true end-of-string; $ would match before a trailing newline.
+	return 1 if $bare =~ /\A(?:localhost|127\.0\.0\.1|::1)\z/i;
 
 	require Sys::Hostname;
 	my $me = lc(Sys::Hostname::hostname());
