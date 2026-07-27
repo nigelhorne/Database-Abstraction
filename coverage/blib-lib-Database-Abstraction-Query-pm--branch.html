@@ -20,7 +20,7 @@ https://pjcj.net
 <h1>Branch Coverage</h1>
 <table>
 <tr><td class="h" align="right">File:</td><td align="left">blib/lib/Database/Abstraction/Query.pm</td></tr>
-<tr><td class="h" align="right">Coverage:</td><td align="left" class="c2">90.9%</td></tr>
+<tr><td class="h" align="right">Coverage:</td><td align="left" class="c1">86.5%</td></tr>
 </table>
 <div><br/></div>
 <table>
@@ -30,34 +30,38 @@ https://pjcj.net
 <tr><td class="h"><a id="L157">157</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">defined $cols ? :</td></tr>
 <tr><td class="h"><a id="L183">183</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">ref $_[0] eq &#39;HASH&#39; ? :</td></tr>
 <tr><td class="h"><a id="L219">219</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">ref $spec eq &#39;ARRAY&#39; ? :</td></tr>
-<tr><td class="h"><a id="L278">278</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $order_by)</td></tr>
-<tr><td class="h"><a id="L284">284</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$dir =~ /DESC/i ? :</td></tr>
-<tr><td class="h"><a id="L287">287</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $offset</td></tr>
-<tr><td class="h"><a id="L288">288</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if defined $limit</td></tr>
-<tr><td class="h"><a id="L303">303</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$count_only ? :</td></tr>
-<tr><td class="h"><a id="L306">306</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (@{$$self{&quot;_joins&quot;};})</td></tr>
-<tr><td class="h"><a id="L313">313</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (@{$$self{&#39;_joins&#39;};}) { }</td></tr>
+<tr><td class="h"><a id="L241">241</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if (defined $col)</td></tr>
+<tr><td class="h"><a id="L242">242</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if $col =~ m[;|--|/\*]</td></tr>
+<tr><td class="h"><a id="L263">263</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless defined $n and $n =~ /\A\d+\z/</td></tr>
+<tr><td class="h"><a id="L281">281</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless defined $n and $n =~ /\A\d+\z/</td></tr>
+<tr><td class="h"><a id="L294">294</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $order_by)</td></tr>
+<tr><td class="h"><a id="L305">305</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$desc ? :</td></tr>
+<tr><td class="h"><a id="L308">308</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $offset</td></tr>
+<tr><td class="h"><a id="L309">309</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if defined $limit</td></tr>
+<tr><td class="h"><a id="L324">324</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$count_only ? :</td></tr>
+<tr><td class="h"><a id="L327">327</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (@{$$self{&quot;_joins&quot;};})</td></tr>
+<tr><td class="h"><a id="L334">334</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (@{$$self{&#39;_joins&#39;};}) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($$db{&#39;type&#39;} eq &#39;CSV&#39; and not $$db{&#39;no_entry&#39;}) { }</td></tr>
-<tr><td class="h"><a id="L314">314</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $where</td></tr>
-<tr><td class="h"><a id="L318">318</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if $where</td></tr>
-<tr><td class="h"><a id="L320">320</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $where</td></tr>
-<tr><td class="h"><a id="L323">323</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ($count_only)</td></tr>
-<tr><td class="h"><a id="L324">324</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if defined $$self{&quot;_order_by&quot;}</td></tr>
-<tr><td class="h"><a id="L325">325</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if defined $$self{&quot;_limit&quot;}</td></tr>
-<tr><td class="h"><a id="L326">326</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if defined $$self{&quot;_offset&quot;}</td></tr>
-<tr><td class="h"><a id="L350">350</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$db{&quot;berkeley&quot;} or ($$db{&quot;type&quot;} // &quot;&quot;) eq &quot;Deep&quot;)</td></tr>
-<tr><td class="h"><a id="L351">351</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$$db{&#39;berkeley&#39;} ? :</td></tr>
-<tr><td class="h"><a id="L353">353</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if @{$$self{&quot;_joins&quot;};}</td></tr>
-<tr><td class="h"><a id="L363">363</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $sth-&gt;execute(@{$args;})</td></tr>
-<tr><td class="h"><a id="L390">390</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$db{&quot;berkeley&quot;} or ($$db{&quot;type&quot;} // &quot;&quot;) eq &quot;Deep&quot;)</td></tr>
-<tr><td class="h"><a id="L391">391</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$$db{&#39;berkeley&#39;} ? :</td></tr>
-<tr><td class="h"><a id="L393">393</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if @{$$self{&quot;_joins&quot;};}</td></tr>
-<tr><td class="h"><a id="L407">407</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $sth-&gt;execute(@{$args;})</td></tr>
-<tr><td class="h"><a id="L431">431</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$db{&quot;berkeley&quot;} or ($$db{&quot;type&quot;} // &quot;&quot;) eq &quot;Deep&quot;)</td></tr>
-<tr><td class="h"><a id="L432">432</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$$db{&#39;berkeley&#39;} ? :</td></tr>
-<tr><td class="h"><a id="L434">434</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if @{$$self{&quot;_joins&quot;};}</td></tr>
-<tr><td class="h"><a id="L442">442</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $sth-&gt;execute(@{$args;})</td></tr>
-<tr><td class="h"><a id="L446">446</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">$row ? :</td></tr>
+<tr><td class="h"><a id="L335">335</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $where</td></tr>
+<tr><td class="h"><a id="L339">339</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if $where</td></tr>
+<tr><td class="h"><a id="L341">341</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $where</td></tr>
+<tr><td class="h"><a id="L344">344</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ($count_only)</td></tr>
+<tr><td class="h"><a id="L345">345</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if defined $$self{&quot;_order_by&quot;}</td></tr>
+<tr><td class="h"><a id="L346">346</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if defined $$self{&quot;_limit&quot;}</td></tr>
+<tr><td class="h"><a id="L347">347</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if defined $$self{&quot;_offset&quot;}</td></tr>
+<tr><td class="h"><a id="L371">371</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$db{&quot;berkeley&quot;} or ($$db{&quot;type&quot;} // &quot;&quot;) eq &quot;Deep&quot;)</td></tr>
+<tr><td class="h"><a id="L372">372</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$$db{&#39;berkeley&#39;} ? :</td></tr>
+<tr><td class="h"><a id="L374">374</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if @{$$self{&quot;_joins&quot;};}</td></tr>
+<tr><td class="h"><a id="L384">384</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $sth-&gt;execute(@{$args;})</td></tr>
+<tr><td class="h"><a id="L411">411</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$db{&quot;berkeley&quot;} or ($$db{&quot;type&quot;} // &quot;&quot;) eq &quot;Deep&quot;)</td></tr>
+<tr><td class="h"><a id="L412">412</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$$db{&#39;berkeley&#39;} ? :</td></tr>
+<tr><td class="h"><a id="L414">414</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if @{$$self{&quot;_joins&quot;};}</td></tr>
+<tr><td class="h"><a id="L428">428</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $sth-&gt;execute(@{$args;})</td></tr>
+<tr><td class="h"><a id="L452">452</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$db{&quot;berkeley&quot;} or ($$db{&quot;type&quot;} // &quot;&quot;) eq &quot;Deep&quot;)</td></tr>
+<tr><td class="h"><a id="L453">453</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$$db{&#39;berkeley&#39;} ? :</td></tr>
+<tr><td class="h"><a id="L455">455</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if @{$$self{&quot;_joins&quot;};}</td></tr>
+<tr><td class="h"><a id="L463">463</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $sth-&gt;execute(@{$args;})</td></tr>
+<tr><td class="h"><a id="L467">467</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">$row ? :</td></tr>
 </table>
 </body>
 </html>
