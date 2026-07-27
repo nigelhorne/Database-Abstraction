@@ -34,6 +34,7 @@ use_ok('Database::test1');	# keyed CSV (! sep, 'entry' key)
 use_ok('Database::test2');	# PSV (| sep, 'entry' key)
 use_ok('Database::test3');	# XML complex — must use max_slurp_size => 1
 use_ok('Database::test4');	# no_entry CSV (, sep)
+use_ok('Database::test4ne');	# no_entry CSV with custom id=>'cardinal' (produces ARRAY slurp)
 use_ok('Database::test5');	# CSV with custom ID column
 
 Readonly my $DATA_DIR       => File::Spec->catfile($Bin, File::Spec->updir(), 't', 'data');
@@ -610,6 +611,20 @@ note '=== H. columns() / schema() caching and consistency ===';
 	my $db2  = Database::test1->new($DATA_DIR);
 	my $cols3 = $db2->columns();
 	isnt($cols1, $cols3, 'H6: separate objects have separate cached column refs');
+
+	# H7 — no_entry CSV slurp (ARRAY-ref data) columns() and schema() return
+	#       correct results (regression guard for ARRAY-branch fix in columns/schema)
+	#       Database::test4ne uses id=>'cardinal' so rows survive the slurp filter.
+	{
+		my $ne_db = Database::test4ne->new(directory => $DATA_DIR);
+		$ne_db->count();    # trigger slurp into ARRAY ref
+		my $ne_cols = $ne_db->columns();
+		ok(ref($ne_cols) eq 'ARRAY' && scalar(@{$ne_cols}) > 0,
+			'H7a: no_entry CSV columns() returns non-empty arrayref (ARRAY path)');
+		my $ne_sch = $ne_db->schema();
+		ok(ref($ne_sch) eq 'HASH' && scalar(keys %{$ne_sch}) > 0,
+			'H7b: no_entry CSV schema() returns non-empty hashref (ARRAY path)');
+	}
 }
 
 # ---------------------------------------------------------------------------

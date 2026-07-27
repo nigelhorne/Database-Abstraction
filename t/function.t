@@ -46,6 +46,7 @@ my $have_sqlite = eval { require DBI; require DBD::SQLite; 1 };
 
 use lib 't/lib';
 use_ok('Database::test1');		# CSV slurp fixture
+use_ok('Database::test4ne');		# no_entry CSV, id=>'cardinal' — produces ARRAY slurp
 use_ok('Database::test5');		# CSV with custom id ('ID'), sep ','
 
 # ---------------------------------------------------------------------------
@@ -592,6 +593,33 @@ note '--- A19: columns() and schema()';
 	# Cached on second call
 	my $schema2 = $db->schema();
 	is($schema, $schema2, 'schema(): cached ref returned on second call');
+}
+
+# ---- A19b: columns() and schema() — no_entry CSV ARRAY slurp path -------
+# Bug fix: when $self->{'data'} is an ARRAY ref (no_entry CSV slurp), the
+# ref($data) eq 'HASH' branch was skipped, returning empty results.
+# The fix adds an elsif for ARRAY ref.
+# Database::test4ne has id=>'cardinal' so test4.csv rows survive the slurp
+# filter and are stored as an ARRAY ref.
+note '--- A19b: columns() and schema() — ARRAY-ref slurp path';
+{
+	my $ne = Database::test4ne->new(directory => $DATA_DIR);
+	$ne->count();    # trigger lazy _open and slurp into ARRAY ref
+
+	is(ref($ne->{'data'}), 'ARRAY',
+		'A19b pre-cond: data is ARRAY ref for test4ne');
+
+	my $ne_cols = $ne->columns();
+	isa_ok($ne_cols, 'ARRAY',
+		'columns() ARRAY slurp: returns arrayref (not empty)');
+	ok(scalar(@{$ne_cols}) > 0,
+		'columns() ARRAY slurp: list is non-empty');
+
+	my $ne_schema = $ne->schema();
+	isa_ok($ne_schema, 'HASH',
+		'schema() ARRAY slurp: returns hashref (not empty)');
+	ok(scalar(keys %{$ne_schema}) > 0,
+		'schema() ARRAY slurp: schema is non-empty');
 }
 
 # ---- A20: query() — returns Query object ---------------------------------

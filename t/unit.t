@@ -591,6 +591,19 @@ note '=== 12. columns() ===';
 		is_deeply($bdb_cols, ['entry', 'value'],
 			'12.5 columns(): BerkeleyDB returns [entry, value]');
 	}
+
+	# 12.6  no_entry CSV slurp (ARRAY data) returns correct column list
+	#       Regression guard for bug where ref($data) eq 'ARRAY' left @cols empty.
+	#       Uses Database::test4ne (id=>'cardinal') so the slurp produces ARRAY data.
+	{
+		use_ok('Database::test4ne');
+		my $ne = Database::test4ne->new(directory => $DATA_DIR);
+		$ne->count();    # trigger lazy _open and slurp into ARRAY ref
+		my $ne_cols = $ne->columns();
+		isa_ok($ne_cols, 'ARRAY', '12.6 columns(): no_entry CSV ARRAY slurp returns arrayref');
+		ok(scalar(@{$ne_cols}) > 0,
+			'12.6 columns(): no_entry CSV ARRAY slurp returns non-empty list');
+	}
 }
 
 # ---------------------------------------------------------------------------
@@ -636,6 +649,18 @@ note '=== 13. schema() ===';
 			'13.6 schema(): BerkeleyDB entry column is pk');
 		is($bdb_schema->{'value'}{'pk'}, 0,
 			'13.6 schema(): BerkeleyDB value column is not pk');
+	}
+
+	# 13.7  no_entry CSV slurp (ARRAY data) returns correct schema
+	#       Regression guard for bug where ref($data) eq 'ARRAY' left %schema empty.
+	#       Uses Database::test4ne (id=>'cardinal') so the slurp produces ARRAY data.
+	{
+		my $ne = Database::test4ne->new(directory => $DATA_DIR);
+		$ne->count();    # trigger lazy _open and slurp into ARRAY ref
+		my $ne_schema = $ne->schema();
+		isa_ok($ne_schema, 'HASH', '13.7 schema(): no_entry CSV ARRAY slurp returns hashref');
+		ok(scalar(keys %{$ne_schema}) > 0,
+			'13.7 schema(): no_entry CSV ARRAY slurp schema is non-empty');
 	}
 }
 

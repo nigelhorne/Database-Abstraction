@@ -650,4 +650,33 @@ SKIP: {
 	};
 }   # end SKIP block
 
+# ===========================================================================
+# EC12 — columns() / schema() ARRAY-slurp branch (regression guard)
+# Purpose: Before the fix, calling columns() or schema() on a no_entry CSV
+# object (whose $self->{'data'} is an ARRAY ref) returned an empty result
+# because the ref($data) eq 'HASH' branch was skipped and the else (DBI)
+# branch never ran.  This confirms the fix produces correct non-empty results.
+#
+# Database::test4ne uses no_entry=>1, id=>'cardinal', sep_char=>',',
+# dbname=>'test4'.  Because 'cardinal' exists in test4.csv, the slurp
+# filter keeps all 3 rows and stores them as an ARRAY ref.
+# ===========================================================================
+{
+	require Database::test4ne;
+
+	my $ne = Database::test4ne->new(directory => $DATA_DIR);
+	$ne->count();    # trigger lazy _open + slurp into ARRAY ref
+
+	is(ref($ne->{'data'}), 'ARRAY',
+		'EC12 pre-cond: no_entry CSV data is ARRAY ref after slurp');
+
+	my $cols = $ne->columns();
+	ok(ref($cols) eq 'ARRAY' && scalar(@{$cols}) > 0,
+		'EC12a: columns() on ARRAY-slurp data returns non-empty arrayref');
+
+	my $sch = $ne->schema();
+	ok(ref($sch) eq 'HASH' && scalar(keys %{$sch}) > 0,
+		'EC12b: schema() on ARRAY-slurp data returns non-empty hashref');
+}
+
 done_testing();

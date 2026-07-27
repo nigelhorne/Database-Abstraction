@@ -1685,6 +1685,8 @@ sub columns {
 		if(ref($data) eq 'HASH') {
 			my ($first) = values %{$data};
 			@cols = sort keys %{$first} if $first;
+		} elsif(ref($data) eq 'ARRAY' && @{$data}) {
+			@cols = sort keys %{$data->[0]};
 		}
 	} else {
 		my $sth = $self->{$table}->prepare_cached("SELECT * FROM $table WHERE 1=0");
@@ -1757,18 +1759,21 @@ sub schema {
 	}
 
 	if(my $data = $self->{'data'}) {
+		my $first;
 		if(ref($data) eq 'HASH') {
-			my ($first) = values %{$data};
-			if($first) {
-				my $id = $self->{'id'};
-				for my $col (keys %{$first}) {
-					$schema{$col} = {
-						type     => 'TEXT',
-						nullable => ($col eq $id ? 0 : 1),
-						default  => undef,
-						pk       => ($col eq $id ? 1 : 0),
-					};
-				}
+			($first) = values %{$data};
+		} elsif(ref($data) eq 'ARRAY' && @{$data}) {
+			$first = $data->[0];
+		}
+		if($first) {
+			my $id = $self->{'id'};
+			for my $col (keys %{$first}) {
+				$schema{$col} = {
+					type     => 'TEXT',
+					nullable => ($col eq $id ? 0 : 1),
+					default  => undef,
+					pk       => ($col eq $id ? 1 : 0),
+				};
 			}
 		}
 	} else {
