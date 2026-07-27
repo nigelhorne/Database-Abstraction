@@ -314,12 +314,12 @@ sub _build_sql
 {
 	my ($self, $count_only) = @_;
 
-	my $db    = $self->{'_db'};
-	my $table = $db->{'table'} || ref($db);
-	$table =~ s/\A.*:://;
+	my $db = $self->{'_db'};
 
-	# Ensure the underlying table connection is open
+	# _open_table populates $db->{'_table_name'} as a side-effect, so call it
+	# first and then read the cache directly — avoids a second ref()+regex.
 	$db->_open_table({});
+	my $table = $db->{'_table_name'};
 
 	my $select = $count_only ? 'COUNT(*)' : $self->{'_select'};
 	my $query  = "SELECT $select FROM $table";

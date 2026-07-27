@@ -926,7 +926,10 @@ sub _open :Protected
 					);
 
 					# Filter out blank lines and comment rows (lines starting with #)
-					my @data = grep { $_->{$self->{'id'}} !~ /^\s*#/ } grep { defined($_->{$self->{'id'}}) } @{$dataref};
+					# Two passes replaced with one: pre-compute id column to avoid N hash
+				# lookups per element, and combine both conditions into one grep.
+				my $id_col = $self->{'id'};
+				my @data = grep { defined($_->{$id_col}) && $_->{$id_col} !~ /\A\s*#/ } @{$dataref};
 
 					if($self->{'no_entry'}) {
 						# Not keyed on a primary column — keep as ordered list.
@@ -1096,9 +1099,12 @@ sub selectall_arrayref {
 			# Scan in-memory hash for simple column criteria without touching DBI.
 			# fixate() locks hash keys, so use exists() to avoid throwing on unknown columns.
 			$self->_debug("$table: selectall_arrayref in-memory scan with criteria");
+			# Pre-compute param keys once — avoids re-running keys() inside the inner
+			# closure on every row iteration (N hash-key extractions → 1).
+			my @param_keys = keys %{$params};
 			my @rc = grep {
 				my $row = $_;
-				all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params->{$_}) } keys %{$params}
+				all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params->{$_}) } @param_keys
 			} values %{$self->{'data'}};
 			return set_return(\@rc, { type => 'arrayref' });
 		}
@@ -1155,7 +1161,7 @@ sub selectall_arrayref {
 
 		my $rc;
 		while(my $href = $sth->fetchrow_hashref()) {
-			push @{$rc}, $href if(scalar keys %{$href});
+			push @{$rc}, $href if %{$href};
 		}
 		$c->set($key, $rc, $self->{'cache_duration'}) if $c;
 
@@ -1376,10 +1382,11 @@ sub count
 			# and must fall through to the SQL path so that column-name validation
 			# fires in _build_where_conditions.
 			$self->_debug("$table: count in-memory scan");
+			my @param_keys = keys %{$params};
 			my @rows = ref($self->{'data'}) eq 'HASH' ? values %{$self->{'data'}} : @{$self->{'data'}};
 			return scalar grep {
 				my $row = $_;
-				all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params->{$_}) } keys %{$params}
+				all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params->{$_}) } @param_keys
 			} @rows;
 		}
 	}
@@ -1997,7 +2004,13 @@ sub AUTOLOAD {
 			} elsif((scalar keys %params) == 0) {
 				if(wantarray) {
 					if($distinct) {
-						my %h = map { $_ => 1 } grep { defined } map { exists($_->{$column}) ? $_->{$column} : undef } values %{$data};
+						# Single pass instead of three (map→grep→map): avoids three
+						# intermediate lists of size N on the stack.
+						my %h;
+						for my $r (values %{$data}) {
+							my $v = exists($r->{$column}) ? $r->{$column} : undef;
+							$h{$v} = 1 if defined $v;
+						}
 						return keys %h;
 					}
 					# DEAD CODE: unreachable because the outer `if(wantarray && !$distinct)`
@@ -2352,33 +2365,93 @@ sub _scan_berkeley
 	return \@rows;
 }
 
-# SQL LIKE match using dynamic programming (O(m*n), no catastrophic backtracking).
-# % matches any sequence of chars; _ matches exactly one char.  Case-insensitive.
+# SQL LIKE match — case-insensitive, ReDoS-safe, no catastrophic backtracking.
+# % matches any sequence of chars; _ matches exactly one char.
+#
+# Fast paths cover the four most common LIKE shapes using O(1) string ops:
+#   '%'        → always true
+#   no wildcard → lc eq comparison
+#   '%suffix'  → ends-with check via substr
+#   'prefix%'  → starts-with check via index
+#   '%mid%'    → contains check via index  (single inner literal, no _ wildcards)
+#
+# Full DP uses O(m) memory (two 1-D rolling arrays) instead of the O(m*n) 2-D
+# table the naive approach allocates.  Character access uses substr() instead of
+# split(//) so no per-character scalar objects are created.
 sub _like_match
 {
 	my ($str, $pattern) = @_;
-	my @s = split //, lc($str);
-	my @p = split //, lc($pattern);
-	my $m = scalar @s;
-	my $n = scalar @p;
 
-	my @dp = map { [ (0) x ($m + 1) ] } 0 .. $n;
-	$dp[0][0] = 1;
+	# Fast path 1: bare '%' — matches any string regardless of content.
+	return 1 if $pattern eq '%';
 
-	for my $i (1 .. $n) {
-		if($p[$i - 1] eq '%') {
-			$dp[$i][0] = $dp[$i - 1][0];
-			for my $j (1 .. $m) {
-				$dp[$i][$j] = ($dp[$i - 1][$j] || $dp[$i][$j - 1]) ? 1 : 0;
-			}
-		} else {
-			for my $j (1 .. $m) {
-				$dp[$i][$j] = ($dp[$i - 1][$j - 1]
-					&& ($p[$i - 1] eq '_' || $p[$i - 1] eq $s[$j - 1])) ? 1 : 0;
+	my $lc_str = lc($str);
+	my $lc_pat = lc($pattern);
+	my $pat_len = length($lc_pat);
+	my $str_len = length($lc_str);
+
+	# Fast path 2: no wildcard characters — plain case-insensitive equality.
+	return ($lc_str eq $lc_pat)
+		if index($lc_pat, '%') == -1 && index($lc_pat, '_') == -1;
+
+	# Fast paths 3-5 apply only when the pattern has no '_' wildcards.
+	# (Patterns with '_' need per-character DP to enforce the single-char rule.)
+	if(index($lc_pat, '_') == -1) {
+		my $first_pct = index($lc_pat, '%');
+		my $last_pct  = rindex($lc_pat, '%');
+
+		# Fast path 3: '%suffix' — exactly one '%', at the start.
+		if($first_pct == 0 && $last_pct == 0) {
+			my $sfx = substr($lc_pat, 1);
+			my $sfx_len = length($sfx);
+			return $str_len >= $sfx_len
+				&& substr($lc_str, $str_len - $sfx_len) eq $sfx;
+		}
+
+		# Fast path 4: 'prefix%' — exactly one '%', at the end.
+		if($last_pct == $pat_len - 1 && $first_pct == $pat_len - 1) {
+			my $pfx = substr($lc_pat, 0, $pat_len - 1);
+			return index($lc_str, $pfx) == 0;
+		}
+
+		# Fast path 5: '%literal%' — '%' at both ends, no inner '%'.
+		# pat_len >= 3 ensures there are two distinct '%' characters.
+		# Only return here when the middle segment is free of further wildcards;
+		# if it contains '%' (e.g. '%a%b%'), fall through to the full DP.
+		if($first_pct == 0 && $last_pct == $pat_len - 1 && $pat_len >= 3) {
+			my $needle = substr($lc_pat, 1, $pat_len - 2);
+			if(index($needle, '%') == -1) {
+				return index($lc_str, $needle) >= 0;
 			}
 		}
 	}
-	return $dp[$n][$m];
+
+	# Full DP — O(m*n) time, O(m) memory.
+	# Two 1-D arrays (@prev, @curr) replace the O(m*n) 2-D table.
+	# substr() replaces split(//) — no per-char scalar allocation.
+	my $m = $str_len;
+	my $n = $pat_len;
+
+	# @prev[j] = true iff pattern[0..i-1] matches string[0..j-1]
+	my @prev = (1, (0) x $m);
+
+	for my $i (1 .. $n) {
+		my @curr = (0) x ($m + 1);
+		my $pc = substr($lc_pat, $i - 1, 1);
+		if($pc eq '%') {
+			$curr[0] = $prev[0];
+			for my $j (1 .. $m) {
+				$curr[$j] = ($prev[$j] || $curr[$j - 1]) ? 1 : 0;
+			}
+		} else {
+			for my $j (1 .. $m) {
+				$curr[$j] = ($prev[$j - 1]
+					&& ($pc eq '_' || $pc eq substr($lc_str, $j - 1, 1))) ? 1 : 0;
+			}
+		}
+		@prev = @curr;
+	}
+	return $prev[$m];
 }
 
 sub _match_criterion
@@ -2429,14 +2502,24 @@ sub _open_table
 {
 	my($self, $params) = @_;
 
-	# Get table name (remove package name prefix if present)
-	my $table = $params->{'table'} || $self->{'table'} || ref($self);
-	$table =~ s/\A.*:://;
+	# Derive the table name, caching the result in '_table_name' for the common
+	# case of no caller-supplied 'table' override.  Avoids repeating ref()+regex
+	# on every query when the same object makes many calls.
+	my $table;
+	if($params->{'table'}) {
+		($table = $params->{'table'}) =~ s/\A.*:://;
+	} else {
+		$table = $self->{'_table_name'} //= do {
+			my $t = $self->{'table'} || ref($self);
+			$t =~ s/\A.*:://;
+			$t;
+		};
+	}
 
 	# Open a connection if it's not already open.
 	# BerkeleyDB never sets $self->{$table} (no DBI handle) or $self->{'data'},
 	# so we also guard on $self->{'berkeley'} to avoid re-tying on every call.
-	$self->_open() if((!$self->{$table}) && (!$self->{'data'}) && (!$self->{'berkeley'}));
+	$self->_open() if(!$self->{$table} && !$self->{'data'} && !$self->{'berkeley'});
 
 	return $table;
 }
