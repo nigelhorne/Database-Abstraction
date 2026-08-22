@@ -42,7 +42,7 @@
 		/* Show cursor points on the headers to show that they are clickable */
 		th { background-color: #f2f2f2; cursor: pointer; }
 		th.sortable {
-			cursor: pointer;
+			cursor: grab;
 			user-select: none;
 			white-space: nowrap;
 		}
@@ -54,6 +54,11 @@
 			color: #000;	/* dark for active */
 			font-weight: bold;
 		}
+		/* Prevent child spans intercepting drag events so enter/leave fire only on the th */
+		th.sortable .label,
+		th.sortable .arrow { pointer-events: none; }
+		th.col-dragging { opacity: 0.4; cursor: grabbing; }
+		th.col-drag-over { outline: 2px dashed #555; background-color: #d8eaff !important; }
 		.sparkline {
 			display: inline-block;
 			vertical-align: middle;
@@ -137,7 +142,7 @@
 	<img src="https://img.shields.io/badge/coverage-84%25-yellow" alt="Coverage badge">
 </div>
 <h1>Database::Abstraction</h1><h2>Coverage Report</h2>
-<table data-sort-col="0" data-sort-order="asc">
+<table data-sort-col="0" data-sort-order="asc" data-table-id="coverage">
 <!-- Make the column headers clickable -->
 <thead>
 <tr>
@@ -153,8 +158,8 @@
 
 <tbody>
 
-<tr class="med"><td><a href="blib-lib-Database-Abstraction-pm.html" title="View coverage line by line" target="_blank">lib/Database/Abstraction.pm</a> <a href="https://github.com/nigelhorne/Database-Abstraction/blob/6f09464096a60ea2332679c427c8ab8a9f23dc21/lib/Database/Abstraction.pm" class="icon-link" title="View source on GitHub">&#128269;</a><canvas class="sparkline" width="80" height="20" data-points="77.1,76.7,77.0,76.7,77.0,76.7,77.1,74.8,74.8,74.7"></canvas></td><td>79.2</td><td>71.9</td><td>65.3</td><td>98.4</td><td><span class="coverage-badge badge-warn" title="Moderate coverage">75.3%</span></td><td class="positive" title="Previous: 74.7%">&#9650; 0.5%</td></tr>
-<tr class="high"><td><a href="blib-lib-Database-Abstraction-Query-pm.html" title="View coverage line by line" target="_blank">lib/Database/Abstraction/Query.pm</a> <a href="https://github.com/nigelhorne/Database-Abstraction/blob/6f09464096a60ea2332679c427c8ab8a9f23dc21/lib/Database/Abstraction/Query.pm" class="icon-link" title="View source on GitHub">&#128269;</a><canvas class="sparkline" width="80" height="20" data-points="90.1,89.6,90.1,91.9,90.1,91.9,90.1,90.1,90.1,93.1"></canvas></td><td>97.9</td><td>91.9</td><td>73.0</td><td>100.0</td><td><span class="coverage-badge badge-good" title="Excellent coverage">93.1%</span></td><td class="neutral" title="Previous: 93.1%">&#9679; 0.0%</td></tr>
+<tr class="med"><td><a href="blib-lib-Database-Abstraction-pm.html" title="View coverage line by line" target="_blank">lib/Database/Abstraction.pm</a> <a href="https://github.com/nigelhorne/Database-Abstraction/blob/3a5beab6773e937e44e6c0f2dfbe30cd01ea91e2/lib/Database/Abstraction.pm" class="icon-link" title="View source on GitHub">&#128269;</a><canvas class="sparkline" width="80" height="20" data-points="76.7,77.0,76.7,77.0,76.7,77.1,74.8,75.3,74.8,74.7"></canvas></td><td>79.2</td><td>71.9</td><td>65.3</td><td>98.4</td><td><span class="coverage-badge badge-warn" title="Moderate coverage">75.3%</span></td><td class="positive" title="Previous: 74.7%">&#9650; 0.5%</td></tr>
+<tr class="high"><td><a href="blib-lib-Database-Abstraction-Query-pm.html" title="View coverage line by line" target="_blank">lib/Database/Abstraction/Query.pm</a> <a href="https://github.com/nigelhorne/Database-Abstraction/blob/3a5beab6773e937e44e6c0f2dfbe30cd01ea91e2/lib/Database/Abstraction/Query.pm" class="icon-link" title="View source on GitHub">&#128269;</a><canvas class="sparkline" width="80" height="20" data-points="89.6,90.1,91.9,90.1,91.9,90.1,90.1,93.1,90.1,93.1"></canvas></td><td>97.9</td><td>91.9</td><td>73.0</td><td>100.0</td><td><span class="coverage-badge badge-good" title="Excellent coverage">93.1%</span></td><td class="neutral" title="Previous: 93.1%">&#9679; 0.0%</td></tr>
 <tr class="summary-row nosort"><td colspan="2"><strong>Summary</strong></td><td colspan="2">2 files</td><td colspan="3">Avg: 84%, Low: 0</td></tr>
 <tr class="high nosort"><td><strong>Total</strong></td><td>88.6</td><td>81.9</td><td>69.1</td><td>99.2</td><td colspan="2"><strong>84.2</strong></td></tr>
 </tbody></table>
@@ -204,8 +209,7 @@ function linearRegression(data) {
 
 
 const dataPoints = [ { x: "2026-07-26T08:33:14-04:00", y: 72.6041974902734, delta: 0, url: "https://github.com/nigelhorne/Database-Abstraction/commit/f184586639a2e9c2664ab3fbfb4dbda1fa9e880d", label: "2026-07-26T08:33:14-04:00", pointBackgroundColor: "gray", comment: "Update cpanfile" },
-{ x: "2026-07-26T16:15:02-04:00", y: 69.5909155028918, delta: -3.0, url: "https://github.com/nigelhorne/Database-Abstraction/commit/eed7130d09cc344944461a7b077ebad9590c86de", label: "2026-07-26T16:15:02-04:00", pointBackgroundColor: "red", comment: "More AUTOLOAD testing" },
-{ x: "2026-07-26T21:21:26-04:00", y: 84.3158665437975, delta: 14.7, url: "https://github.com/nigelhorne/Database-Abstraction/commit/f38a905135066d2613da9f77380eb45662b6c445", label: "2026-07-26T21:21:26-04:00", pointBackgroundColor: "green", comment: "More edge cases" },
+{ x: "2026-07-26T21:21:26-04:00", y: 84.3158665437975, delta: 11.7, url: "https://github.com/nigelhorne/Database-Abstraction/commit/f38a905135066d2613da9f77380eb45662b6c445", label: "2026-07-26T21:21:26-04:00", pointBackgroundColor: "green", comment: "More edge cases" },
 { x: "2026-07-26T21:35:27-04:00", y: 83.1361801315251, delta: -1.2, url: "https://github.com/nigelhorne/Database-Abstraction/commit/7eca50f058fb929c9b7925c40b454c3c864d87a5", label: "2026-07-26T21:35:27-04:00", pointBackgroundColor: "red", comment: "Improved the regexes" },
 { x: "2026-07-27T07:36:02-04:00", y: 83.5519424517485, delta: 0.4, url: "https://github.com/nigelhorne/Database-Abstraction/commit/e028513e58da82a15d9643ad9f3933dd3e3c8569", label: "2026-07-27T07:36:02-04:00", pointBackgroundColor: "green", comment: "Performance enhancements" },
 { x: "2026-07-27T16:42:02-04:00", y: 83.642481157045, delta: 0.1, url: "https://github.com/nigelhorne/Database-Abstraction/commit/784af998631bd9dae1bdeb2c21f940ed8d180c24", label: "2026-07-27T16:42:02-04:00", pointBackgroundColor: "green", comment: "Latest ghgen" },
@@ -213,7 +217,8 @@ const dataPoints = [ { x: "2026-07-26T08:33:14-04:00", y: 72.6041974902734, delt
 { x: "2026-08-21T15:26:53-04:00", y: 83.642481157045, delta: 0.0, url: "https://github.com/nigelhorne/Database-Abstraction/commit/b3b2a93402d0867b8022bf9980709bab847a6e5e", label: "2026-08-21T15:26:53-04:00", pointBackgroundColor: "gray", comment: "Latest dashboard" },
 { x: "2026-08-21T22:02:06-04:00", y: 82.4858846867926, delta: -1.2, url: "https://github.com/nigelhorne/Database-Abstraction/commit/8e4f7b97838747a8c8cad104f00b26d23f3c2fbc", label: "2026-08-21T22:02:06-04:00", pointBackgroundColor: "red", comment: "Fix CI" },
 { x: "2026-08-22T08:56:40-04:00", y: 41.9483405689932, delta: -40.5, url: "https://github.com/nigelhorne/Database-Abstraction/commit/9b58e28ecb992d53bee96b371475d3cfc2cf3b44", label: "2026-08-22T08:56:40-04:00", pointBackgroundColor: "red", comment: "Added domain testing" },
-{ x: "2026-08-22T13:59:24+00:00", y: 84.1581190464832, delta: 42.2, url: "https://github.com/nigelhorne/Database-Abstraction/commit/6f09464096a60ea2332679c427c8ab8a9f23dc21", label: "2026-08-22T13:59:24+00:00", pointBackgroundColor: "green", comment: "Added Test::Mockingbird" } ];
+{ x: "2026-08-22T09:54:19-04:00", y: 84.1581190464832, delta: 42.2, url: "https://github.com/nigelhorne/Database-Abstraction/commit/6f09464096a60ea2332679c427c8ab8a9f23dc21", label: "2026-08-22T09:54:19-04:00", pointBackgroundColor: "green", comment: "Added Test::Mockingbird" },
+{ x: "2026-08-22T14:23:42+00:00", y: 84.1581190464832, delta: 0.0, url: "https://github.com/nigelhorne/Database-Abstraction/commit/3a5beab6773e937e44e6c0f2dfbe30cd01ea91e2", label: "2026-08-22T14:23:42+00:00", pointBackgroundColor: "gray", comment: "Latest test dashboard" } ];
 const regressionPoints = linearRegression(dataPoints);
 // Try to register the zoom plugin (handles different UMD builds)
 (function registerZoomPlugin(){
@@ -336,7 +341,10 @@ if(resetBtn) {
 	});
 }
 
-function sortTable(th, colIndex) {
+function sortTable(th) {
+	// Always recompute colIndex from DOM so it stays correct after drag-reordering.
+	// The historic onclick="sortTable(this, N)" calls still work; the N is ignored.
+	const colIndex = Array.from(th.parentElement.cells).indexOf(th);
 	const table = th.closest("table");
 	if(!table || !table.tBodies.length) return;
 
@@ -347,21 +355,30 @@ function sortTable(th, colIndex) {
 	const prevOrder = table.getAttribute("data-sort-order") || "desc";
 	const asc = (prevCol != colIndex) ? true : (prevOrder === "desc");
 
-	const isNumeric = colIndex === 0; // Date column
+	const isDate = th.dataset.sortType === 'date';
 
 	const normalRows = rows.filter(r => !r.classList.contains("nosort"));
 	const fixedRows = rows.filter(r => r.classList.contains("nosort"));
 
 	normalRows.sort((a, b) => {
-		let x = a.cells[colIndex]?.innerText.trim() || "";
-		let y = b.cells[colIndex]?.innerText.trim() || "";
+		const cellA = a.cells[colIndex];
+		const cellB = b.cells[colIndex];
+		let x = (cellA?.dataset.value ?? cellA?.innerText ?? "").trim();
+		let y = (cellB?.dataset.value ?? cellB?.innerText ?? "").trim();
 
-		if(isNumeric) {
+		if(isDate) {
 			x = Date.parse(x) || 0;
 			y = Date.parse(y) || 0;
 		} else {
-			x = x.toLowerCase();
-			y = y.toLowerCase();
+			const nx = parseFloat(x);
+			const ny = parseFloat(y);
+			if(!isNaN(nx) && !isNaN(ny)) {
+				x = nx;
+				y = ny;
+			} else {
+				x = x.toLowerCase();
+				y = y.toLowerCase();
+			}
 		}
 
 		if(x < y) return asc ? -1 : 1;
@@ -389,28 +406,235 @@ function sortTable(th, colIndex) {
 
 	table.setAttribute("data-sort-col", colIndex);
 	table.setAttribute("data-sort-order", asc ? "asc" : "desc");
+	saveSortState(table);
 }
 
+// ---------------------------------------------------------
+// Column drag-to-reorder
+// ---------------------------------------------------------
+let _dragSrcTh = null;
+let _initializingTables = false;
+
+// ---------------------------------------------------------
+// localStorage persistence for sort state and column order
+// ---------------------------------------------------------
+function _tableId(table) {
+	return table ? table.dataset.tableId : null;
+}
+
+function saveColOrder(table) {
+	const id = _tableId(table);
+	if(!id) return;
+	const headerRow = table.tHead && table.tHead.rows[0];
+	if(!headerRow) return;
+	const order = Array.from(headerRow.cells).map(th => parseInt(th.dataset.colId, 10));
+	try { localStorage.setItem('atg_col_order_' + id, JSON.stringify(order)); } catch(e) {}
+}
+
+function saveSortState(table) {
+	if(_initializingTables) return;
+	const id = _tableId(table);
+	if(!id) return;
+	const colIdx = parseInt(table.getAttribute('data-sort-col'), 10);
+	const order  = table.getAttribute('data-sort-order') || 'asc';
+	const headerRow = table.tHead && table.tHead.rows[0];
+	if(!headerRow) return;
+	const th = headerRow.cells[colIdx];
+	const colId = th ? parseInt(th.dataset.colId, 10) : colIdx;
+	try { localStorage.setItem('atg_sort_' + id, JSON.stringify({colId, order})); } catch(e) {}
+}
+
+function _restoreColOrder(table, savedOrder) {
+	const headerRow = table.tHead && table.tHead.rows[0];
+	if(!headerRow) return;
+	const placed = new Set();
+	savedOrder.forEach((wantedId, dstPos) => {
+		const srcTh = Array.from(headerRow.cells).find(
+			th => parseInt(th.dataset.colId, 10) === wantedId && !placed.has(th)
+		);
+		if(!srcTh) return;
+		const srcIdx = Array.from(headerRow.cells).indexOf(srcTh);
+		const dstIdx = dstPos < headerRow.cells.length ? dstPos : headerRow.cells.length - 1;
+		if(srcIdx === dstIdx) { placed.add(srcTh); return; }
+		Array.from(table.rows).forEach(row => {
+			if(row.cells.length <= Math.max(srcIdx, dstIdx)) return;
+			const moved = row.cells[srcIdx];
+			const ref = row.cells[dstIdx];
+			if(srcIdx < dstIdx) row.insertBefore(moved, ref ? ref.nextSibling : null);
+			else row.insertBefore(moved, ref);
+		});
+		placed.add(srcTh);
+	});
+}
+
+function _applySort(table, th, order) {
+	// Force the desired direction then call sortTable
+	const colIndex = Array.from(th.parentElement.cells).indexOf(th);
+	// Preset state so sortTable's toggle logic lands on `order`
+	table.setAttribute('data-sort-col', colIndex === 0 ? -1 : 0); // make it differ
+	table.setAttribute('data-sort-order', order === 'asc' ? 'desc' : 'asc');
+	sortTable(th);
+}
+
+function _colDragStart(e) {
+	_dragSrcTh = this;
+	e.dataTransfer.effectAllowed = 'move';
+	e.dataTransfer.setData('text/plain', ''); // required by Firefox
+	this.classList.add('col-dragging');
+}
+
+function _colDragOver(e) {
+	if(!_dragSrcTh || _dragSrcTh === this) return;
+	e.preventDefault();
+	e.dataTransfer.dropEffect = 'move';
+}
+
+function _colDragEnter(e) {
+	if(!_dragSrcTh || _dragSrcTh === this) return;
+	// Clear previous drag-over highlight before setting the new one
+	document.querySelectorAll('th.col-drag-over').forEach(t => t.classList.remove('col-drag-over'));
+	this.classList.add('col-drag-over');
+}
+
+function _colDragLeave(e) {
+	// Only clear when leaving to something truly outside this th
+	if(!this.contains(e.relatedTarget)) {
+		this.classList.remove('col-drag-over');
+	}
+}
+
+function _colDrop(e) {
+	e.preventDefault();
+	e.stopPropagation();
+	if(!_dragSrcTh || _dragSrcTh === this) return false;
+
+	const table = this.closest('table');
+	const srcIdx = Array.from(_dragSrcTh.parentElement.cells).indexOf(_dragSrcTh);
+	const dstIdx = Array.from(this.parentElement.cells).indexOf(this);
+
+	// Move the cell at srcIdx to dstIdx in every row (thead + tbody)
+	Array.from(table.rows).forEach(row => {
+		const cells = row.cells;
+		if(cells.length <= Math.max(srcIdx, dstIdx)) return;
+		const moved = cells[srcIdx];
+		if(srcIdx < dstIdx) {
+			row.insertBefore(moved, cells[dstIdx].nextSibling);
+		} else {
+			row.insertBefore(moved, cells[dstIdx]);
+		}
+	});
+
+	// Update data-sort-col so the next sort-click knows the active column's new position
+	const activeArrow = table.querySelector('thead .arrow.active');
+	if(activeArrow) {
+		const activeTh = activeArrow.closest('th');
+		const newIdx = Array.from(activeTh.parentElement.cells).indexOf(activeTh);
+		table.setAttribute('data-sort-col', newIdx);
+	}
+
+	saveColOrder(table);
+	return false;
+}
+
+function _colDragEnd(e) {
+	this.classList.remove('col-dragging');
+	document.querySelectorAll('th.col-drag-over').forEach(t => t.classList.remove('col-drag-over'));
+	_dragSrcTh = null;
+}
 
 // Initial display.
-// The table has been set up sorted in ascending order on the filename; reflect that in the GUI
+// The coverage table is pre-sorted ascending by filename from Perl; reflect that in the GUI.
+// The mutation and duplication tables are sorted by JS on load so the arrows always match data.
+// Saved column order and sort state are restored from localStorage when present.
 document.addEventListener("DOMContentLoaded", () => {
-	const table = document.querySelector("table");
-	if(!table) return;
+	_initializingTables = true;
 
-	const headers = table.tHead.rows[0].cells;
-	for(let i = 0; i < headers.length; i++) {
-		const arrow = headers[i].querySelector(".arrow");
-		if(!arrow) continue;
+	// Assign original column indices as data-col-id (must be done before any reordering)
+	document.querySelectorAll('table[data-table-id]').forEach(table => {
+		const headerRow = table.tHead && table.tHead.rows[0];
+		if(!headerRow) return;
+		Array.from(headerRow.cells).forEach((th, i) => { th.dataset.colId = i; });
+	});
 
-		if(i === 0) {
-			arrow.textContent = "▲";
-			arrow.classList.add("active");
-		} else {
-			arrow.textContent = "▲";
-			arrow.classList.remove("active");
+	// Restore saved column order, then sort state, for every identified table
+	document.querySelectorAll('table[data-table-id]').forEach(table => {
+		const id = _tableId(table);
+		// --- column order ---
+		let savedOrder = null;
+		try { savedOrder = JSON.parse(localStorage.getItem('atg_col_order_' + id)); } catch(e) {}
+		if(Array.isArray(savedOrder) && savedOrder.length) {
+			_restoreColOrder(table, savedOrder);
+		}
+
+		// --- sort state ---
+		let savedSort = null;
+		try { savedSort = JSON.parse(localStorage.getItem('atg_sort_' + id)); } catch(e) {}
+		if(savedSort && typeof savedSort.colId === 'number') {
+			const headerRow = table.tHead && table.tHead.rows[0];
+			const th = headerRow && Array.from(headerRow.cells).find(
+				c => parseInt(c.dataset.colId, 10) === savedSort.colId
+			);
+			if(th) {
+				_applySort(table, th, savedSort.order || 'asc');
+				return; // done with this table
+			}
+		}
+
+		// No saved sort — apply defaults
+		if(table.classList.contains('mut-table')) {
+			// Score% column (original col 5)
+			const headerRow = table.tHead && table.tHead.rows[0];
+			const th = headerRow && Array.from(headerRow.cells).find(
+				c => parseInt(c.dataset.colId, 10) === 5
+			);
+			if(th) _applySort(table, th, 'asc');
+		} else if(table.classList.contains('dup-table')) {
+			// File column (original col 0)
+			const headerRow = table.tHead && table.tHead.rows[0];
+			const th = headerRow && Array.from(headerRow.cells).find(
+				c => parseInt(c.dataset.colId, 10) === 0
+			);
+			if(th) _applySort(table, th, 'asc');
+		} else if(table.classList.contains('sortable-table') && !table.classList.contains('mut-table') && !table.classList.contains('dup-table')) {
+			// CPAN Testers: sort by Date (original col 0) ascending
+			const headerRow = table.tHead && table.tHead.rows[0];
+			const th = headerRow && Array.from(headerRow.cells).find(
+				c => parseInt(c.dataset.colId, 10) === 0
+			);
+			if(th) _applySort(table, th, 'asc');
+		}
+	});
+
+	// Coverage table: pre-sorted ascending by File (col 0) from Perl — just update arrows
+	const covTable = document.querySelector("table[data-table-id='coverage']");
+	if(covTable && covTable.tHead) {
+		const id = _tableId(covTable);
+		let savedSort = null;
+		try { savedSort = JSON.parse(localStorage.getItem('atg_sort_' + id)); } catch(e) {}
+		if(!savedSort) {
+			const headers = covTable.tHead.rows[0].cells;
+			for(let i = 0; i < headers.length; i++) {
+				const arrow = headers[i].querySelector(".arrow");
+				if(!arrow) continue;
+				arrow.textContent = "▲";
+				arrow.classList.toggle("active", i === 0);
+			}
 		}
 	}
+
+	_initializingTables = false;
+
+	// Wire up drag-to-reorder on every sortable column header
+	document.querySelectorAll('th.sortable').forEach(th => {
+		th.setAttribute('draggable', 'true');
+		th.title = (th.title ? th.title + ' · ' : '') + 'Drag to reorder columns';
+		th.addEventListener('dragstart',  _colDragStart);
+		th.addEventListener('dragover',   _colDragOver);
+		th.addEventListener('dragenter',  _colDragEnter);
+		th.addEventListener('dragleave',  _colDragLeave);
+		th.addEventListener('drop',       _colDrop);
+		th.addEventListener('dragend',    _colDragEnd);
+	});
 });
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -502,10 +726,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	update();
 });
-document.addEventListener("DOMContentLoaded", () => {
-	const th = document.querySelector("table.sortable-table th");
-	if(th) sortTable(th, 0);
-});
 </script>
 
 
@@ -533,10 +753,10 @@ document.addEventListener("DOMContentLoaded", () => {
 	</label>
 </div>
 
-<table class="sortable-table" data-sort-col="0" data-sort-order="asc">
+<table class="sortable-table" data-sort-col="0" data-sort-order="asc" data-table-id="cpan">
 <thead>
 <tr>
-	<th class="sortable" onclick="sortTable(this, 0)">
+	<th class="sortable" onclick="sortTable(this, 0)" data-sort-type="date">
 		<span class="label">Date</span> <span class="arrow">&#x25B2;</span>
 	</th>
 	<th class="sortable" onclick="sortTable(this, 1)">
@@ -570,16 +790,30 @@ document.addEventListener("DOMContentLoaded", () => {
 <li><b>Survived</b>: 
 103
 </li>
+<li><b>Duplication</b>: no duplicate code blocks detected</li>
 </ul>
 <h3>Mutation Files</h3>
 
-<table border='1' cellpadding='5'>
+<table border='1' cellpadding='5' class="sortable-table mut-table" data-sort-col="5" data-sort-order="asc" data-table-id="mut">
 
-<tr><th>File</th><th>Total</th><th>Killed</th><th>Survivors</th><th>Skipped</th><th>Score%</th><th>Complexity</th><th title="TER1=Statement, TER2=Branch, TER3=LCSAJ Path">TER1 / TER2 / TER3</th></tr>
+<thead>
+<tr>
+<th class="sortable" onclick="sortTable(this, 0)"><span class="label">File</span> <span class="arrow">&#x25B2;</span></th>
+<th class="sortable" onclick="sortTable(this, 1)"><span class="label">Total</span> <span class="arrow">&#x25B2;</span></th>
+<th class="sortable" onclick="sortTable(this, 2)"><span class="label">Killed</span> <span class="arrow">&#x25B2;</span></th>
+<th class="sortable" onclick="sortTable(this, 3)"><span class="label">Survivors</span> <span class="arrow">&#x25B2;</span></th>
+<th class="sortable" onclick="sortTable(this, 4)"><span class="label">Skipped</span> <span class="arrow">&#x25B2;</span></th>
+<th class="sortable" onclick="sortTable(this, 5)"><span class="label">Score%</span> <span class="arrow active">&#x25B2;</span></th>
+<th class="sortable" onclick="sortTable(this, 6)"><span class="label">Complexity</span> <span class="arrow">&#x25B2;</span></th>
+<th class="sortable" onclick="sortTable(this, 7)" title="TER1=Statement, TER2=Branch, TER3=LCSAJ Path"><span class="label">TER1 / TER2 / TER3</span> <span class="arrow">&#x25B2;</span></th>
+<th class="sortable" onclick="sortTable(this, 8)"><span class="label">Dup%</span> <span class="arrow">&#x25B2;</span></th>
+</tr>
+</thead>
+<tbody>
 
-<tr class="med"><td><a href="mutation_html/lib/Database/Abstraction.pm.html" title="View mutation line by line" target="_blank">lib/Database/Abstraction.pm</a> <a href="https://github.com/nigelhorne/Database-Abstraction/blob/6f09464096a60ea2332679c427c8ab8a9f23dc21/lib/Database/Abstraction.pm" class="icon-link" title="View source on GitHub">&#128269;</a></td><td>422</td><td>320</td><td>102</td><td>0</td><td><span class="coverage-badge badge-warn" title="Moderate">75.8%</span></td><td><span class="coverage-badge badge-bad" title="Needs improvement">495</span></td><td><span class="coverage-badge badge-warn" title="Moderate">79.2%</span> / <span class="coverage-badge badge-warn" title="Moderate">71.9%</span> / <span class="coverage-badge badge-good" title="Excellent">100.0%</span></td></tr>
-<tr class="high"><td><a href="mutation_html/lib/Database/Abstraction/Query.pm.html" title="View mutation line by line" target="_blank">lib/Database/Abstraction/Query.pm</a> <a href="https://github.com/nigelhorne/Database-Abstraction/blob/6f09464096a60ea2332679c427c8ab8a9f23dc21/lib/Database/Abstraction/Query.pm" class="icon-link" title="View source on GitHub">&#128269;</a></td><td>34</td><td>33</td><td>1</td><td>0</td><td><span class="coverage-badge badge-good" title="Excellent">97.1%</span></td><td><span class="coverage-badge badge-good" title="Good">43</span></td><td><span class="coverage-badge badge-good" title="Excellent">97.9%</span> / <span class="coverage-badge badge-good" title="Excellent">91.9%</span> / <span class="coverage-badge badge-good" title="Excellent">100.0%</span></td></tr>
-</table>
+<tr class="med"><td><a href="mutation_html/lib/Database/Abstraction.pm.html" title="View mutation line by line" target="_blank">lib/Database/Abstraction.pm</a> <a href="https://github.com/nigelhorne/Database-Abstraction/blob/3a5beab6773e937e44e6c0f2dfbe30cd01ea91e2/lib/Database/Abstraction.pm" class="icon-link" title="View source on GitHub">&#128269;</a></td><td>422</td><td>320</td><td>102</td><td>0</td><td><span class="coverage-badge badge-warn" title="Moderate">75.8%</span></td><td><span class="coverage-badge badge-bad" title="Needs improvement">495</span></td><td><span class="coverage-badge badge-warn" title="Moderate">79.2%</span> / <span class="coverage-badge badge-warn" title="Moderate">71.9%</span> / <span class="coverage-badge badge-good" title="Excellent">100.0%</span></td><td><span class="coverage-badge badge-good" title="Low duplication">0.0%</span></td></tr>
+<tr class="high"><td><a href="mutation_html/lib/Database/Abstraction/Query.pm.html" title="View mutation line by line" target="_blank">lib/Database/Abstraction/Query.pm</a> <a href="https://github.com/nigelhorne/Database-Abstraction/blob/3a5beab6773e937e44e6c0f2dfbe30cd01ea91e2/lib/Database/Abstraction/Query.pm" class="icon-link" title="View source on GitHub">&#128269;</a></td><td>34</td><td>33</td><td>1</td><td>0</td><td><span class="coverage-badge badge-good" title="Excellent">97.1%</span></td><td><span class="coverage-badge badge-good" title="Good">43</span></td><td><span class="coverage-badge badge-good" title="Excellent">97.9%</span> / <span class="coverage-badge badge-good" title="Excellent">91.9%</span> / <span class="coverage-badge badge-good" title="Excellent">100.0%</span></td><td><span class="coverage-badge badge-good" title="Low duplication">0.0%</span></td></tr>
+</tbody></table>
 
 <h2>Structural Coverage (Approximate)</h2>
 <div class='summary'>
@@ -593,8 +827,8 @@ Tests execute 81.30% of the code but detect only 77.41% of injected faults.
 </div>
 <footer>
 	<p>Project: <a href="https://github.com/nigelhorne/Database-Abstraction">Database-Abstraction</a></p>
-	<p><em>Last updated: 2026-08-22 13:59:04 - <a href="https://github.com/nigelhorne/Database-Abstraction/commit/6f09464096a60ea2332679c427c8ab8a9f23dc21">commit <code>6f09464</code></a></em></p>
-	<p style="float: right; font-size: 0.85em; color: #999;">Powered by <a href="https://metacpan.org/dist/App-Test-Generator">App::Test::Generator 0.45</a></p>
+	<p><em>Last updated: 2026-08-22 14:23:12 - <a href="https://github.com/nigelhorne/Database-Abstraction/commit/3a5beab6773e937e44e6c0f2dfbe30cd01ea91e2">commit <code>3a5beab</code></a></em></p>
+	<p style="float: right; font-size: 0.85em; color: #999;">Powered by <a href="https://metacpan.org/dist/App-Test-Generator">App::Test::Generator 0.46</a></p>
 </footer>
 </body>
 </html>
