@@ -20,6 +20,7 @@ t/comment-spelling.t
 t/csv.t
 t/csv_id.t
 t/data/test1.csv
+t/data/test1.html
 t/data/test2.psv
 t/data/test3.xml
 t/data/test4.csv
@@ -35,6 +36,7 @@ t/eof.t
 t/eol.t
 t/extended_tests.t
 t/function.t
+t/html.t
 t/init.t
 t/integration.t
 t/join.t
