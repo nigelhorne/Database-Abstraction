@@ -19,6 +19,7 @@ t/chi.t
 t/comment-spelling.t
 t/csv.t
 t/csv_id.t
+t/data-flow.t
 t/data/test1.csv
 t/data/test1.html
 t/data/test2.psv

@@ -1048,7 +1048,6 @@ sub _open :Protected
 					} else {
 						Carp::croak('XML slurp: cannot handle ', ref($xml), ' structure');
 					}
-					$self->{'data'} = ();
 					if($self->{'no_entry'}) {
 						# Not keyed, will need to scan each entry
 						my $i = 0;
