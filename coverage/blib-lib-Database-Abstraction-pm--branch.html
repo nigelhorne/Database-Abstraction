@@ -20,7 +20,7 @@ https://pjcj.net
 <h1>Branch Coverage</h1>
 <table>
 <tr><td class="h" align="right">File:</td><td align="left">blib/lib/Database/Abstraction.pm</td></tr>
-<tr><td class="h" align="right">Coverage:</td><td align="left" class="c0">71.2%</td></tr>
+<tr><td class="h" align="right">Coverage:</td><td align="left" class="c0">71.9%</td></tr>
 </table>
 <div><br/></div>
 <table>
@@ -262,7 +262,7 @@ https://pjcj.net
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif (scalar keys %params == 1 and defined(my $key = $params{&#39;entry&#39;})) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif (scalar keys %params == 0) { }</td></tr>
 <tr><td class="h"><a id="L2052">2052</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if (defined $key)</td></tr>
-<tr><td class="h"><a id="L2056">2056</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless exists $row-&gt;{$key} and defined $$row{$key} and $$row{$key} eq $value</td></tr>
+<tr><td class="h"><a id="L2056">2056</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless exists $row-&gt;{$key} and defined $$row{$key} and $$row{$key} eq $value</td></tr>
 <tr><td class="h"><a id="L2057">2057</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">exists $row-&gt;{$column} ? :</td></tr>
 <tr><td class="h"><a id="L2058">2058</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">defined $rc ? :</td></tr>
 <tr><td class="h"><a id="L2068">2068</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (exists $data-&gt;{$key} and defined(my $hash = $$data{$key}))</td></tr>
@@ -310,7 +310,7 @@ https://pjcj.net
 <tr><td class="h"><a id="L2255">2255</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ref $v</td></tr>
 <tr><td class="h"><a id="L2302">2302</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $or_list = delete $p{&#39;-or&#39;})</td></tr>
 <tr><td class="h"><a id="L2306">2306</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($s)</td></tr>
-<tr><td class="h"><a id="L2311">2311</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if (@sub_clauses)</td></tr>
+<tr><td class="h"><a id="L2311">2311</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (@sub_clauses)</td></tr>
 <tr><td class="h"><a id="L2316">2316</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $and_list = delete $p{&#39;-and&#39;})</td></tr>
 <tr><td class="h"><a id="L2320">2320</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if ($s)</td></tr>
 <tr><td class="h"><a id="L2325">2325</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if (@sub_clauses)</td></tr>
@@ -360,7 +360,7 @@ https://pjcj.net
 <tr><td class="h"><a id="L2547">2547</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $row_val</td></tr>
 <tr><td class="h"><a id="L2548">2548</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless _like_match($row_val, $operand)</td></tr>
 <tr><td class="h"><a id="L2550">2550</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $row_val</td></tr>
-<tr><td class="h"><a id="L2551">2551</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if _like_match($row_val, $operand)</td></tr>
+<tr><td class="h"><a id="L2551">2551</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if _like_match($row_val, $operand)</td></tr>
 <tr><td class="h"><a id="L2553">2553</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (not defined $operand) { }</td></tr>
 <tr><td class="h"><a id="L2554">2554</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $row_val</td></tr>
 <tr><td class="h"><a id="L2556">2556</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $row_val and $row_val ne $operand</td></tr>
@@ -370,13 +370,13 @@ https://pjcj.net
 <tr><td class="h"><a id="L2565">2565</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $row_val and $row_val &lt;= $operand</td></tr>
 <tr><td class="h"><a id="L2571">2571</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">!(defined $row_val &amp;&amp; defined $crit_val) ? :</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">!(defined $row_val || defined $crit_val) ? :</td></tr>
-<tr><td class="h"><a id="L2585">2585</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($$params{&#39;table&#39;}) { }</td></tr>
+<tr><td class="h"><a id="L2585">2585</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$params{&#39;table&#39;}) { }</td></tr>
 <tr><td class="h"><a id="L2598">2598</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $$self{$table} or $$self{&quot;data&quot;} or $$self{&quot;berkeley&quot;}</td></tr>
-<tr><td class="h"><a id="L2611">2611</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (my $dbh = $$self{$table})</td></tr>
+<tr><td class="h"><a id="L2611">2611</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $dbh = $$self{$table})</td></tr>
 <tr><td class="h"><a id="L2626">2626</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless do {
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BEGIN {
-&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;autodie::Scope::GuardStack/guard5&#39;} = &#39;autodie::Scope::Guard=CODE(0x55afc211e460)&#39;;
-&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;no Fatal&#39;} = &#39;HASH(0x55afc211e3e8)&#39;;
+&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;autodie::Scope::GuardStack/guard5&#39;} = &#39;autodie::Scope::Guard=CODE(0x55bd8d665700)&#39;;
+&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;no Fatal&#39;} = &#39;HASH(0x55bd8d665688)&#39;;
 }
 &#11;open $fh, &quot;&lt;&quot;, $file
 }</td></tr>
@@ -390,8 +390,8 @@ https://pjcj.net
 <tr><td class="h"><a id="L2680">2680</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $lc_bare eq $me</td></tr>
 <tr><td class="h"><a id="L2696">2696</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless do {
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BEGIN {
-&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;autodie::Scope::GuardStack/guard6&#39;} = &#39;autodie::Scope::Guard=CODE(0x55afc212ffb8)&#39;;
-&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;no Fatal&#39;} = &#39;HASH(0x55afc212ff58)&#39;;
+&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;autodie::Scope::GuardStack/guard6&#39;} = &#39;autodie::Scope::Guard=CODE(0x55bd8d677478)&#39;;
+&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;no Fatal&#39;} = &#39;HASH(0x55bd8d677418)&#39;;
 }
 &#11;open $fh, &quot;&lt;&quot;, $file
 }</td></tr>
