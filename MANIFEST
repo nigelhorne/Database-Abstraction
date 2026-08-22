@@ -32,6 +32,7 @@ t/data/test8.psv
 t/db.t
 t/db_noentry.t
 t/deep.t
+t/domain.t
 t/edge_cases.t
 t/eof.t
 t/eol.t
