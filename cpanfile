@@ -40,6 +40,7 @@ on 'test' => sub {
 	requires 'FindBin';
 	requires 'IPC::System::Simple';
 	requires 'JSON::MaybeXS';
+	requires 'LWP::UserAgent';
 	requires 'POSIX';
 	requires 'Readonly';
 	requires 'Test::Carp';
