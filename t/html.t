@@ -7,25 +7,30 @@ use FindBin qw($Bin);
 use File::Spec;
 use Test::Most tests => 27;
 use Test::NoWarnings;
-use Test::MockModule;
+use Test::Mockingbird;
 use HTTP::Response;
+
+# Pre-load the modules that _open() lazy-requires so that mock() can install
+# its replacements before require() runs inside the code under test.  Without
+# this, the first require LWP::UserAgent inside _open() would overwrite the
+# mock that was installed before the object's first query.
+use LWP::UserAgent;
+require HTML::TableExtract;
 
 use lib 't/lib';
 use Database::test1;
 
 # ---------------------------------------------------------------------------
-# Helpers — build a mock LWP::UserAgent that returns canned HTML
+# Helpers — build canned HTTP responses served by all mocks below
 # ---------------------------------------------------------------------------
 
-my $DATA_DIR = File::Spec->catfile($Bin, File::Spec->updir(), 't', 'data');
+my $DATA_DIR  = File::Spec->catfile($Bin, File::Spec->updir(), 't', 'data');
 my $HTML_FILE = File::Spec->catfile($DATA_DIR, 'test1.html');
 
-# Slurp the fixture file once; mock will serve it for every request.
 open(my $fh, '<', $HTML_FILE) or die "Cannot open $HTML_FILE: $!";
-my $fixture_html = do { local $/; <$fh> };
+my $FIXTURE_HTML = do { local $/; <$fh> };
 close $fh;
 
-# Build a fake successful HTTP::Response
 sub make_ok_response {
 	my ($html) = @_;
 	my $r = HTTP::Response->new(200, 'OK');
@@ -42,8 +47,7 @@ sub make_fail_response {
 # 1. Basic keyed slurp from a URL
 # ---------------------------------------------------------------------------
 {
-	my $mock_ua = Test::MockModule->new('LWP::UserAgent');
-	$mock_ua->mock(get => sub { make_ok_response($fixture_html) });
+	my $g = mock_scoped 'LWP::UserAgent::get' => sub { make_ok_response($FIXTURE_HTML) };
 
 	my $db = new_ok('Database::test1' => [{ url => 'http://example.com/test1.html' }]);
 
@@ -67,8 +71,7 @@ sub make_fail_response {
 # 2. selectall_arrayref — all rows and filtered rows
 # ---------------------------------------------------------------------------
 {
-	my $mock_ua = Test::MockModule->new('LWP::UserAgent');
-	$mock_ua->mock(get => sub { make_ok_response($fixture_html) });
+	my $g = mock_scoped 'LWP::UserAgent::get' => sub { make_ok_response($FIXTURE_HTML) };
 
 	my $db = Database::test1->new(url => 'http://example.com/test1.html');
 
@@ -76,7 +79,6 @@ sub make_fail_response {
 	is(ref $all, 'ARRAY', 'selectall_arrayref returns arrayref');
 	cmp_ok(scalar @{$all}, '==', 3, 'all 3 rows returned');
 
-	# Filter by a non-key column via in-memory scan
 	my $filtered = $db->selectall_arrayref(name => 'Bob');
 	cmp_ok(scalar @{$filtered}, '==', 1, 'filter by name=Bob finds 1 row');
 	is($filtered->[0]{'name'}, 'Bob', 'filtered row is Bob');
@@ -86,8 +88,7 @@ sub make_fail_response {
 # 3. AUTOLOAD column lookup
 # ---------------------------------------------------------------------------
 {
-	my $mock_ua = Test::MockModule->new('LWP::UserAgent');
-	$mock_ua->mock(get => sub { make_ok_response($fixture_html) });
+	my $g = mock_scoped 'LWP::UserAgent::get' => sub { make_ok_response($FIXTURE_HTML) };
 
 	my $db = Database::test1->new(url => 'http://example.com/test1.html');
 
@@ -99,8 +100,7 @@ sub make_fail_response {
 # 4. html_table_index — select the second table on the page
 # ---------------------------------------------------------------------------
 {
-	my $mock_ua = Test::MockModule->new('LWP::UserAgent');
-	$mock_ua->mock(get => sub { make_ok_response($fixture_html) });
+	my $g = mock_scoped 'LWP::UserAgent::get' => sub { make_ok_response($FIXTURE_HTML) };
 
 	my $db = Database::test1->new(url => 'http://example.com/test1.html', no_entry => 1, html_table_index => 1);
 
@@ -115,8 +115,7 @@ sub make_fail_response {
 # 5. no_entry mode — row list without a key column
 # ---------------------------------------------------------------------------
 {
-	my $mock_ua = Test::MockModule->new('LWP::UserAgent');
-	$mock_ua->mock(get => sub { make_ok_response($fixture_html) });
+	my $g = mock_scoped 'LWP::UserAgent::get' => sub { make_ok_response($FIXTURE_HTML) };
 
 	my $db = Database::test1->new(url => 'http://example.com/test1.html', no_entry => 1);
 	my $rows = $db->selectall_arrayref();
@@ -128,8 +127,7 @@ sub make_fail_response {
 # 6. HTTP failure croaks with a clear message
 # ---------------------------------------------------------------------------
 {
-	my $mock_ua = Test::MockModule->new('LWP::UserAgent');
-	$mock_ua->mock(get => sub { make_fail_response() });
+	my $g = mock_scoped 'LWP::UserAgent::get' => sub { make_fail_response() };
 
 	throws_ok {
 		Database::test1->new(url => 'http://example.com/missing.html')
@@ -141,8 +139,7 @@ sub make_fail_response {
 # 7. out-of-range html_table_index croaks
 # ---------------------------------------------------------------------------
 {
-	my $mock_ua = Test::MockModule->new('LWP::UserAgent');
-	$mock_ua->mock(get => sub { make_ok_response($fixture_html) });
+	my $g = mock_scoped 'LWP::UserAgent::get' => sub { make_ok_response($FIXTURE_HTML) };
 
 	throws_ok {
 		Database::test1->new(url => 'http://example.com/test1.html', html_table_index => 99)
@@ -172,8 +169,10 @@ sub make_fail_response {
 # ---------------------------------------------------------------------------
 {
 	my $call_count = 0;
-	my $mock_ua = Test::MockModule->new('LWP::UserAgent');
-	$mock_ua->mock(get => sub { $call_count++; make_ok_response($fixture_html) });
+	my $g = mock_scoped 'LWP::UserAgent::get' => sub {
+		$call_count++;
+		make_ok_response($FIXTURE_HTML);
+	};
 
 	my $db = Database::test1->new(url => 'http://example.com/test1.html');
 	$db->selectall_arrayref();
