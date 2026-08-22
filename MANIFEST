@@ -58,6 +58,7 @@ t/logger.t
 t/mutant_killers.t
 t/no_entry.t
 t/passwd.t
+t/path.t
 t/pod-cm.t
 t/pod-coverage.t
 t/pod-links.t
