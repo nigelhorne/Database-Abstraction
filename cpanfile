@@ -38,6 +38,7 @@ on 'test' => sub {
 	requires 'File::Temp';
 	requires 'File::stat';
 	requires 'FindBin';
+	requires 'HTML::TableExtract';
 	requires 'IPC::System::Simple';
 	requires 'JSON::MaybeXS';
 	requires 'LWP::UserAgent';

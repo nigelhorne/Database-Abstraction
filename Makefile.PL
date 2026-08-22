@@ -58,6 +58,7 @@ WriteMakefile(
 		'File::stat' => 0,
 		'File::Temp' => 0,
 		'FindBin' => 0,
+		'HTML::TableExtract' => 0,
 		'IPC::System::Simple' => 0,
 		'JSON::MaybeXS' => 0,
 		'LWP::UserAgent' => 0,
