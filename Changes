@@ -1,6 +1,6 @@
 Revision history for Database-Abstraction
 
-0.38
+0.38	Sat Aug 22 15:21:37 EDT 2026
 	[ Enhancements ]
 	- HTML URL backend: new url => 'https://...' constructor parameter fetches
 	  a remote HTML page with LWP::UserAgent, extracts a <table> element via
