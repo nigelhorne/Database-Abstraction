@@ -358,11 +358,11 @@ Approximate LCSAJ segments: 75<br>
 </span><span class="">   17: 
 </span><span class="">   18: =head1 VERSION
 </span><span class="">   19: 
-</span><span class="">   20: Version 0.37
+</span><span class="">   20: Version 0.38
 </span><span class="">   21: 
 </span><span class="">   22: =cut
 </span><span class="">   23: 
-</span><span class="">   24: our $VERSION = &#39;0.37&#39;;
+</span><span class="">   24: our $VERSION = &#39;0.38&#39;;
 </span><span class="">   25: 
 </span><span class="">   26: =head1 SYNOPSIS
 </span><span class="">   27: 
@@ -579,14 +579,8 @@ Approximate LCSAJ segments: 75<br>
 </span><span class="">  238: 	# interpolated verbatim into ORDER BY $col (see _build_sql).  The check
 </span><span class="">  239: 	# is deliberately permissive so it does not break legitimate multi-column
 </span><span class="">  240: 	# expressions (&quot;score DESC, name ASC&quot;) or SQL functions (&quot;ABS(score) DESC&quot;).
-</span><span class="survived-1 tooltip" data-tooltip="Mutation survived. Add targeted tests to validate this branch.">  241: 	if(defined $col) {
-</span>
-					<details class="mutant-details">
-					<summary>Mutants (Total: 1, Killed: 0, Survived: 1)</summary>
-					<ul>
-				<li><b>COND_INV_241_2: Invert condition if to unless</b><br>MEDIUM: Add tests asserting both true and false outcomes
-</li></ul></details>
-<span class="">  242: 		croak(&quot;order_by: unsafe ORDER BY expression &#39;$col&#39;&quot;)
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  241: 	if(defined $col) {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="">  242: 		croak(&quot;order_by: unsafe ORDER BY expression &#39;$col&#39;&quot;)
 </span><span class="">  243: 			if $col =~ /;|--|\/\*/;
 </span><span class="">  244: 	}
 </span><span class="">  245: 	$self-&gt;{&#39;_order_by&#39;} = $col;
