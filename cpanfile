@@ -12,7 +12,7 @@ requires 'ExtUtils::MakeMaker', '6.64';   # 6.64 for TEST_REQUIRES
 requires 'File::Spec';
 requires 'File::Temp';
 requires 'List::Util', '1.33';
-requires 'Log::Abstraction', '0.26';
+requires 'Log::Abstraction', '0.33';
 requires 'Object::Configure', '0.16';
 requires 'Params::Get', '0.13';
 requires 'Return::Set';

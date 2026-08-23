@@ -34,7 +34,7 @@ use Cwd;
 use File::Spec;
 use File::Temp;
 use List::Util qw(all);
-use Log::Abstraction 0.26;
+use Log::Abstraction 0.33;
 use Object::Configure 0.16;
 use Params::Get 0.13;
 use Return::Set qw(set_return);

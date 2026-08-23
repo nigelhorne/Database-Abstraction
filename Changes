@@ -1,5 +1,9 @@
 Revision history for Database-Abstraction
 
+0.39
+	[ Bug Fixes ]
+	- Bump minimum Log::Abstraction - Fix https://github.com/nigelhorne/Database-Abstraction/issues/13
+
 0.38	Sat Aug 22 15:21:37 EDT 2026
 	[ Enhancements ]
 	- HTML URL backend: new url => 'https://...' constructor parameter fetches

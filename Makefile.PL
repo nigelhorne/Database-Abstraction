@@ -41,7 +41,7 @@ WriteMakefile(
 		'File::Spec' => 0,
 		'File::Temp' => 0,
 		'List::Util' => 1.33,
-		'Log::Abstraction' => 0.26,
+		'Log::Abstraction' => 0.33,
 		'Object::Configure' => 0.16,
 		'Params::Get' => 0.13,
 		'Return::Set' => 0,
