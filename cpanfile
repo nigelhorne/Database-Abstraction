@@ -8,7 +8,6 @@ requires 'Cwd';
 requires 'DBD::SQLite::Constants';
 requires 'DBI', '1.6';
 requires 'Data::Reuse';   # Required for result-set memory deduplication; see also RT#100461
-requires 'ExtUtils::MakeMaker', '6.64';   # 6.64 for TEST_REQUIRES
 requires 'File::Spec';
 requires 'File::Temp';
 requires 'List::Util', '1.33';
@@ -38,6 +37,7 @@ on 'test' => sub {
 	requires 'File::Temp';
 	requires 'File::stat';
 	requires 'FindBin';
+	requires 'Gzip::Faster';
 	requires 'HTML::TableExtract';
 	requires 'IPC::System::Simple';
 	requires 'JSON::MaybeXS';

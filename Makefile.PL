@@ -37,7 +37,6 @@ WriteMakefile(
 		'Data::Reuse' => 0,	# Required for result-set memory deduplication; see also RT#100461
 		# 'Error' => 0,
 		'DBD::SQLite::Constants' => 0,
-		'ExtUtils::MakeMaker' => 6.64,	# 6.64 for TEST_REQUIRES
 		'File::Spec' => 0,
 		'File::Temp' => 0,
 		'List::Util' => 1.33,
@@ -58,6 +57,7 @@ WriteMakefile(
 		'File::stat' => 0,
 		'File::Temp' => 0,
 		'FindBin' => 0,
+		'Gzip::Faster' => 0,
 		'HTML::TableExtract' => 0,
 		'IPC::System::Simple' => 0,
 		'JSON::MaybeXS' => 0,

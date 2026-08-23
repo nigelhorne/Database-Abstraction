@@ -3,6 +3,18 @@ Revision history for Database-Abstraction
 0.39
 	[ Bug Fixes ]
 	- Bump minimum Log::Abstraction - Fix https://github.com/nigelhorne/Database-Abstraction/issues/13
+	[ Tests ]
+	- t/path.t: control-flow path-coverage tests for all key internal helpers
+	  (_like_match, _match_criterion, _has_complex_criteria, _build_where,
+	  _build_where_conditions, _build_joins, _is_local_host, _fixate via
+	  slurp-locked-hash state, _quote_identifier, _is_deep_db, _open_table,
+	  AUTOLOAD); 102 assertions covering every uniquely identifiable branch
+	- t/transaction.t: transaction-flow and resource-lifecycle tests covering
+	  object lazy-open→query→DESTROY sequencing, query idempotency across all
+	  four select methods, multi-instance isolation (independent data refs,
+	  Data::Reuse stale-address safety), CHI cache MISS→SET→HIT lifecycle,
+	  gzip temp-file born/reused/unlinked on DESTROY, and query-builder chain
+	  idempotency; 31 assertions
 
 0.38	Sat Aug 22 15:21:37 EDT 2026
 	[ Enhancements ]
