@@ -36,7 +36,7 @@ use File::Temp;
 use List::Util qw(all);
 use Log::Abstraction 0.33;
 use Object::Configure 0.16;
-use Params::Get 0.13;
+use Params::Get 0.17;
 use Return::Set qw(set_return);
 use Scalar::Util;
 use Sub::Private;
