@@ -1,6 +1,6 @@
 Revision history for Database-Abstraction
 
-0.39
+0.39	Sun Aug 23 09:12:54 PM EDT 2026
 	[ Bug Fixes ]
 	- Bump minimum Log::Abstraction - Fix https://github.com/nigelhorne/Database-Abstraction/issues/13
 	[ Tests ]
