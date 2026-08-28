@@ -79,6 +79,7 @@ WriteMakefile(
 		'Test::NoWarnings' => 0,
 		'Test::Returns' => 0,
 		'Test::Warn' => 0,
+		'Test::Which' => 0,
 		'Test::Without::Module' => 0,
 		'Text::xSV::Slurp' => 0,
 		'XML::Simple' => 0
