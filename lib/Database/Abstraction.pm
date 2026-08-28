@@ -390,7 +390,9 @@ sub import
 {
 	my $pkg = shift;
 
-	if((scalar(@_) % 2) == 0) {
+	if((scalar(@_) == 0) && (ref($pkg) eq 'HASH')) {
+		init(Object::Configure::configure(__PACKAGE__, $pkg));
+	} elsif((scalar(@_) % 2) == 0) {
 		my %h = @_;
 		init(Object::Configure::configure($pkg, \%h));
 	} elsif((scalar(@_) == 1) && (ref($_[0]) eq 'HASH')) {
