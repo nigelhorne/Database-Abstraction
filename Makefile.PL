@@ -66,7 +66,7 @@ WriteMakefile(
 		'HTML::TableExtract' => 0,
 		'IPC::System::Simple' => 0,
 		'JSON::MaybeXS' => 0,
-		'LWP::UserAgent' => 0,
+		'LWP::UserAgent::Cached' => 0,
 		'POSIX' => 0,
 		'Readonly' => 0,
 		'Test::Carp' => 0,

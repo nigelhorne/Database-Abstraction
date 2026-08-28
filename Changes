@@ -3,6 +3,9 @@ Revision history for Database-Abstraction
 0.40
 	[ Tests ]
 	- Added t/all-fuzz.t
+	[ Enhancements ]
+	- Use LWP::UserAgent::Cached
+	- Use http(s)_proxy
 
 0.39	Sun Aug 23 09:12:54 PM EDT 2026
 	[ Bug Fixes ]

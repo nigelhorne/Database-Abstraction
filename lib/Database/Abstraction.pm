@@ -721,10 +721,11 @@ sub _open :Protected
 	# URL-based HTML table backend — lazy-loads LWP::UserAgent and HTML::TableExtract.
 	# Both modules are optional; they are not required for file-based backends.
 	if(my $url = $self->{'url'} || $defaults{'url'}) {
-		require LWP::UserAgent;
+		require LWP::UserAgent::Cached;
 		require HTML::TableExtract;
 
-		my $ua = LWP::UserAgent->new(timeout => 30, agent => 'Database::Abstraction/' . $VERSION);
+		my $ua = $self->{ua} // LWP::UserAgent::Cached->new(timeout => 30, agent => __PACKAGE__ . '/' . $VERSION);
+		$ua->env_proxy(1);
 		my $response = $ua->get($url);
 		Carp::croak(ref($self), ": cannot fetch '$url': ", $response->status_line)
 			unless $response->is_success;
