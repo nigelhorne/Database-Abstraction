@@ -1,6 +1,6 @@
 Revision history for Database-Abstraction
 
-0.40
+0.40	Fri Aug 28 04:17:15 PM EDT 2026
 	[ Tests ]
 	- Added t/all-fuzz.t
 	[ Enhancements ]
