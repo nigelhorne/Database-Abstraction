@@ -602,13 +602,16 @@ sub new {
 		croak("$class: abstract class");
 	} elsif(Scalar::Util::blessed($class)) {
 		# If $class is an object, clone it with new arguments.
-		# Validate 'id' before merging — the id validation block below is
-		# skipped by this early return, so a hostile clone arg like
-		# id => "entry); DROP TABLE t--" would otherwise bypass all guards
-		# and be interpolated directly into ORDER BY / COUNT() SQL.
+		# Validate 'id' and 'table' before merging — the validation block below is
+		# skipped by this early return, so hostile clone args would otherwise bypass
+		# all guards and be interpolated directly into SQL.
 		if(defined $args{'id'}) {
 			croak(ref($class), ": unsafe id column name '$args{id}'")
 				unless $args{'id'} =~ $SAFE_IDENTIFIER;
+		}
+		if(defined $args{'table'}) {
+			croak(ref($class), ": unsafe table name '$args{table}'")
+				unless $args{'table'} =~ $SAFE_QUALIFIED;
 		}
 		return bless { %{$class}, %args }, ref($class);
 	}
