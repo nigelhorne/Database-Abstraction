@@ -82,5 +82,6 @@ t/two_databases.t
 t/unit.t
 t/vars.t
 t/version.t
+t/xlsx.t
 t/xml.t
 t/xml_record.t

@@ -54,6 +54,7 @@ WriteMakefile(
 		#   IO::Compress::Gzip (core since 5.9.4; used in t/ fixture creation)
 	}, TEST_REQUIRES => {
 		'DBD::CSV' => 0,
+		'DBD::Excel' => 0,
 		'DBD::XMLSimple' => 0.07,
 		'Fcntl' => 0,
 		'File::Glob' => 0,

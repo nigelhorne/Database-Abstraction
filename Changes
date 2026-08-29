@@ -1,5 +1,21 @@
 Revision history for Database-Abstraction
 
+0.41
+	[ Enhancements ]
+	- XLSX backend: DBD::Excel driver; probe for .xlsx files after gzip/PSV/CSV,
+	  before XML; lazy require inside _open() so DBD::Excel is never loaded for
+	  other backends; type set to 'Excel'.
+	- Constructor-level table override: new() now accepts a table parameter that
+	  overrides the class-name-derived table/worksheet name for the lifetime of
+	  the object.  Validated against SAFE_QUALIFIED at construction time.
+	- Filename stem fix: dbname now falls back to the class name (not the table
+	  override), so table => 'Sheet2' queries a different worksheet within the
+	  same file without requiring an explicit dbname.
+	- Remote backend: .xlsx added to the remote extension probe list.
+	[ Tests ]
+	- t/xlsx.t: 19 tests covering XLSX basic queries, no_entry mode, table
+	  override (multi-worksheet), and unsafe-table-name rejection.
+
 0.40	Fri Aug 28 04:17:15 PM EDT 2026
 	[ Tests ]
 	- Added t/all-fuzz.t

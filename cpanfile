@@ -29,6 +29,7 @@ on 'configure' => sub {
 
 on 'test' => sub {
 	requires 'DBD::CSV';
+	requires 'DBD::Excel';
 	requires 'DBD::XMLSimple', '0.07';
 	requires 'Fcntl';
 	requires 'File::Glob';

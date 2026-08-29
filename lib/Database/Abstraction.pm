@@ -69,8 +69,9 @@ our $VERSION = '0.40';
 =head1 DESCRIPTION
 
 C<Database::Abstraction> is a read-only ORM for Perl that gives a uniform
-interface over CSV, PSV, XML, SQLite, DBM::Deep, and BerkeleyDB files - without writing
-any SQL.
+interface over CSV, PSV, XML, SQLite, DBM::Deep, BerkeleyDB, and Excel (XLSX)
+files - local, remote (via SSH), or fetched from a URL - without writing any
+SQL.
 
 Key features:
 
@@ -126,7 +127,7 @@ A CHI-compatible cache layer is also supported.
     use parent 'Database::Abstraction';
 
     # 2. Open the database - file is auto-detected from the class name
-    #    (looks for foo.sql / foo.psv / foo.csv / foo.xml / foo.db)
+    #    (looks for foo.sql / foo.psv / foo.csv / foo.xlsx / foo.xml / foo.db)
     my $db = Database::Foo->new(directory => '/path/to/data');
 
     # 3. Simple lookups -----------------------------------------------
@@ -249,15 +250,24 @@ Comma (or custom) separated file, ending C<.csv> or C<.db>; can be
 gzipped.  B<Note:> the default separator is C<!> not C<,> for historical
 reasons - pass C<< sep_char => ',' >> for standard CSVs.
 
-=item 5. C<XML>
+=item 5. C<Excel>
+
+Excel workbook ending C<.xlsx>.  Each worksheet is a separate SQL table;
+the active worksheet is determined by the class-derived table name (or the
+C<table> constructor parameter - see L</SUBROUTINES/METHODS>).  Requires
+L<DBD::Excel> (loaded lazily); L<Spreadsheet::ParseXLSX> is used
+automatically for modern C<.xlsx> files when installed.  No slurp path:
+C<max_slurp_size> has no effect on the Excel backend.
+
+=item 6. C<XML>
 
 File ending C<.xml>
 
-=item 6. C<BerkeleyDB>
+=item 7. C<BerkeleyDB>
 
 Binary key-value file ending C<.db>
 
-=item 7. C<HTML>
+=item 8. C<HTML>
 
 Remote HTML page fetched via a URL.  Pass C<url> instead of C<directory>; the
 module fetches the page with L<LWP::UserAgent>, parses all C<< <table> >>
@@ -438,6 +448,18 @@ Database password.  Used only with C<dsn>; ignored for file-based backends.
 
 Override the filename stem searched in C<directory> (default: the table
 name derived from the class name).
+
+=item * C<table>
+
+Override the table (or worksheet) name used in SQL queries for this object.
+Default is the class-name-derived table name (e.g. C<Database::Foo> =>
+C<foo>).  Particularly useful for Excel workbooks where a single F<.xlsx>
+file contains multiple worksheets: pass C<< table => 'Summary' >> to query
+the C<Summary> worksheet without creating a dedicated subclass.  Also works
+with SQLite/DSN connections to select a table other than the class-derived
+default.  The filename stem (C<dbname>) continues to fall back to the class
+name, so the correct file is opened regardless of this override.  The value
+is validated against C<$SAFE_QUALIFIED> at construction time.
 
 =item * C<filename>
 
@@ -626,6 +648,10 @@ sub new {
 			croak("$class: unsafe url '$src->{url}'")
 				unless $src->{'url'} =~ /\Ahttps?:\/\//i;
 		}
+		if(defined $src->{'table'}) {
+			croak("$class: unsafe table name '$src->{table}'")
+				unless $src->{'table'} =~ $SAFE_QUALIFIED;
+		}
 	}
 
 	# Defaults are set first so that %args keys override them
@@ -774,7 +800,13 @@ sub _open :Protected
 		return $self;
 	}
 
-	my $dbname = $self->{'dbname'} || $defaults{'dbname'} || $table;
+	# Derive the filename stem from the class name, NOT from any $table override.
+	# This allows table => 'Sheet2' to query a different worksheet within the same
+	# file (e.g. test1.xlsx with a 'sheet2' worksheet) without needing an explicit
+	# dbname. When dbname is set explicitly it always wins.
+	my $class_stem = ref($self);
+	$class_stem =~ s/\A.*:://;
+	my $dbname = $self->{'dbname'} || $defaults{'dbname'} || $class_stem;
 	Carp::croak(ref($self), ": unsafe dbname '$dbname'")
 		unless $dbname =~ /^[a-zA-Z0-9_.-]+$/ && $dbname !~ /\.\./;
 
@@ -792,7 +824,7 @@ sub _open :Protected
 			my $tmpdir_obj = File::Temp->newdir(CLEANUP => 1);
 			$self->{'_remote_tmpdir'} = $tmpdir_obj;	# auto-cleans on DESTROY
 			my $tmpdir = $tmpdir_obj->dirname();
-			for my $ext (qw(sql dbm deep db csv.gz db.gz psv csv xml)) {
+			for my $ext (qw(sql dbm deep db csv.gz db.gz psv xlsx csv xml)) {
 				my $remote_file = "$remote_dir/$dbname.$ext";
 				my $content = eval { scalar File::Slurp::Remote::read_remote_file($host, $remote_file) };
 				next unless defined($content) && length($content);
@@ -1025,55 +1057,68 @@ sub _open :Protected
 			}
 			$self->{'type'} = 'CSV';
 		} else {
-			$slurp_file = File::Spec->catfile($dir, "$dbname.xml");
-			if(-r $slurp_file) {
-				if((-s $slurp_file) <= $max_slurp_size) {
-					require XML::Simple;
+			my $xlsx_file = File::Spec->catfile($dir, "$dbname.xlsx");
+			if(-r $xlsx_file) {
+				# Excel workbook via DBD::Excel — each worksheet is a SQL table.
+				# Loaded lazily; not required for any other backend.
+				require DBD::Excel;
+				$dbh = DBI->connect("dbi:Excel:file=$xlsx_file", undef, undef, {
+					RaiseError => 1,
+					PrintError => 0,
+				}) or Carp::croak(ref($self), ": can't open $xlsx_file: $DBI::errstr");
+				$self->{'type'} = 'Excel';
+				$slurp_file = $xlsx_file;
+			} else {
+				$slurp_file = File::Spec->catfile($dir, "$dbname.xml");
+				if(-r $slurp_file) {
+					if((-s $slurp_file) <= $max_slurp_size) {
+						require XML::Simple;
 
-					my $xml = XML::Simple::XMLin($slurp_file);
-					my @keys = keys %{$xml};
-					my $key = $keys[0];
-					my @data;
-					if(ref($xml->{$key}) eq 'ARRAY') {
-						@data = @{$xml->{$key}};
-					} elsif(ref($xml) eq 'ARRAY') {
-						@data = @{$xml};
-					} elsif((ref($xml) eq 'HASH') && !$self->{'no_entry'}) {
-						if(scalar(keys %{$xml}) == 1) {
-							if($xml->{$table}) {
-								@data = $xml->{$table};
+						my $xml = XML::Simple::XMLin($slurp_file);
+						my @keys = keys %{$xml};
+						my $key = $keys[0];
+						my @data;
+						if(ref($xml->{$key}) eq 'ARRAY') {
+							@data = @{$xml->{$key}};
+						} elsif(ref($xml) eq 'ARRAY') {
+							@data = @{$xml};
+						} elsif((ref($xml) eq 'HASH') && !$self->{'no_entry'}) {
+							if(scalar(keys %{$xml}) == 1) {
+								if($xml->{$table}) {
+									@data = $xml->{$table};
+								} else {
+									Carp::croak('XML slurp: complex documents with an "entry" field are not yet supported');
+								}
 							} else {
-								Carp::croak('XML slurp: complex documents with an "entry" field are not yet supported');
+								Carp::croak('XML slurp: multi-key documents are not yet supported');
 							}
 						} else {
-							Carp::croak('XML slurp: multi-key documents are not yet supported');
+							Carp::croak('XML slurp: cannot handle ', ref($xml), ' structure');
+						}
+						if($self->{'no_entry'}) {
+							# Not keyed, will need to scan each entry
+							my $i = 0;
+							foreach my $d(@data) {
+								$self->{'data'}->{$i++} = $d;
+							}
+						} else {
+							# keyed on the $self->{'id'} (default: "entry") column
+							foreach my $d(@data) {
+								$self->{'data'}->{$d->{$self->{'id'}}} = $d;
+							}
 						}
 					} else {
-						Carp::croak('XML slurp: cannot handle ', ref($xml), ' structure');
-					}
-					if($self->{'no_entry'}) {
-						# Not keyed, will need to scan each entry
-						my $i = 0;
-						foreach my $d(@data) {
-							$self->{'data'}->{$i++} = $d;
-						}
-					} else {
-						# keyed on the $self->{'id'} (default: "entry") column
-						foreach my $d(@data) {
-							$self->{'data'}->{$d->{$self->{'id'}}} = $d;
-						}
+						$dbh = DBI->connect('dbi:XMLSimple(RaiseError=>1):');
+						$dbh->{'RaiseError'} = 1;
+						$self->_debug("read in $table from XML $slurp_file");
+						$dbh->func($table, 'XML', $slurp_file, 'xmlsimple_import');
 					}
 				} else {
-					$dbh = DBI->connect('dbi:XMLSimple(RaiseError=>1):');
-					$dbh->{'RaiseError'} = 1;
-					$self->_debug("read in $table from XML $slurp_file");
-					$dbh->func($table, 'XML', $slurp_file, 'xmlsimple_import');
+					# throw Error(-file => "$dir/$table");
+					$self->_fatal("Can't find a file called '$dbname' for the table $table in $dir");
 				}
-			} else {
-				# throw Error(-file => "$dir/$table");
-				$self->_fatal("Can't find a file called '$dbname' for the table $table in $dir");
+				$self->{'type'} = 'XML';
 			}
-			$self->{'type'} = 'XML';
 		}
 	}
 
@@ -2788,7 +2833,7 @@ DBI failed to connect to the given C<dsn>.  Check credentials and host.
 
 =item C<< Can't find a file called 'I<name>' for the table I<T> in I<dir> >>
 
-None of the probe extensions (C<.sql>, C<.psv>, C<.csv>, C<.db>, C<.xml>)
+None of the probe extensions (C<.sql>, C<.psv>, C<.csv>, C<.xlsx>, C<.db>, C<.xml>)
 matched in C<directory>.
 
 =item C<< I<Class>: prepare failed: I<$errstr> >>
