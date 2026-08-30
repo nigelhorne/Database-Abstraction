@@ -1525,11 +1525,12 @@ sub count
 			# fires in _build_where_conditions.
 			$self->_debug("$table: count in-memory scan");
 			my @param_keys = keys %{$params};
-			my @rows = ref($self->{'data'}) eq 'HASH' ? values %{$self->{'data'}} : @{$self->{'data'}};
+			# Pass the row list directly to grep — avoids materialising an
+			# intermediate @rows array of N references on the stack.
 			return scalar grep {
 				my $row = $_;
 				all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params->{$_}) } @param_keys
-			} @rows;
+			} (ref($self->{'data'}) eq 'HASH' ? values %{$self->{'data'}} : @{$self->{'data'}});
 		}
 	}
 
@@ -1680,6 +1681,10 @@ sub fetchrow_hashref {
 	} else {
 		$self->_debug("fetchrow_hashref $query");
 	}
+	# TODO: Data Flow Anomaly - D~: $key is computed unconditionally (string concat +
+	# join) even when no cache is configured.  When $self->{cache} is undef the
+	# assembled string is a dead store.  Cost is trivial but the logic would be
+	# cleaner inside the if($c) block below.
 	my $key = ref($self) . '::';
 	if(defined($query_args[0])) {
 		if(wantarray) {
@@ -2362,11 +2367,25 @@ sub _build_where
 	my ($self, $params) = @_;
 
 	$params //= {};
-	my %p = %{$params};	# work on a copy so we can delete -or/-and
 	my @clauses;
 	my @args;
 
-	if(my $or_list = delete $p{'-or'}) {
+	# Avoid an O(K) hash copy in the common case where neither -or nor -and is
+	# present.  Only copy when we actually need to delete grouping keys, so the
+	# plain-criteria path (the vast majority of queries) passes $params through
+	# directly to _build_where_conditions without any allocation.
+	my $or_list  = $params->{'-or'};
+	my $and_list = $params->{'-and'};
+	my $plain;
+	if(defined($or_list) || defined($and_list)) {
+		my %p = %{$params};
+		delete @p{qw(-or -and)};
+		$plain = \%p;
+	} else {
+		$plain = $params;
+	}
+
+	if($or_list) {
 		my (@sub_clauses, @sub_args);
 		for my $cond (@{$or_list}) {
 			my ($s, $a) = $self->_build_where_conditions($cond);
@@ -2380,7 +2399,7 @@ sub _build_where
 			push @args, @sub_args;
 		}
 	}
-	if(my $and_list = delete $p{'-and'}) {
+	if($and_list) {
 		my (@sub_clauses, @sub_args);
 		for my $cond (@{$and_list}) {
 			my ($s, $a) = $self->_build_where_conditions($cond);
@@ -2395,7 +2414,7 @@ sub _build_where
 		}
 	}
 
-	my ($more, $margs) = $self->_build_where_conditions(\%p);
+	my ($more, $margs) = $self->_build_where_conditions($plain);
 	if($more) {
 		push @clauses, $more;
 		push @args, @{$margs};
@@ -2481,6 +2500,11 @@ sub _scan_berkeley
 	my ($self, $params) = @_;
 	$params //= {};
 
+	# TODO: Data Flow Anomaly - Mutation side effect: delete mutates the caller's
+	# $params hashref in-place.  All current callers (selectall_arrayref,
+	# selectall_array, count) do not reuse $params after this call, so it is safe;
+	# but a future caller that reuses $params would silently lose the 'join' key.
+	# Fix: use exists($params->{'join'}) to check; copy params before deleting.
 	if(delete $params->{'join'}) {
 		Carp::croak(ref($self), ': BerkeleyDB does not support JOINs');
 	}
@@ -2489,11 +2513,14 @@ sub _scan_berkeley
 	}
 
 	my $bdb = $self->{'berkeley'};
-	my @rows = map { { entry => $_, value => $bdb->{$_} } } keys %{$bdb};
+	my @cols = keys %{$params};
+	my @rows;
 
-	if(my @cols = keys %{$params}) {
-		@rows = grep {
-			my $row = $_;
+	if(@cols) {
+		# Single-pass build+filter: avoids materialising the full N-row list
+		# before filtering.  Peak memory is O(matching rows) instead of O(N).
+		for my $k (keys %{$bdb}) {
+			my $row = { entry => $k, value => $bdb->{$k} };
 			my $match = 1;
 			for my $col (@cols) {
 				unless($self->_match_criterion($row->{$col}, $params->{$col})) {
@@ -2501,8 +2528,10 @@ sub _scan_berkeley
 					last;
 				}
 			}
-			$match;
-		} @rows;
+			push @rows, $row if $match;
+		}
+	} else {
+		@rows = map { { entry => $_, value => $bdb->{$_} } } keys %{$bdb};
 	}
 
 	return \@rows;
