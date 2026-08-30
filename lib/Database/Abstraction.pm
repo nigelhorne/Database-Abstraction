@@ -2262,15 +2262,15 @@ sub AUTOLOAD {
 
 sub DESTROY
 {
-	if(defined($^V) && ($^V ge 'v5.14.0')) {
-		return if ${^GLOBAL_PHASE} eq 'DESTRUCT';	# >= 5.14.0 only
-	}
 	my $self = shift;
 
 	# Clean up temporary files — deleting File::Temp objects triggers auto-unlink/rmdir
 	delete $self->{'_temp_fh'};
 	delete $self->{'_remote_tmpdir'};
 
+	if(defined($^V) && ($^V ge 'v5.14.0')) {
+		return if ${^GLOBAL_PHASE} eq 'DESTRUCT';	# >= 5.14.0 only
+	}
 	# Clean up database handles
 	my $table_name = $self->{'table'} || ref($self);
 	$table_name =~ s/\A.*:://;
