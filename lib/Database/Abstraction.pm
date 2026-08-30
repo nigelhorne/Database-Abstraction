@@ -943,7 +943,7 @@ sub _open :Protected
 			require Gzip::Faster;
 
 			close($fin);
-			$fin = File::Temp->new(SUFFIX => '.csv', UNLINK => 1);
+			$fin = File::Temp->new(SUFFIX => '.csv', UNLINK => 1, CLEANUP => 1);
 			print $fin Gzip::Faster::gunzip_file($gz_file);
 			$fin->flush();
 			$slurp_file = $fin->filename();
@@ -2262,15 +2262,23 @@ sub AUTOLOAD {
 
 sub DESTROY
 {
-	my $self = shift;
-
-	# Clean up temporary files — deleting File::Temp objects triggers auto-unlink/rmdir
-	delete $self->{'_temp_fh'};
-	delete $self->{'_remote_tmpdir'};
-
 	if(defined($^V) && ($^V ge 'v5.14.0')) {
 		return if ${^GLOBAL_PHASE} eq 'DESTRUCT';	# >= 5.14.0 only
 	}
+
+	my $self = shift;
+
+	# Clean up temporary files — deleting File::Temp objects triggers auto-unlink/rmdir
+	# If that doesn't happen for some reason, explicitly unlink
+	if(defined $self->{'_temp_fh'}) {
+		my $temp_fh = $self->{'_temp_fh'};
+		my $temp_path = eval { $temp_fh->filename() };
+		delete $self->{'_temp_fh'};
+		# Fallback explicit unlink if File::Temp didn't clean up
+		unlink($temp_path) if defined($temp_path) && -f $temp_path;
+	}
+	delete $self->{'_remote_tmpdir'};
+
 	# Clean up database handles
 	my $table_name = $self->{'table'} || ref($self);
 	$table_name =~ s/\A.*:://;
