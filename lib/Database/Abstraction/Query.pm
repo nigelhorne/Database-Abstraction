@@ -239,8 +239,10 @@ sub order_by
 	# is deliberately permissive so it does not break legitimate multi-column
 	# expressions ("score DESC, name ASC") or SQL functions ("ABS(score) DESC").
 	if(defined $col) {
+		# Block the three primary SQL injection vectors that can appear inside
+		# an ORDER BY expression.  Use m{} to avoid escaping '/' and '\*'.
 		croak("order_by: unsafe ORDER BY expression '$col'")
-			if $col =~ /;|--|\/\*/;
+			if $col =~ m{; | -- | /\*}x;
 	}
 	$self->{'_order_by'} = $col;
 	return $self;

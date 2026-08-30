@@ -644,8 +644,15 @@ sub new {
 		}
 		if(defined $src->{'host'}) {
 			croak("$class: unsafe host '$src->{host}'")
-				# \z (not $) so a trailing newline cannot sneak past the anchor.
-				unless $src->{'host'} =~ /\A(?:[a-zA-Z0-9][a-zA-Z0-9._-]*\@)?[a-zA-Z0-9:][a-zA-Z0-9._:-]*\z/;
+				unless $src->{'host'} =~ /\A
+					(?:                   # optional "user\@" prefix
+						[a-zA-Z0-9]       # username: first char must be alnum
+						[a-zA-Z0-9._-]*   # username: rest may include dots and hyphens
+						\@                # literal at-sign; \@ prevents array interpolation
+					)?
+					[a-zA-Z0-9:]          # first char of host or IP; colon allows IPv6
+					[a-zA-Z0-9._:-]*      # rest: hostname, dotted IPv4, or IPv6 hex groups
+				\z/x;
 		}
 		if(defined $src->{'url'}) {
 			croak("$class: unsafe url '$src->{url}'")
@@ -810,8 +817,9 @@ sub _open :Protected
 	my $class_stem = ref($self);
 	$class_stem =~ s/\A.*:://;
 	my $dbname = $self->{'dbname'} || $defaults{'dbname'} || $class_stem;
+	# \A/\z (not ^/$) so a trailing newline cannot sneak past the $ anchor.
 	Carp::croak(ref($self), ": unsafe dbname '$dbname'")
-		unless $dbname =~ /^[a-zA-Z0-9_.-]+$/ && $dbname !~ /\.\./;
+		unless $dbname =~ /\A[a-zA-Z0-9_.-]+\z/ && $dbname !~ /\.\./;
 
 	# When a remote host is given, fetch all candidate files into a local temp
 	# directory via File::Slurp::Remote (SSH/SCP).  localhost / 127.0.0.1 / the
@@ -956,7 +964,7 @@ sub _open :Protected
 		}
 		if(my $filename = $self->{'filename'} || $defaults{'filename'}) {
 			Carp::croak(ref($self), ": unsafe filename '$filename'")
-				unless $filename =~ /^[a-zA-Z0-9_.-]+$/ && $filename !~ /\.\./;
+				unless $filename =~ /\A[a-zA-Z0-9_.-]+\z/ && $filename !~ /\.\./;
 			$self->_debug("Looking for $filename in $dir");
 			$slurp_file = File::Spec->catfile($dir, $filename);
 		}
@@ -2034,10 +2042,10 @@ has been disabled with C<< auto_load => 0 >>.
 
 sub AUTOLOAD {
 	our $AUTOLOAD;
-	my ($column) = $AUTOLOAD =~ /::(\w+)$/;
+	my ($column) = $AUTOLOAD =~ /::(\w+)\z/;
 
 	return if($column eq 'DESTROY');
-	return if($column =~ /^_/);	# never treat private method names as column lookups
+	return if($column =~ /\A_/);	# never treat private method names as column lookups
 
 	my $self = shift or return;
 
@@ -2719,8 +2727,8 @@ sub _has_bdb_magic {
 sub _is_local_host {
 	my ($self, $host) = @_;
 
-	# Strip optional user@ prefix
-	(my $bare = $host) =~ s/^[^@]*\@//;
+	# Strip optional user@ prefix.  \A (not ^) so a newline cannot split the match.
+	(my $bare = $host) =~ s/\A[^@]*@//;
 
 	# \z anchors at true end-of-string; $ would match before a trailing newline.
 	return 1 if $bare =~ /\A(?:localhost|127\.0\.0\.1|::1)\z/i;
