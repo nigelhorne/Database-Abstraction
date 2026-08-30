@@ -54,6 +54,10 @@ use constant	DEFAULT_MAX_SLURP_SIZE => 16 * 1024;	# CSV files <= than this size 
 my $SAFE_IDENTIFIER = qr/\A[a-zA-Z_][a-zA-Z0-9_]*\z/;
 my $SAFE_QUALIFIED  = qr/\A[a-zA-Z_][a-zA-Z0-9_.]*\z/;
 
+# Module-level constant: valid JOIN types after uc() normalisation.
+# Built once at compile time; reused by every _build_joins call.
+my %VALID_JOIN_TYPES = map { $_ => 1 } qw(INNER LEFT RIGHT FULL CROSS);
+
 =head1 NAME
 
 Database::Abstraction - Read-only Database Abstraction Layer (ORM)
@@ -1374,9 +1378,12 @@ sub selectall_array
 		} elsif(ref($self->{'data'}) eq 'HASH') {
 			# Same as selectall_arrayref scan but returns a list
 			$self->_debug("$table: selectall_array in-memory scan with criteria");
+			# Pre-compute param keys once — same optimisation as selectall_arrayref:
+			# avoids N * K hash-key extractions inside the inner closure.
+			my @param_keys = keys %{$params};
 			my @rc = grep {
 				my $row = $_;
-				all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params->{$_}) } keys %{$params}
+				all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params->{$_}) } @param_keys
 			} values %{$self->{'data'}};
 			return @rc;
 		}
@@ -2230,7 +2237,9 @@ sub AUTOLOAD {
 	$sth->execute(@args) || croak($query);
 
 	if(wantarray) {
-		my @rc = map { $_->[0] } @{$sth->fetchall_arrayref()};
+		# fetchall_arrayref([0]) asks DBI to project column 0 server-side, so each
+		# returned row is [$col0] instead of the full row — less memory, same result.
+		my @rc = map { $_->[0] } @{$sth->fetchall_arrayref([0])};
 		if($cache) {
 			$cache->set($key, \@rc, $self->{'cache_duration'});	# Store a ref to the array
 		}
@@ -2287,7 +2296,6 @@ sub _build_joins
 	my ($self, $join_spec) = @_;
 
 	my @specs = ref($join_spec) eq 'ARRAY' ? @{$join_spec} : ($join_spec);
-	my %valid_types = map { $_ => 1 } qw(INNER LEFT RIGHT FULL CROSS);
 	my @clauses;
 
 	for my $j (@specs) {
@@ -2296,7 +2304,7 @@ sub _build_joins
 		Carp::croak("join: unsafe table name '$jtable'")
 			unless $jtable =~ $SAFE_QUALIFIED;
 		my $on     = $j->{'on'}    or Carp::croak('join: missing "on" condition');
-		Carp::croak("Invalid JOIN type: $type") unless $valid_types{$type};
+		Carp::croak("Invalid JOIN type: $type") unless $VALID_JOIN_TYPES{$type};
 		push @clauses, "$type JOIN $jtable ON ($on)";
 	}
 
@@ -2414,7 +2422,7 @@ sub _build_where_conditions
 			unless $col =~ $SAFE_QUALIFIED;
 
 		if(ref($val) eq 'HASH') {
-			for my $op (sort keys %{$val}) {
+			for my $op (keys %{$val}) {    # no sort — operator hashes typically have 1-2 keys; sort adds O(K log K) overhead
 				my $operand = $val->{$op};
 				if($op eq '-in' || $op eq '-not_in') {
 					my $sql_op = $op eq '-in' ? 'IN' : 'NOT IN';
@@ -2562,31 +2570,32 @@ sub _like_match
 	}
 
 	# Full DP — O(m*n) time, O(m) memory.
-	# Two 1-D arrays (@prev, @curr) replace the O(m*n) 2-D table.
+	# Two 1-D arrayrefs (@$prev, @$curr) replace the O(m*n) 2-D table.
 	# substr() replaces split(//) — no per-char scalar allocation.
+	# Ref-swap ($prev,$curr) = ($curr,$prev) at the end of each outer iteration
+	# avoids the O(m) array copy that "@prev = @curr" would perform.
 	my $m = $str_len;
 	my $n = $pat_len;
 
-	# @prev[j] = true iff pattern[0..i-1] matches string[0..j-1]
-	my @prev = (1, (0) x $m);
+	my ($prev, $curr) = ([1, (0) x $m], [(0) x ($m + 1)]);
 
 	for my $i (1 .. $n) {
-		my @curr = (0) x ($m + 1);
+		@{$curr} = (0) x ($m + 1);    # zero in-place — reuses existing allocation
 		my $pc = substr($lc_pat, $i - 1, 1);
 		if($pc eq '%') {
-			$curr[0] = $prev[0];
+			$curr->[0] = $prev->[0];
 			for my $j (1 .. $m) {
-				$curr[$j] = ($prev[$j] || $curr[$j - 1]) ? 1 : 0;
+				$curr->[$j] = ($prev->[$j] || $curr->[$j - 1]) ? 1 : 0;
 			}
 		} else {
 			for my $j (1 .. $m) {
-				$curr[$j] = ($prev[$j - 1]
+				$curr->[$j] = ($prev->[$j - 1]
 					&& ($pc eq '_' || $pc eq substr($lc_str, $j - 1, 1))) ? 1 : 0;
 			}
 		}
-		@prev = @curr;
+		($prev, $curr) = ($curr, $prev);    # O(1) ref swap — no array copy
 	}
-	return $prev[$m];
+	return $prev->[$m];
 }
 
 sub _match_criterion

@@ -7,7 +7,7 @@ use FindBin qw($Bin);
 use File::Spec;
 use File::Temp qw(tempdir);
 use Test::Most;
-use Test::Needs;
+use Test::Needs 'DBD::Excel', 'Spreadsheet::WriteExcel';
 use Test::NoWarnings;
 
 # Pre-load lazily-required modules before any Database::test1 object is
