@@ -1,6 +1,6 @@
 Revision history for Database-Abstraction
 
-0.41
+0.41	Sun Aug 30 09:39:17 AM EDT 2026
 	[ Enhancements ]
 	- XLSX backend: DBD::Excel driver; probe for .xlsx files after gzip/PSV/CSV,
 	  before XML; lazy require inside _open() so DBD::Excel is never loaded for
