@@ -64,11 +64,11 @@ Database::Abstraction - Read-only Database Abstraction Layer (ORM)
 
 =head1 VERSION
 
-Version 0.41
+Version 0.42
 
 =cut
 
-our $VERSION = '0.41';
+our $VERSION = '0.42';
 
 =head1 DESCRIPTION
 
@@ -1686,7 +1686,6 @@ sub fetchrow_hashref {
 
 	my $table = $self->_open_table($params);
 
-	# ::diag($self->{'type'});
 	if($self->{'data'} && (!$self->{'no_entry'}) && (scalar keys(%{$params}) == 1) && defined($params->{'entry'}) && !$self->_has_complex_criteria($params)) {
 		$self->_debug('Fast return from slurped data');
 		# Use exists(), fixate() locks the outer hash; accessing a missing key throws
@@ -1694,8 +1693,6 @@ sub fetchrow_hashref {
 	}
 
 	if($self->{'berkeley'}) {
-		# print STDERR ">>>>>>>>>>>>\n";
-		# ::diag(Data::Dumper->new([$self->{'berkeley'}])->Dump());
 		if((!$self->{'no_entry'}) && (scalar keys(%{$params}) == 1) && defined($params->{'entry'})) {
 			return { entry => $self->{'berkeley'}->{$params->{'entry'}} };
 		}

@@ -22,6 +22,12 @@ Revision history for Database-Abstraction
 	  failed on CI when the OS or DBI still held the file descriptor open briefly
 	  after DESTROY; the weak-reference check directly tests GC, independent of
 	  OS filesystem visibility.
+	- Zero-byte CSV (keyed mode): _open() now stores {} instead of () in
+	  $self->{'data'}.  The empty-list assignment was equivalent to undef, which
+	  caused query methods to fall through to DBI with a 0-column table and
+	  croak on the 'entry IS NOT NULL' WHERE clause.  The empty hashref mirrors
+	  what the newline-only path stores and lets all fast-path methods return
+	  correct empty results without touching the DBI handle.
 	[ Tests ]
 	- t/xlsx.t: completely rewritten with two independent SKIP sections.
 	  Section A — .xls binary format via Spreadsheet::WriteExcel + DBD::Excel,
@@ -44,13 +50,6 @@ Revision history for Database-Abstraction
 	- t/extended_tests.t EX5: updated to reflect that zero-byte keyed CSV now
 	  stores an empty hashref (not undef) in $db->{'data'} after open, enabling
 	  fast-path query methods to return 0/undef/[] without touching DBI.
-	[ Bug Fixes ]
-	- Zero-byte CSV (keyed mode): _open() now stores {} instead of () in
-	  $self->{'data'}.  The empty-list assignment was equivalent to undef, which
-	  caused query methods to fall through to DBI with a 0-column table and
-	  croak on the 'entry IS NOT NULL' WHERE clause.  The empty hashref mirrors
-	  what the newline-only path stores and lets all fast-path methods return
-	  correct empty results without touching the DBI handle.
 
 0.41	Sun Aug 30 09:39:17 AM EDT 2026
 	[ Enhancements ]
