@@ -4,730 +4,728 @@
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231664.275,
+         "finish" : 1789239949.62632,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "-e",
-         "start" : 1789231632.78413,
-         "version" : "0.41"
+         "start" : 1789239902.93415,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231632.89935,
+         "finish" : 1789239903.08608,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "-e",
-         "start" : 1789231632.89924,
-         "version" : "0.41"
+         "start" : 1789239903.08598,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231633.21533,
+         "finish" : 1789239903.49492,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/00-load.t",
-         "start" : 1789231633.21414,
-         "version" : "0.41"
+         "start" : 1789239903.49365,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231634.01181,
+         "finish" : 1789239904.55823,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/10-compile.t",
-         "start" : 1789231633.64897,
-         "version" : "0.41"
+         "start" : 1789239904.08874,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231634.31982,
+         "finish" : 1789239904.96149,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/20-new.t",
-         "start" : 1789231634.21247,
-         "version" : "0.41"
+         "start" : 1789239904.81964,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231634.96173,
+         "finish" : 1789239905.83468,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/30-basics.t",
-         "start" : 1789231634.83262,
-         "version" : "0.41"
+         "start" : 1789239905.68505,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231635.51584,
+         "finish" : 1789239906.63857,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/all-fuzz.t",
-         "start" : 1789231635.51559,
-         "version" : "0.41"
+         "start" : 1789239906.63824,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231636.06784,
+         "finish" : 1789239907.28546,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/bugs.t",
-         "start" : 1789231635.85592,
-         "version" : "0.41"
+         "start" : 1789239907.0798,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231636.64688,
+         "finish" : 1789239908.09253,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/carp.t",
-         "start" : 1789231636.54486,
-         "version" : "0.41"
+         "start" : 1789239907.96001,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231637.45038,
+         "finish" : 1789239909.18215,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/cgi_security.t",
-         "start" : 1789231637.2556,
-         "version" : "0.41"
+         "start" : 1789239908.9436,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231637.99612,
+         "finish" : 1789239910.22464,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/chi.t",
-         "start" : 1789231637.99572,
-         "version" : "0.41"
+         "start" : 1789239909.97229,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231638.18958,
+         "finish" : 1789239910.92948,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/comment-spelling.t",
-         "start" : 1789231638.18931,
-         "version" : "0.41"
+         "start" : 1789239910.92924,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231638.57682,
+         "finish" : 1789239911.43103,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/csv.t",
-         "start" : 1789231638.51115,
-         "version" : "0.41"
+         "start" : 1789239911.34485,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231639.22441,
+         "finish" : 1789239912.30012,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/csv_id.t",
-         "start" : 1789231639.16269,
-         "version" : "0.41"
+         "start" : 1789239912.21967,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231640.12967,
+         "finish" : 1789239913.65557,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/data-flow.t",
-         "start" : 1789231639.79838,
-         "version" : "0.41"
+         "start" : 1789239913.09456,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231640.71054,
+         "finish" : 1789239914.49312,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/db.t",
-         "start" : 1789231640.71025,
-         "version" : "0.41"
+         "start" : 1789239914.49288,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231640.93057,
+         "finish" : 1789239914.78837,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/db_noentry.t",
-         "start" : 1789231640.93028,
-         "version" : "0.41"
+         "start" : 1789239914.7881,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231641.14906,
+         "finish" : 1789239915.3282,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/deep.t",
-         "start" : 1789231641.14878,
-         "version" : "0.41"
+         "start" : 1789239915.19003,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231641.68481,
+         "finish" : 1789239916.44474,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/domain.t",
-         "start" : 1789231641.50105,
-         "version" : "0.41"
+         "start" : 1789239916.20541,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231642.69284,
+         "finish" : 1789239918.00996,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/edge_cases.t",
-         "start" : 1789231642.30886,
-         "version" : "0.41"
+         "start" : 1789239917.30499,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231643.50789,
+         "finish" : 1789239919.19065,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/empty_files.t",
-         "start" : 1789231643.37838,
-         "version" : "0.41"
+         "start" : 1789239919.01175,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231643.99754,
+         "finish" : 1789239919.82253,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/eof.t",
-         "start" : 1789231643.99726,
-         "version" : "0.41"
+         "start" : 1789239919.82226,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231644.18555,
+         "finish" : 1789239920.06262,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/eol.t",
-         "start" : 1789231644.1853,
-         "version" : "0.41"
+         "start" : 1789239920.06234,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231644.71193,
+         "finish" : 1789239920.83774,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/extended_tests.t",
-         "start" : 1789231644.52755,
-         "version" : "0.41"
+         "start" : 1789239920.4875,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231645.61626,
+         "finish" : 1789239922.40566,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/function.t",
-         "start" : 1789231645.35944,
-         "version" : "0.41"
+         "start" : 1789239921.7584,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231646.39722,
+         "finish" : 1789239923.52727,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/html.t",
-         "start" : 1789231646.35139,
-         "version" : "0.41"
+         "start" : 1789239923.46909,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231646.95905,
+         "finish" : 1789239924.29003,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/init.t",
-         "start" : 1789231646.86049,
-         "version" : "0.41"
+         "start" : 1789239924.16243,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231647.88099,
+         "finish" : 1789239926.12331,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/integration.t",
-         "start" : 1789231647.54967,
-         "version" : "0.41"
+         "start" : 1789239925.10463,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231648.59439,
+         "finish" : 1789239927.16568,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/join.t",
-         "start" : 1789231648.55597,
-         "version" : "0.41"
+         "start" : 1789239927.1189,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231649.23194,
+         "finish" : 1789239928.02706,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/locales.t",
-         "start" : 1789231649.16736,
-         "version" : "0.41"
+         "start" : 1789239927.94375,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231649.87901,
+         "finish" : 1789239928.89961,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/logger.t",
-         "start" : 1789231649.70177,
-         "version" : "0.41"
+         "start" : 1789239928.67064,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231650.84262,
+         "finish" : 1789239930.29526,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/mutant_killers.t",
-         "start" : 1789231650.5244,
-         "version" : "0.41"
+         "start" : 1789239929.77514,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231651.58708,
+         "finish" : 1789239931.3297,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/no_entry.t",
-         "start" : 1789231651.53039,
-         "version" : "0.41"
+         "start" : 1789239931.25671,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231652.19963,
+         "finish" : 1789239932.15815,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/passwd.t",
-         "start" : 1789231652.04163,
-         "version" : "0.41"
+         "start" : 1789239931.95636,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231652.93091,
+         "finish" : 1789239933.16325,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/path.t",
-         "start" : 1789231652.83843,
-         "version" : "0.41"
+         "start" : 1789239933.03987,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231653.40353,
+         "finish" : 1789239933.82997,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/pod-cm.t",
-         "start" : 1789231653.40326,
-         "version" : "0.41"
+         "start" : 1789239933.8297,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231653.58949,
+         "finish" : 1789239934.07328,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/pod-coverage.t",
-         "start" : 1789231653.58925,
-         "version" : "0.41"
+         "start" : 1789239934.07299,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231653.77599,
+         "finish" : 1789239934.31678,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/pod-links.t",
-         "start" : 1789231653.77574,
-         "version" : "0.41"
+         "start" : 1789239934.31651,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231653.96077,
+         "finish" : 1789239934.55851,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/pod-snippets.t",
-         "start" : 1789231653.96052,
-         "version" : "0.41"
+         "start" : 1789239934.55825,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231654.14987,
+         "finish" : 1789239934.79929,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/pod-spelling.t",
-         "start" : 1789231654.14958,
-         "version" : "0.41"
+         "start" : 1789239934.79904,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231654.33863,
+         "finish" : 1789239935.04125,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/pod-synopsis.t",
-         "start" : 1789231654.33837,
-         "version" : "0.41"
+         "start" : 1789239935.04098,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231654.52725,
+         "finish" : 1789239935.2823,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/pod.t",
-         "start" : 1789231654.52699,
-         "version" : "0.41"
+         "start" : 1789239935.28205,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231654.85896,
+         "finish" : 1789239935.71354,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/portability.t",
-         "start" : 1789231654.82702,
-         "version" : "0.41"
+         "start" : 1789239935.6734,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231655.45626,
+         "finish" : 1789239936.54176,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/psv.t",
-         "start" : 1789231655.30537,
-         "version" : "0.41"
+         "start" : 1789239936.34158,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231656.10895,
+         "finish" : 1789239937.43891,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/query_builder.t",
-         "start" : 1789231656.05972,
-         "version" : "0.41"
+         "start" : 1789239937.37628,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231656.59828,
+         "finish" : 1789239938.12664,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/remote.t",
-         "start" : 1789231656.59803,
-         "version" : "0.41"
+         "start" : 1789239938.12632,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231657.00042,
+         "finish" : 1789239938.64282,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/remote_local.t",
-         "start" : 1789231656.90603,
-         "version" : "0.41"
+         "start" : 1789239938.52358,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231657.6404,
+         "finish" : 1789239939.5196,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/schema.t",
-         "start" : 1789231657.5761,
-         "version" : "0.41"
+         "start" : 1789239939.43586,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231658.08819,
+         "finish" : 1789239940.14354,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/strict.t",
-         "start" : 1789231658.08796,
-         "version" : "0.41"
+         "start" : 1789239940.14324,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231658.27427,
+         "finish" : 1789239940.38788,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/tabs.t",
-         "start" : 1789231658.27404,
-         "version" : "0.41"
+         "start" : 1789239940.38763,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231658.6357,
+         "finish" : 1789239940.86427,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/test7.t",
-         "start" : 1789231658.47821,
-         "version" : "0.41"
+         "start" : 1789239940.65651,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231659.29919,
+         "finish" : 1789239941.80023,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/test8.t",
-         "start" : 1789231659.14062,
-         "version" : "0.41"
+         "start" : 1789239941.59333,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231660.03726,
+         "finish" : 1789239942.90279,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/transaction.t",
-         "start" : 1789231659.94558,
-         "version" : "0.41"
+         "start" : 1789239942.69336,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231660.70856,
+         "finish" : 1789239943.84084,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/two_databases.t",
-         "start" : 1789231660.65157,
-         "version" : "0.41"
+         "start" : 1789239943.76625,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231661.59636,
+         "finish" : 1789239945.43903,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/unit.t",
-         "start" : 1789231661.27393,
-         "version" : "0.41"
+         "start" : 1789239944.60903,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231662.17297,
+         "finish" : 1789239946.28211,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/vars.t",
-         "start" : 1789231662.1727,
-         "version" : "0.41"
+         "start" : 1789239946.28191,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231662.3614,
+         "finish" : 1789239946.52178,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/version.t",
-         "start" : 1789231662.36113,
-         "version" : "0.41"
+         "start" : 1789239946.52155,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231662.69425,
+         "finish" : 1789239947.33783,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/xlsx.t",
-         "start" : 1789231662.68823,
-         "version" : "0.41"
+         "start" : 1789239946.93839,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231663.36357,
+         "finish" : 1789239948.35026,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/xml.t",
-         "start" : 1789231663.26923,
-         "version" : "0.41"
+         "start" : 1789239948.21931,
+         "version" : "0.42"
       },
       {
          "OS" : "linux",
          "abstract" : "Read-only Database Abstraction Layer (ORM)",
          "dir" : "/home/runner/work/Database-Abstraction/Database-Abstraction",
-         "finish" : 1789231663.95009,
+         "finish" : 1789239949.15332,
          "name" : "Database-Abstraction",
          "perl" : "5.40.5",
          "run" : "t/xml_record.t",
-         "start" : 1789231663.82973,
-         "version" : "0.41"
+         "start" : 1789239948.98869,
+         "version" : "0.42"
       }
    ],
    "summary" : {
       "Total" : {
          "branch" : {
-            "covered" : 604,
-            "error" : 228,
-            "percentage" : 72.5961538461538,
+            "covered" : 648,
+            "error" : 184,
+            "percentage" : 77.8846153846154,
             "total" : 832,
             "uncoverable" : 0
          },
          "condition" : {
-            "covered" : 276,
-            "error" : 145,
-            "percentage" : 65.5581947743468,
+            "covered" : 278,
+            "error" : 143,
+            "percentage" : 66.0332541567696,
             "total" : 421,
             "uncoverable" : 0
          },
          "statement" : {
-            "covered" : 1076,
-            "error" : 272,
-            "percentage" : 79.8219584569733,
+            "covered" : 1135,
+            "error" : 213,
+            "percentage" : 84.1988130563798,
             "total" : 1348
          },
          "subroutine" : {
-            "covered" : 80,
-            "error" : 1,
-            "percentage" : 98.7654320987654,
+            "covered" : 81,
+            "percentage" : 100,
             "total" : 81
          },
          "total" : {
-            "covered" : 2036,
-            "error" : 646,
-            "percentage" : 75.9134973900074,
+            "covered" : 2142,
+            "error" : 540,
+            "percentage" : 79.8657718120805,
             "total" : 2682,
             "uncoverable" : 0
          }
       },
       "blib/lib/Database/Abstraction.pm" : {
          "branch" : {
-            "covered" : 535,
-            "error" : 223,
-            "percentage" : 70.5804749340369,
+            "covered" : 579,
+            "error" : 179,
+            "percentage" : 76.3852242744063,
             "total" : 758,
             "uncoverable" : 0
          },
          "condition" : {
-            "covered" : 246,
-            "error" : 132,
-            "percentage" : 65.0793650793651,
+            "covered" : 248,
+            "error" : 130,
+            "percentage" : 65.6084656084656,
             "total" : 378,
             "uncoverable" : 0
          },
          "statement" : {
-            "covered" : 935,
-            "error" : 269,
-            "percentage" : 77.6578073089701,
+            "covered" : 994,
+            "error" : 210,
+            "percentage" : 82.5581395348837,
             "total" : 1204
          },
          "subroutine" : {
-            "covered" : 63,
-            "error" : 1,
-            "percentage" : 98.4375,
+            "covered" : 64,
+            "percentage" : 100,
             "total" : 64
          },
          "total" : {
-            "covered" : 1779,
-            "error" : 625,
-            "percentage" : 74.0016638935108,
+            "covered" : 1885,
+            "error" : 519,
+            "percentage" : 78.4109816971714,
             "total" : 2404,
             "uncoverable" : 0
          }
