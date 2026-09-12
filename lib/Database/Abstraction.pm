@@ -2327,6 +2327,7 @@ sub DESTROY
 		my $temp_fh = $self->{'_temp_fh'};
 		my $temp_path = eval { $temp_fh->filename() };
 		delete $self->{'_temp_fh'};
+		undef $temp_fh;	# Release the local strong reference
 		# Fallback explicit unlink if File::Temp didn't clean up
 		unlink($temp_path) if defined($temp_path) && -f $temp_path;
 	}
