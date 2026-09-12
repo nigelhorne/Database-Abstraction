@@ -711,8 +711,8 @@ Approximate LCSAJ segments: 75<br>
 </span><span class="">  370: 	# Ensure _open() fires before checking the backend type.
 </span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  371: 	$db-&gt;_open_table({});
 </span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="">  372: 
-</span><span class="">  373: 	if($db-&gt;{&#39;berkeley&#39;} || ($db-&gt;{&#39;type&#39;} // &#39;&#39;) eq &#39;Deep&#39;) {
-</span><span class="">  374: 		my $backend = $db-&gt;{&#39;berkeley&#39;} ? &#39;BerkeleyDB&#39; : &#39;Deep&#39;;
+</span><span class="">  373: 	if($db-&gt;{&#39;berkeley&#39;} || ($db-&gt;{&#39;type&#39;} // &#39;&#39;) =~ /\A(?:Deep|XLSX)\z/) {
+</span><span class="">  374: 		my $backend = $db-&gt;{&#39;berkeley&#39;} ? &#39;BerkeleyDB&#39; : ($db-&gt;{&#39;type&#39;} // &#39;&#39;);
 </span><span class="">  375: 		croak(ref($db), &quot;: query-&gt;all() with JOINs is not supported on $backend&quot;)
 </span><span class="">  376: 			if @{$self-&gt;{&#39;_joins&#39;}};
 </span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  377: 		my $rows = $db-&gt;selectall_arrayref({%{$self-&gt;{&#39;_where&#39;}}});
@@ -751,8 +751,8 @@ Approximate LCSAJ segments: 75<br>
 </span><span class="">  410: 
 </span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  411: 	$db-&gt;_open_table({});
 </span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="">  412: 
-</span><span class="">  413: 	if($db-&gt;{&#39;berkeley&#39;} || ($db-&gt;{&#39;type&#39;} // &#39;&#39;) eq &#39;Deep&#39;) {
-</span><span class="">  414: 		my $backend = $db-&gt;{&#39;berkeley&#39;} ? &#39;BerkeleyDB&#39; : &#39;Deep&#39;;
+</span><span class="">  413: 	if($db-&gt;{&#39;berkeley&#39;} || ($db-&gt;{&#39;type&#39;} // &#39;&#39;) =~ /\A(?:Deep|XLSX)\z/) {
+</span><span class="">  414: 		my $backend = $db-&gt;{&#39;berkeley&#39;} ? &#39;BerkeleyDB&#39; : ($db-&gt;{&#39;type&#39;} // &#39;&#39;);
 </span><span class="">  415: 		croak(ref($db), &quot;: query-&gt;first() with JOINs is not supported on $backend&quot;)
 </span><span class="">  416: 			if @{$self-&gt;{&#39;_joins&#39;}};
 </span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  417: 		my $rows = $db-&gt;selectall_arrayref({%{$self-&gt;{&#39;_where&#39;}}});
@@ -793,8 +793,8 @@ Approximate LCSAJ segments: 75<br>
 </span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  452: 
 </span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="">  453: 	$db-&gt;_open_table({});
 </span><span class="">  454: 
-</span><span class="">  455: 	if($db-&gt;{&#39;berkeley&#39;} || ($db-&gt;{&#39;type&#39;} // &#39;&#39;) eq &#39;Deep&#39;) {
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  456: 		my $backend = $db-&gt;{&#39;berkeley&#39;} ? &#39;BerkeleyDB&#39; : &#39;Deep&#39;;
+</span><span class="">  455: 	if($db-&gt;{&#39;berkeley&#39;} || ($db-&gt;{&#39;type&#39;} // &#39;&#39;) =~ /\A(?:Deep|XLSX)\z/) {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  456: 		my $backend = $db-&gt;{&#39;berkeley&#39;} ? &#39;BerkeleyDB&#39; : ($db-&gt;{&#39;type&#39;} // &#39;&#39;);
 </span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  457: 		croak(ref($db), &quot;: query-&gt;count() with JOINs is not supported on $backend&quot;)
 </span><span class="">  458: 			if @{$self-&gt;{&#39;_joins&#39;}};
 </span><span class="">  459: 		return $db-&gt;count({%{$self-&gt;{&#39;_where&#39;}}});
