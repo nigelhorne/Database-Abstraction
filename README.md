@@ -12,6 +12,8 @@ Version 0.41
 interface over CSV, PSV, XML, SQLite, DBM::Deep, BerkeleyDB, and Excel (XLSX)
 files - local, remote (via SSH), or fetched from a URL - without writing any
 SQL.
+Effectively it allows you to access a database table, of many different
+database formats, as an object.
 
 Key features:
 
