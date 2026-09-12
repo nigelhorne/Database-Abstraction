@@ -1,6 +1,6 @@
 Revision history for Database-Abstraction
 
-0.42
+0.42	Sat Sep 12 02:59:48 PM EDT 2026
 	[ Enhancements ]
 	- XLS backend: .xls (old binary format) now detected before .xlsx; opened via
 	  DBD::Excel (Spreadsheet::ParseExcel internally); all queries go through
