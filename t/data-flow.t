@@ -931,17 +931,15 @@ subtest 'DF-11: File::Temp gzipped CSV lifecycle (D => U => K)' => sub {
 		Scalar::Util::weaken($fh_weakref);
 	}    # $db goes out of scope → DESTROY → _temp_fh deleted (K)
 
-	# DF-11.5: File::Temp object is GC'd after DESTROY (platform-independent)
-	# Using a weak reference instead of -f avoids false failures when the OS
-	# or DBI still holds the fd open briefly (observed on GitHub Actions).
-	ok !defined($fh_weakref),
-		'DF-11.5: File::Temp object destroyed after DESTROY';
+	# DF-11.5: File was cleaned up after DESTROY
+	ok !-f $temp_path,
+		'DF-11.5: temp file removed after DESTROY (File::Temp auto-unlink)';
 
 	# DF-11.6: data from gzipped CSV is correct
 	{
 		my $db  = Database::gz_df11->new(directory => $dir);
 		my $cnt = $db->count();
-		cmp_ok $cnt, '==', 3, 'DF-11.6: count() from gzipped CSV returns correct value';
+		cmp_ok($cnt, '==', 3, 'DF-11.6: count() from gzipped CSV returns correct value');
 	}
 
 	# DF-11.7: second object opens its own temp file (no aliasing)
