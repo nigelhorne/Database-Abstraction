@@ -1,6 +1,6 @@
 Revision history for Database-Abstraction
 
-0.43
+0.43	Fri Sep 18 02:25:48 PM EDT 2026
 	[ Enhancements ]
 	- TSV backend: tab-separated files ending .tsv are now detected and opened
 	  in the file-detection probe order between .psv and .csv.  sep_char is set
