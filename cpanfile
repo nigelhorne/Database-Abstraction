@@ -10,6 +10,7 @@ requires 'DBI', '1.6';
 requires 'Data::Reuse';   # Required for result-set memory deduplication; see also RT#100461
 requires 'File::Spec';
 requires 'File::Temp';
+requires 'File::pfopen';
 requires 'List::Util', '1.33';
 requires 'Log::Abstraction', '0.33';
 requires 'Object::Configure', '0.16';
