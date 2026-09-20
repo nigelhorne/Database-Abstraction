@@ -31,7 +31,6 @@ use Data::Reuse;
 use DBI;
 use Fcntl;	# For O_RDONLY
 use Cwd;
-use File::pfopen;
 use File::Spec;
 use File::Temp;
 use List::Util qw(all);
@@ -878,10 +877,9 @@ sub _open :Protected
 	}
 	# Probe for SQLite files (.sql, .sqlite, .sqlite3)
 	my $slurp_file;
-	my ($fh, $filename) = File::pfopen::pfopen($dir, $dbname, 'sql:sqlite:sqlite3');
-	if($filename) {
-		$slurp_file = $filename;
-		close $fh;
+	for my $ext (qw(sql sqlite sqlite3)) {
+		my $candidate = File::Spec->catfile($dir, "$dbname.$ext");
+		if(-r $candidate) { $slurp_file = $candidate; last }
 	}
 	$slurp_file //= File::Spec->catfile($dir, "$dbname.sql");
 

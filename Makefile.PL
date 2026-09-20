@@ -37,7 +37,6 @@ WriteMakefile(
 		'Data::Reuse' => 0,	# Required for result-set memory deduplication; see also RT#100461
 		# 'Error' => 0,
 		'DBD::SQLite::Constants' => 0,
-		'File::pfopen' => 0,
 		'File::Spec' => 0,
 		'File::Temp' => 0,
 		'List::Util' => 1.33,
