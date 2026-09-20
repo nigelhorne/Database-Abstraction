@@ -35,6 +35,10 @@ package Database::ef_gz;
 use parent 'Database::Abstraction';
 1;
 
+package Database::ef_tsv;
+use parent 'Database::Abstraction';
+1;
+
 package main;
 
 my $HAS_XML  = eval { require XML::Simple; 1 };
@@ -221,6 +225,34 @@ subtest 'EF8: gzip CSV newline-only content — no crashes, no data' => sub {
 			'EF8: new() lives on newline-only gzip CSV';
 		_assert_no_data($db, 'EF8');
 	}
+};
+
+# ---------------------------------------------------------------------------
+# EF9 — TSV, empty file (0 bytes)
+# ---------------------------------------------------------------------------
+
+subtest 'EF9: TSV empty file — no crashes, no data' => sub {
+	plan tests => 9;
+
+	my $tmpdir = _tmpdir_with('ef_tsv.tsv', '');
+	my $db;
+	lives_ok { $db = Database::ef_tsv->new(directory => $tmpdir) }
+		'EF9: new() lives on zero-byte TSV';
+	_assert_no_data($db, 'EF9');
+};
+
+# ---------------------------------------------------------------------------
+# EF10 — TSV, newline-only file (1 byte: "\n")
+# ---------------------------------------------------------------------------
+
+subtest 'EF10: TSV newline-only file — no crashes, no data' => sub {
+	plan tests => 9;
+
+	my $tmpdir = _tmpdir_with('ef_tsv.tsv', "\n");
+	my $db;
+	lives_ok { $db = Database::ef_tsv->new(directory => $tmpdir) }
+		'EF10: new() lives on newline-only TSV';
+	_assert_no_data($db, 'EF10');
 };
 
 done_testing();

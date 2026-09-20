@@ -731,5 +731,97 @@ SKIP: {
 	};
 }
 
+# ---------------------------------------------------------------------------
+# EX21 — TSV detection: .tsv extension is probed, sep_char set to "\t"
+# Covers the TSV branch added between PSV and CSV in _open().
+# ---------------------------------------------------------------------------
+
+subtest 'EX21: .tsv file detected and sep_char set to tab' => sub {
+	plan tests => 4;
+
+	my $tsv_content = "entry\tnumber\n\"uno\"\t1\n\"dos\"\t2\n";
+	my $tmpdir = tempdir(CLEANUP => 1);
+	my $tsv_file = File::Spec->catfile($tmpdir, 'exttest_tsv.tsv');
+	open(my $fh, '>', $tsv_file) or die "cannot write $tsv_file: $!";
+	print $fh $tsv_content;
+	close $fh;
+
+	{
+		package Database::exttest_tsv;
+		use parent 'Database::Abstraction';
+	}
+
+	my $db;
+	lives_ok { $db = Database::exttest_tsv->new(directory => $tmpdir) }
+		'EX21: new() lives with .tsv file present';
+	cmp_ok($db->count(), '==', 2, 'EX21: count() returns 2 rows from TSV');
+	is($db->fetchrow_hashref(entry => 'uno')->{'number'}, 1,
+		'EX21: fetchrow_hashref returns correct value from TSV');
+	# Verify TSV detection returns no data when the .tsv file is absent
+	my $empty_dir = tempdir(CLEANUP => 1);
+	throws_ok { Database::exttest_tsv->new(directory => $empty_dir)->count() }
+		qr/Can't find a file/i,
+		'EX21: no .tsv file in dir triggers missing-file croak';
+};
+
+# ---------------------------------------------------------------------------
+# EX22/EX23 — .sqlite and .sqlite3 extension probes (directory-based detection)
+# Covers the SQLite probe loop that tries sql / sqlite / sqlite3 in order.
+# ---------------------------------------------------------------------------
+
+SKIP: {
+	skip('DBI or DBD::SQLite not available', 8) unless $HAS_SQLITE;
+
+	require DBI;
+
+	{
+		package Database::exttest_sq;
+		use parent 'Database::Abstraction';
+	}
+
+	# EX22 — .sqlite extension
+	subtest 'EX22: .sqlite extension detected and opened as SQLite' => sub {
+		plan tests => 3;
+
+		my $dir22 = tempdir(CLEANUP => 1);
+		my $f22   = File::Spec->catfile($dir22, 'exttest_sq.sqlite');
+		{
+			my $dbh = DBI->connect("dbi:SQLite:dbname=$f22", undef, undef, { RaiseError => 1 });
+			$dbh->do(q{CREATE TABLE exttest_sq (entry TEXT PRIMARY KEY, val TEXT)});
+			$dbh->do(q{INSERT INTO exttest_sq VALUES ('a', 'alpha')});
+			$dbh->do(q{INSERT INTO exttest_sq VALUES ('b', 'beta')});
+			$dbh->disconnect();
+		}
+
+		my $db22;
+		lives_ok { $db22 = Database::exttest_sq->new(directory => $dir22) }
+			'EX22: new() lives with .sqlite file present';
+		cmp_ok($db22->count(), '==', 2, 'EX22: count() returns 2 from .sqlite file');
+		is($db22->{'type'}, 'DBI', 'EX22: type is DBI for .sqlite backend');
+	};
+
+	# EX23 — .sqlite3 extension
+	subtest 'EX23: .sqlite3 extension detected and opened as SQLite' => sub {
+		plan tests => 3;
+
+		my $dir23 = tempdir(CLEANUP => 1);
+		my $f23   = File::Spec->catfile($dir23, 'exttest_sq.sqlite3');
+		{
+			my $dbh = DBI->connect("dbi:SQLite:dbname=$f23", undef, undef, { RaiseError => 1 });
+			$dbh->do(q{CREATE TABLE exttest_sq (entry TEXT PRIMARY KEY, val TEXT)});
+			$dbh->do(q{INSERT INTO exttest_sq VALUES ('x', 'xi')});
+			$dbh->do(q{INSERT INTO exttest_sq VALUES ('y', 'psi')});
+			$dbh->do(q{INSERT INTO exttest_sq VALUES ('z', 'omega')});
+			$dbh->disconnect();
+		}
+
+		my $db23;
+		lives_ok { $db23 = Database::exttest_sq->new(directory => $dir23) }
+			'EX23: new() lives with .sqlite3 file present';
+		cmp_ok($db23->count(), '==', 3, 'EX23: count() returns 3 from .sqlite3 file');
+		is($db23->{'type'}, 'DBI', 'EX23: type is DBI for .sqlite3 backend');
+	};
+}
+
 done_testing();
 
