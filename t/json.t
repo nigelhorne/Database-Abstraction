@@ -6,13 +6,9 @@ use FindBin qw($Bin);
 
 use lib 't/lib';
 use Test::Most;
+use Test::Needs 'JSON::MaybeXS';
 
-eval { require JSON::MaybeXS };
-if($@) {
-	plan skip_all => 'JSON::MaybeXS not available';
-} else {
-	plan tests => 8;
-}
+plan tests => 9;
 
 use Database::test_json;
 
@@ -27,10 +23,13 @@ cmp_ok($res->{'entry'}, 'eq', 'first', 'fetchrow_hashref entry column');
 cmp_ok($res->{'number'}, 'eq', '1st', 'fetchrow_hashref number column');
 
 my @rc = $db->entry(unique => 1);
-cmp_ok(scalar(@rc), '==', 3, 'distinct entry values returns 3');
+cmp_ok(scalar(@rc), '==', 4, 'distinct entry values returns 4');
 
 @rc = $db->entry();
-cmp_ok(scalar(@rc), '==', 3, 'all entry values returns 3');
+cmp_ok(scalar(@rc), '==', 4, 'all entry values returns 4');
 
 @rc = $db->selectall_hash();
-cmp_ok(scalar(@rc), '==', 3, 'selectall_hash returns all 3 rows');
+cmp_ok(scalar(@rc), '==', 4, 'selectall_hash returns all 4 rows');
+
+my @perls = $db->perl('5.42.3');
+cmp_ok(scalar(@perls), '>=', 1, 'perl() AUTOLOAD returns at least one entry for version 5.42.3');

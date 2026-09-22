@@ -47,6 +47,7 @@ t/init.t
 t/integration.t
 t/join.t
 t/json.t
+t/json_url.t
 t/lib/Database/passwd.pm
 t/lib/Database/test1.pm
 t/lib/Database/test2.pm
@@ -58,6 +59,7 @@ t/lib/Database/test6.pm
 t/lib/Database/test7.pm
 t/lib/Database/test8.pm
 t/lib/Database/test_json.pm
+t/lib/Database/test_json_url.pm
 t/lib/Database/test_tsv.pm
 t/lib/MyLogger.pm
 t/locales.t

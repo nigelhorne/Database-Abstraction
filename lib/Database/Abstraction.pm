@@ -19,6 +19,7 @@ package Database::Abstraction;
 # TODO:	Other databases e.g., Redis, noSQL, remote databases such as MySQL, PostgreSQL
 # TODO: The no_entry/entry terminology is confusing.  Replace with no_id/id_column
 # TODO: Log queries and the time that they took to execute per database
+# TODO: Add DBD::JSON if one is ever written
 
 use warnings;
 use strict;
@@ -323,9 +324,9 @@ Binary key-value file ending C<.db>.
 
 =item 10. C<HTML>
 
-Remote HTML page fetched via a URL.  Pass C<url> instead of C<directory>; the
-module fetches the page with L<LWP::UserAgent>, parses all C<< <table> >>
-elements with L<HTML::TableExtract>, and slurps the first (or
+HTML page fetched via a C<url>.  Pass C<url => 'https://...'> instead of
+C<directory>; the module fetches the page with L<LWP::UserAgent>, parses all
+C<< <table> >> elements with L<HTML::TableExtract>, and slurps the first (or
 C<html_table_index>-selected) table into memory.  The first row of the table
 is treated as column headers.  Both modules are loaded lazily and are not
 required for other backends.
@@ -333,7 +334,21 @@ required for other backends.
 =back
 
 Pass C<dsn> to bypass file detection entirely and connect via any DBI driver.
-Pass C<url> to fetch and slurp a remote HTML table without a local directory.
+Pass C<url> to fetch and slurp data from a remote source without a local
+directory.  When the URL returns C<Content-Type: application/json> or the URL
+path ends in C<.json>, the response is parsed as JSON (see item 8 above).
+Otherwise the response is parsed as an HTML page (item 10).
+
+Example - fetching CPAN Testers results:
+
+    package Database::cpantesters;
+    use parent 'Database::Abstraction';
+
+    my $db = Database::cpantesters->new(
+        url      => 'https://www.cpantesters.org/show/Database-Abstraction.json',
+        no_entry => 1,
+    );
+    my $passes = $db->selectall_arrayref(grade => 'PASS');
 
 =head1 QUERY CRITERIA
 
@@ -808,11 +823,11 @@ sub _open :Protected
 		return $self;
 	}
 
-	# URL-based HTML table backend — lazy-loads LWP::UserAgent and HTML::TableExtract.
-	# Both modules are optional; they are not required for file-based backends.
+	# URL-based backend — handles both JSON and HTML table responses.
+	# LWP::UserAgent::Cached is always required; JSON::MaybeXS and
+	# HTML::TableExtract are loaded lazily based on the response Content-Type.
 	if(my $url = $self->{'url'} || $defaults{'url'}) {
 		require LWP::UserAgent::Cached;
-		require HTML::TableExtract;
 
 		my $ua = $self->{ua} // LWP::UserAgent::Cached->new(timeout => 30, agent => __PACKAGE__ . '/' . $VERSION);
 		$ua->env_proxy(1);
@@ -820,44 +835,78 @@ sub _open :Protected
 		Carp::croak(ref($self), ": cannot fetch '$url': ", $response->status_line)
 			unless $response->is_success;
 
-		my $te = HTML::TableExtract->new();
-		$te->parse($response->decoded_content);
-
-		my $tidx = $self->{'html_table_index'} // $defaults{'html_table_index'} // 0;
-		my @tables = $te->tables;
-		Carp::croak(ref($self), ": no HTML tables found at '$url'")
-			unless @tables;
-		Carp::croak(ref($self), ": html_table_index $tidx out of range (", scalar @tables, " tables) at '$url'")
-			if $tidx >= @tables;
-
-		my @rows = $tables[$tidx]->rows;
-		Carp::croak(ref($self), ": empty HTML table at '$url'")
-			unless @rows;
-
-		my @headers = map { defined($_) ? "$_" : '' } @{$rows[0]};
-		my $id = $self->{'id'};
-
-		if($self->{'no_entry'}) {
+		my $content_type = $response->content_type() // '';
+		if($content_type =~ m{\bapplication/json\b}i || $url =~ /\.json(?:[?#]|\z)/i) {
+			# JSON URL backend — lazy-loads JSON::MaybeXS.
+			# Detects by Content-Type: application/json or a .json URL suffix.
+			require JSON::MaybeXS;
+			my $parsed = JSON::MaybeXS::decode_json($response->decoded_content);
 			my @data;
-			for my $i (1 .. $#rows) {
-				my %row;
-				@row{@headers} = map { defined($_) ? "$_" : undef } @{$rows[$i]};
-				push @data, \%row;
+			if(ref($parsed) eq 'ARRAY') {
+				@data = @{$parsed};
+			} elsif(ref($parsed) eq 'HASH') {
+				# Object keyed by primary-key value — inject id column into each row
+				my $id_col = $self->{'id'};
+				for my $k (sort keys %{$parsed}) {
+					my $row = $parsed->{$k};
+					if(ref($row) eq 'HASH') {
+						push @data, { $id_col => $k, %{$row} };
+					} else {
+						push @data, { $id_col => $k, value => $row };
+					}
+				}
+			} else {
+				Carp::croak(ref($self), ": JSON URL: unexpected top-level structure from '$url'");
 			}
-			$self->{'data'} = \@data;
+			if($self->{'no_entry'}) {
+				$self->{'data'} = @data ? \@data : undef;
+			} else {
+				$self->{'data'} = { map { $_->{$self->{'id'}} => $_ } @data };
+			}
+			$self->{'type'} = 'JSON';
 		} else {
-			my %data;
-			for my $i (1 .. $#rows) {
-				my %row;
-				@row{@headers} = map { defined($_) ? "$_" : undef } @{$rows[$i]};
-				my $key = $row{$id};
-				next unless defined $key;
-				$data{$key} = \%row;
+			# HTML table backend — lazy-loads HTML::TableExtract.
+			require HTML::TableExtract;
+
+			my $te = HTML::TableExtract->new();
+			$te->parse($response->decoded_content);
+
+			my $tidx = $self->{'html_table_index'} // $defaults{'html_table_index'} // 0;
+			my @tables = $te->tables;
+			Carp::croak(ref($self), ": no HTML tables found at '$url'")
+				unless @tables;
+			Carp::croak(ref($self), ": html_table_index $tidx out of range (", scalar @tables, " tables) at '$url'")
+				if $tidx >= @tables;
+
+			my @rows = $tables[$tidx]->rows;
+			Carp::croak(ref($self), ": empty HTML table at '$url'")
+				unless @rows;
+
+			my @headers = map { defined($_) ? "$_" : '' } @{$rows[0]};
+			my $id = $self->{'id'};
+
+			if($self->{'no_entry'}) {
+				my @data;
+				for my $i (1 .. $#rows) {
+					my %row;
+					@row{@headers} = map { defined($_) ? "$_" : undef } @{$rows[$i]};
+					push @data, \%row;
+				}
+				$self->{'data'} = \@data;
+			} else {
+				my %data;
+				for my $i (1 .. $#rows) {
+					my %row;
+					@row{@headers} = map { defined($_) ? "$_" : undef } @{$rows[$i]};
+					my $key = $row{$id};
+					next unless defined $key;
+					$data{$key} = \%row;
+				}
+				$self->{'data'} = \%data;
 			}
-			$self->{'data'} = \%data;
+			$self->{'type'} = 'HTML';
 		}
 
-		$self->{'type'} = 'HTML';
 		$self->{'_updated'} = time();
 		$self->_fixate($self->{'data'}) if $self->{'data'} && ref($self->{'data'}) eq 'HASH';
 		$self->{$table} = undef;	# No DBI handle; all queries use the in-memory data path
@@ -1392,6 +1441,16 @@ sub selectall_arrayref {
 				all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params->{$_}) } @param_keys
 			} values %{$self->{'data'}};
 			return set_return(\@rc, { type => 'arrayref' });
+		} elsif(ref($self->{'data'}) eq 'ARRAY' && !$self->{$table}) {
+			# In-memory scan for array-backed no_entry stores (JSON, XLSX, HTML URL)
+			# where there is no DBI handle.  Mirrors the equivalent path in count().
+			$self->_debug("$table: selectall_arrayref in-memory array scan with criteria");
+			my @param_keys = keys %{$params};
+			my @rc = grep {
+				my $row = $_;
+				all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params->{$_}) } @param_keys
+			} @{$self->{'data'}};
+			return set_return(\@rc, { type => 'arrayref' });
 		}
 	}
 
@@ -1532,6 +1591,15 @@ sub selectall_array
 				all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params->{$_}) } @param_keys
 			} values %{$self->{'data'}};
 			return @rc;
+		} elsif(ref($self->{'data'}) eq 'ARRAY' && !$self->{$table}) {
+			# In-memory scan for array-backed no_entry stores (JSON, XLSX, HTML URL)
+			# where there is no DBI handle.  Mirrors the equivalent path in count().
+			$self->_debug("$table: selectall_array in-memory array scan with criteria");
+			my @param_keys = keys %{$params};
+			return grep {
+				my $row = $_;
+				all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params->{$_}) } @param_keys
+			} @{$self->{'data'}};
 		}
 	}
 
@@ -2247,6 +2315,16 @@ sub AUTOLOAD {
 			# Handle both HASH (keyed data) and ARRAY (no_entry CSV slurp).
 			my @_rows = ref($data) eq 'ARRAY' ? @{$data} : values %{$data};
 			return map { exists($_->{$column}) ? $_->{$column} : undef } @_rows;
+		}
+		if($self->{'data'} && !$self->{$table} && !$self->_has_complex_criteria(\%params)) {
+			# Non-DBI backends (JSON, XLSX, HTML URL): scan in-memory data with criteria.
+			my @param_keys = keys %params;
+			my @_rows = ref($self->{'data'}) eq 'ARRAY' ? @{$self->{'data'}} : values %{$self->{'data'}};
+			return map { exists($_->{$column}) ? $_->{$column} : undef }
+			       grep {
+			           my $row = $_;
+			           all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params{$_}) } @param_keys
+			       } @_rows;
 		}
 		my $id = $self->{'id'};
 		if(($self->{'type'} eq 'CSV') && !$self->{'no_entry'}) {

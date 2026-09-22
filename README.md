@@ -240,15 +240,31 @@ The module probes the `directory` for files in this priority order:
 
 - 10. `HTML`
 
-    Remote HTML page fetched via a URL.  Pass `url` instead of `directory`; the
-    module fetches the page with [LWP::UserAgent](https://metacpan.org/pod/LWP%3A%3AUserAgent), parses all `<table>`
-    elements with [HTML::TableExtract](https://metacpan.org/pod/HTML%3A%3ATableExtract), and slurps the first (or
+    HTML page fetched via a `url`.  Pass `url =` 'https://...'> instead of
+    `directory`; the module fetches the page with [LWP::UserAgent](https://metacpan.org/pod/LWP%3A%3AUserAgent), parses all
+    `<table>` elements with [HTML::TableExtract](https://metacpan.org/pod/HTML%3A%3ATableExtract), and slurps the first (or
     `html_table_index`-selected) table into memory.  The first row of the table
     is treated as column headers.  Both modules are loaded lazily and are not
     required for other backends.
 
 Pass `dsn` to bypass file detection entirely and connect via any DBI driver.
-Pass `url` to fetch and slurp a remote HTML table without a local directory.
+Pass `url` to fetch and slurp data from a remote source without a local
+directory.  When the URL returns `Content-Type: application/json` or the URL
+path ends in `.json`, the response is parsed as JSON (see item 8 above).
+Otherwise the response is parsed as an HTML page (item 10).
+
+Example - fetching CPAN Testers results:
+
+```perl
+package Database::cpantesters;
+use parent 'Database::Abstraction';
+
+my $db = Database::cpantesters->new(
+    url      => 'https://www.cpantesters.org/show/Crypt-SelfCertificate.json',
+    no_entry => 1,
+);
+my $passes = $db->selectall_arrayref(grade => 'PASS');
+```
 
 ## Query Criteria
 
