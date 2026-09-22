@@ -823,5 +823,37 @@ SKIP: {
 	};
 }
 
+# ---------------------------------------------------------------------------
+# EX24 — .json extension detected and slurped via JSON::MaybeXS
+# ---------------------------------------------------------------------------
+
+SKIP: {
+	skip('JSON::MaybeXS not available', 4) unless eval { require JSON::MaybeXS; 1 };
+
+	{
+		package Database::exttest_json;
+		use parent 'Database::Abstraction';
+	}
+
+	subtest 'EX24: .json file detected and slurped correctly' => sub {
+		plan tests => 4;
+
+		my $json_content = '[{"entry":"uno","number":1},{"entry":"dos","number":2}]';
+		my $tmpdir = tempdir(CLEANUP => 1);
+		my $json_file = File::Spec->catfile($tmpdir, 'exttest_json.json');
+		open(my $fh, '>', $json_file) or die "cannot write $json_file: $!";
+		print $fh $json_content;
+		close $fh;
+
+		my $db;
+		lives_ok { $db = Database::exttest_json->new(directory => $tmpdir) }
+			'EX24: new() lives with .json file present';
+		cmp_ok($db->count(), '==', 2, 'EX24: count() returns 2 rows from JSON');
+		is($db->fetchrow_hashref(entry => 'uno')->{'number'}, 1,
+			'EX24: fetchrow_hashref returns correct value from JSON');
+		is($db->{'type'}, 'JSON', 'EX24: type is JSON for .json backend');
+	};
+}
+
 done_testing();
 

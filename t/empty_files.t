@@ -39,10 +39,15 @@ package Database::ef_tsv;
 use parent 'Database::Abstraction';
 1;
 
+package Database::ef_json;
+use parent 'Database::Abstraction';
+1;
+
 package main;
 
 my $HAS_XML  = eval { require XML::Simple; 1 };
 my $HAS_GZIP = eval { require Gzip::Faster; Gzip::Faster->import(); 1 };
+my $HAS_JSON = eval { require JSON::MaybeXS; 1 };
 
 # ---------------------------------------------------------------------------
 # Helper: assert that all query methods return empty/0/undef (no matches).
@@ -253,6 +258,40 @@ subtest 'EF10: TSV newline-only file — no crashes, no data' => sub {
 	lives_ok { $db = Database::ef_tsv->new(directory => $tmpdir) }
 		'EF10: new() lives on newline-only TSV';
 	_assert_no_data($db, 'EF10');
+};
+
+# ---------------------------------------------------------------------------
+# EF11 — JSON, empty file (0 bytes)
+# ---------------------------------------------------------------------------
+
+subtest 'EF11: JSON empty file — no crashes, no data' => sub {
+	SKIP: {
+		skip 'JSON::MaybeXS not available', 9 unless $HAS_JSON;
+		plan tests => 9;
+
+		my $tmpdir = _tmpdir_with('ef_json.json', '');
+		my $db;
+		lives_ok { $db = Database::ef_json->new(directory => $tmpdir) }
+			'EF11: new() lives on zero-byte JSON';
+		_assert_no_data($db, 'EF11');
+	}
+};
+
+# ---------------------------------------------------------------------------
+# EF12 — JSON, newline-only file (1 byte: "\n")
+# ---------------------------------------------------------------------------
+
+subtest 'EF12: JSON newline-only file — no crashes, no data' => sub {
+	SKIP: {
+		skip 'JSON::MaybeXS not available', 9 unless $HAS_JSON;
+		plan tests => 9;
+
+		my $tmpdir = _tmpdir_with('ef_json.json', "\n");
+		my $db;
+		lives_ok { $db = Database::ef_json->new(directory => $tmpdir) }
+			'EF12: new() lives on newline-only JSON';
+		_assert_no_data($db, 'EF12');
+	}
 };
 
 done_testing();

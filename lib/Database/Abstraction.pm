@@ -64,18 +64,18 @@ Database::Abstraction - Read-only Database Abstraction Layer (ORM)
 
 =head1 VERSION
 
-Version 0.44
+Version 0.45
 
 =cut
 
-our $VERSION = '0.44';
+our $VERSION = '0.45';
 
 =head1 DESCRIPTION
 
 C<Database::Abstraction> is a read-only ORM for Perl that gives a uniform
-interface over CSV, PSV, XML, SQLite, DBM::Deep, BerkeleyDB, and Excel (XLSX)
-files - local, remote (via SSH), or fetched from a URL - without writing any
-SQL.
+interface over CSV, PSV, TSV, JSON, XML, SQLite, DBM::Deep, BerkeleyDB, and
+Excel (XLS/XLSX) files - local, remote (via SSH), or fetched from a URL -
+without writing any SQL.
 Effectively it allows you to access a database table, of many different
 database formats, as an object.
 
@@ -133,7 +133,7 @@ A CHI-compatible cache layer is also supported.
     use parent 'Database::Abstraction';
 
     # 2. Open the database - file is auto-detected from the class name
-    #    (looks for foo.sql / foo.sqlite / foo.sqlite3 / foo.psv / foo.csv / foo.xlsx / foo.xml / foo.db)
+    #    (looks for foo.sql / foo.sqlite / foo.sqlite3 / foo.psv / foo.tsv / foo.csv / foo.xlsx / foo.xml / foo.json / foo.db)
     my $db = Database::Foo->new(directory => '/path/to/data');
 
     # 3. Simple lookups -----------------------------------------------
@@ -238,7 +238,8 @@ The module probes the C<directory> for files in this priority order:
 
 =item 1. C<SQLite>
 
-File ending C<.sql>, C<.sqlite>, or C<.sqlite3>
+File ending C<.sql>, C<.sqlite>, or C<.sqlite3>.
+Requires L<DBD::SQLite>.
 
 =item 2. C<Deep>
 
@@ -248,20 +249,21 @@ Requires L<DBM::Deep> (loaded lazily).
 
 =item 3. C<PSV>
 
-Pipe-separated file, ending C<.psv>
+Pipe-separated file, ending C<.psv>.
 
 =item 4. C<TSV>
 
-Tab-separated file, ending C<.tsv>
+Tab-separated file, ending C<.tsv>.
 
 =item 5. C<CSV>
 
 Comma (or custom) separated file, ending C<.csv> or C<.db>; can be
-gzipped.
+gzipped (C<.csv.gz> or C<.db.gz>).
 B<Note:> the default separator is C<!> not C<,> for historical
 reasons - pass C<< sep_char => ',' >> for standard CSVs.
+Requires L<Text::xSV::Slurp> for the slurp fast-path (loaded lazily).
 
-=item 5. C<Excel> (C<.xls>) and C<XLSX> (C<.xlsx>)
+=item 6. C<Excel> (C<.xls>) and C<XLSX> (C<.xlsx>)
 
 Two separate Excel backends - one per file format:
 
@@ -283,15 +285,43 @@ For both formats, each worksheet is a separate logical table; the active
 worksheet is determined by the class-derived table name (or the C<table>
 constructor parameter).  Both modules are loaded lazily.
 
-=item 6. C<XML>
+=item 7. C<XML>
 
-File ending C<.xml>
+File ending C<.xml>.
+Requires L<XML::Simple> for the slurp fast-path (loaded lazily).
 
-=item 7. C<BerkeleyDB>
+=item 8. C<JSON>
 
-Binary key-value file ending C<.db>
+File ending C<.json>, slurped into memory via L<JSON::MaybeXS> (loaded
+lazily).
 
-=item 8. C<HTML>
+The file may contain either a JSON array of row objects:
+
+    [
+      { "entry": "key1", "col": "val1" },
+      { "entry": "key2", "col": "val2" }
+    ]
+
+or a JSON object whose keys are the primary-key values:
+
+    {
+      "key1": { "col": "val1" },
+      "key2": { "col": "val2" }
+    }
+
+In the object form, each key is injected into its row hash under the C<id>
+column name (default C<entry>), so all normal lookups work identically to
+the array form.
+
+A zero-byte or whitespace-only file is treated as empty - all query methods
+return 0 / C<undef> / C<[]> without throwing.
+Requires L<JSON::MaybeXS> (loaded lazily).
+
+=item 9. C<BerkeleyDB>
+
+Binary key-value file ending C<.db>.
+
+=item 10. C<HTML>
 
 Remote HTML page fetched via a URL.  Pass C<url> instead of C<directory>; the
 module fetches the page with L<LWP::UserAgent>, parses all C<< <table> >>
@@ -859,7 +889,7 @@ sub _open :Protected
 			my $tmpdir_obj = File::Temp->newdir(CLEANUP => 1);
 			$self->{'_remote_tmpdir'} = $tmpdir_obj;	# auto-cleans on DESTROY
 			my $tmpdir = $tmpdir_obj->dirname();
-			for my $ext (qw(sql sqlite sqlite3 dbm deep db csv.gz db.gz psv tsv xls xlsx csv xml)) {
+			for my $ext (qw(sql sqlite sqlite3 dbm deep db csv.gz db.gz psv tsv xls xlsx csv xml json)) {
 				my $remote_file = "$remote_dir/$dbname.$ext";
 				my $content = eval { scalar File::Slurp::Remote::read_remote_file($host, $remote_file) };
 				next unless defined($content) && length($content);
@@ -1199,10 +1229,55 @@ sub _open :Protected
 						$dbh->func($table, 'XML', $slurp_file, 'xmlsimple_import');
 					}
 				} else {
+					my $json_file = File::Spec->catfile($dir, "$dbname.json");
+					if(-r $json_file) {
+						if((-s $json_file) == 0) {
+							$self->{'data'} = $self->{'no_entry'} ? undef : {};
+						} else {
+							require JSON::MaybeXS;
+
+							open(my $jfh, '<', $json_file);
+							local $/;
+							my $raw = <$jfh>;
+							close $jfh;
+							if(!defined($raw) || $raw =~ /\A\s*\z/) {
+								# Whitespace-only — treat as empty, same as zero-byte
+								$self->{'data'} = $self->{'no_entry'} ? undef : {};
+							} else {
+								my $parsed = JSON::MaybeXS::decode_json($raw);
+								my @data;
+								if(ref($parsed) eq 'ARRAY') {
+									@data = @{$parsed};
+								} elsif(ref($parsed) eq 'HASH') {
+									# Hash of id => row — inject id column into each row
+									my $id_col = $self->{'id'};
+									for my $k (sort keys %{$parsed}) {
+										my $row = $parsed->{$k};
+										if(ref($row) eq 'HASH') {
+											push @data, { $id_col => $k, %{$row} };
+										} else {
+											push @data, { $id_col => $k, value => $row };
+										}
+									}
+								} else {
+									Carp::croak(ref($self), ": JSON slurp: unexpected top-level structure in $json_file");
+								}
+								if($self->{'no_entry'}) {
+									$self->{'data'} = @data ? \@data : undef;
+								} else {
+									$self->{'data'} = { map { $_->{$self->{'id'}} => $_ } @data };
+								}
+							}
+						}
+						$slurp_file = $json_file;
+						$self->_debug("read in $table from JSON $json_file");
+						$self->{'type'} = 'JSON';
+					} else {
 					# throw Error(-file => "$dir/$table");
 					$self->_fatal("Can't find a file called '$dbname' for the table $table in $dir");
+					}
 				}
-				$self->{'type'} = 'XML';
+				$self->{'type'} //= 'XML';
 			}
 		}	# end: xlsx else (xml path)
 		}	# end: xls else
@@ -3062,6 +3137,8 @@ same criteria has already populated it.
 =item * L<Database::Abstraction::Query> - chained query builder
 
 =item * L<Configure an Object at Runtime|Object::Configure>
+
+=item * L<JSON::MaybeXS> - JSON backend (optional; install for C<.json> support)
 
 =item * L<Test Dashboard|https://nigelhorne.github.io/Database-Abstraction/coverage/>
 
