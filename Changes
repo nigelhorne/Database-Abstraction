@@ -1,13 +1,6 @@
 Revision history for Database-Abstraction
 
-0.45
-	[ Bug Fixes ]
-	- AUTOLOAD: calling $db->col('val') in list context (wantarray) with a
-	  non-empty params hash on no-DBI backends (JSON, XLSX, HTML URL) fell
-	  through to the SQL path and died with "Can't call method prepare_cached
-	  on an undefined value".  Added an in-memory scan path for the
-	  wantarray+criteria case, mirroring the zero-params fast-path already
-	  present in the same branch.
+0.45	Tue Sep 22 04:56:49 PM EDT 2026
 	[ Enhancements ]
 	- JSON URL backend: when the url constructor parameter is used and the server
 	  returns Content-Type: application/json, or the URL path ends in .json, the
@@ -34,6 +27,13 @@ Revision history for Database-Abstraction
 	  in-memory fast-path.  JSON::MaybeXS added to META_MERGE recommends.
 	  Remote-host probe list updated to include .json.
 	- LWP::UserAgent::Cached added to META_MERGE recommends (URL backend).
+	[ Bug Fixes ]
+	- AUTOLOAD: calling $db->col('val') in list context (wantarray) with a
+	  non-empty params hash on no-DBI backends (JSON, XLSX, HTML URL) fell
+	  through to the SQL path and died with "Can't call method prepare_cached
+	  on an undefined value".  Added an in-memory scan path for the
+	  wantarray+criteria case, mirroring the zero-params fast-path already
+	  present in the same branch.
 	[ Tests ]
 	- t/json_url.t (new): 22 tests covering JSON URL detection by Content-Type
 	  and by .json URL suffix, array-form and object-form JSON, no_entry mode

@@ -19,7 +19,7 @@ package Database::Abstraction;
 # TODO:	Other databases e.g., Redis, noSQL, remote databases such as MySQL, PostgreSQL
 # TODO: The no_entry/entry terminology is confusing.  Replace with no_id/id_column
 # TODO: Log queries and the time that they took to execute per database
-# TODO: Add DBD::JSON if one is ever written
+# TODO: Use DBD::JSON if one is ever written
 
 use warnings;
 use strict;
