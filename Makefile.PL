@@ -107,6 +107,7 @@ WriteMakefile(
 			'File::Slurp::Remote' => 0,	# remote host backend (SSH/SCP)
 			'Gzip::Faster' => 0,		# gzip CSV backend
 			'JSON::MaybeXS' => 0,		# JSON backend
+			'LWP::UserAgent::Cached' => 0,	# URL backend (HTML and JSON)
 			'Spreadsheet::ParseXLSX' => 0,	# .xlsx (OOXML Excel) backend
 			'Text::xSV::Slurp' => 0,	# CSV/PSV slurp backend
 			'XML::Simple' => 0,		# XML backend

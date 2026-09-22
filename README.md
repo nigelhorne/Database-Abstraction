@@ -241,7 +241,7 @@ The module probes the `directory` for files in this priority order:
 - 10. `HTML`
 
     HTML page fetched via a `url`.  Pass `url =` 'https://...'> instead of
-    `directory`; the module fetches the page with [LWP::UserAgent](https://metacpan.org/pod/LWP%3A%3AUserAgent), parses all
+    `directory`; the module fetches the page with [LWP::UserAgent::Cached](https://metacpan.org/pod/LWP%3A%3AUserAgent%3A%3ACached), parses all
     `<table>` elements with [HTML::TableExtract](https://metacpan.org/pod/HTML%3A%3ATableExtract), and slurps the first (or
     `html_table_index`-selected) table into memory.  The first row of the table
     is treated as column headers.  Both modules are loaded lazily and are not
@@ -260,7 +260,7 @@ package Database::cpantesters;
 use parent 'Database::Abstraction';
 
 my $db = Database::cpantesters->new(
-    url      => 'https://www.cpantesters.org/show/Crypt-SelfCertificate.json',
+    url      => 'https://www.cpantesters.org/show/Database-Abstraction.json',
     no_entry => 1,
 );
 my $passes = $db->selectall_arrayref(grade => 'PASS');
@@ -455,7 +455,7 @@ string which is taken to be `directory`.
     A URL (`http://` or `https://`) pointing to an HTML page that contains one
     or more `<table>` elements.  When present, `directory` is not required.
     The first row of the selected table is used as column headers.
-    Requires [LWP::UserAgent](https://metacpan.org/pod/LWP%3A%3AUserAgent) and [HTML::TableExtract](https://metacpan.org/pod/HTML%3A%3ATableExtract) (both loaded lazily).
+    Requires [LWP::UserAgent::Cached](https://metacpan.org/pod/LWP%3A%3AUserAgent%3A%3ACached) and [HTML::TableExtract](https://metacpan.org/pod/HTML%3A%3ATableExtract) (both loaded lazily).
 
 #### Behaviour Parameters
 

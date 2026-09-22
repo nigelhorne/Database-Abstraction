@@ -1,6 +1,13 @@
 Revision history for Database-Abstraction
 
 0.45
+	[ Bug Fixes ]
+	- AUTOLOAD: calling $db->col('val') in list context (wantarray) with a
+	  non-empty params hash on no-DBI backends (JSON, XLSX, HTML URL) fell
+	  through to the SQL path and died with "Can't call method prepare_cached
+	  on an undefined value".  Added an in-memory scan path for the
+	  wantarray+criteria case, mirroring the zero-params fast-path already
+	  present in the same branch.
 	[ Enhancements ]
 	- JSON URL backend: when the url constructor parameter is used and the server
 	  returns Content-Type: application/json, or the URL path ends in .json, the
@@ -26,14 +33,16 @@ Revision history for Database-Abstraction
 	  type is set to 'JSON'; no DBI handle is created; all queries use the
 	  in-memory fast-path.  JSON::MaybeXS added to META_MERGE recommends.
 	  Remote-host probe list updated to include .json.
+	- LWP::UserAgent::Cached added to META_MERGE recommends (URL backend).
 	[ Tests ]
 	- t/json_url.t (new): 22 tests covering JSON URL detection by Content-Type
 	  and by .json URL suffix, array-form and object-form JSON, no_entry mode
 	  with criteria filtering (CPAN Testers example), AUTOLOAD column lookup,
 	  HTTP failure croak, and fetch-once per object guard.
-	- t/json.t (new): 8 tests mirroring t/tsv.t — AUTOLOAD, fetchrow_hashref,
-	  distinct/all entry values, selectall_hash; skipped when JSON::MaybeXS
-	  is absent.
+	- t/json.t (new): 9 tests — AUTOLOAD scalar and list-context lookups,
+	  fetchrow_hashref, distinct/all entry values, selectall_hash, and
+	  perl-version column lookup via AUTOLOAD wantarray path; skipped when
+	  JSON::MaybeXS is absent.
 	- t/empty_files.t: EF11 (zero-byte .json) and EF12 (whitespace-only .json),
 	  each 9 assertions; skipped when JSON::MaybeXS is absent.
 	- t/extended_tests.t: EX24 — array-format .json detection, count()==2,
@@ -44,6 +53,7 @@ Revision history for Database-Abstraction
 	  Dependency notes added to each backend entry.
 	- DESCRIPTION: JSON added to the format list.
 	- SEE ALSO: JSON::MaybeXS entry added.
+	- POD: LWP::UserAgent references corrected to LWP::UserAgent::Cached.
 
 0.44	Sat Sep 19 09:28:17 PM EDT 2026
 	[ Enhancements ]

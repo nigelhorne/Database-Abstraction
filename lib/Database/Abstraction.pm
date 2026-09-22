@@ -325,7 +325,7 @@ Binary key-value file ending C<.db>.
 =item 10. C<HTML>
 
 HTML page fetched via a C<url>.  Pass C<url => 'https://...'> instead of
-C<directory>; the module fetches the page with L<LWP::UserAgent>, parses all
+C<directory>; the module fetches the page with L<LWP::UserAgent::Cached>, parses all
 C<< <table> >> elements with L<HTML::TableExtract>, and slurps the first (or
 C<html_table_index>-selected) table into memory.  The first row of the table
 is treated as column headers.  Both modules are loaded lazily and are not
@@ -551,7 +551,7 @@ installed; it is loaded lazily (only when C<host> is given).
 A URL (C<http://> or C<https://>) pointing to an HTML page that contains one
 or more C<< <table> >> elements.  When present, C<directory> is not required.
 The first row of the selected table is used as column headers.
-Requires L<LWP::UserAgent> and L<HTML::TableExtract> (both loaded lazily).
+Requires L<LWP::UserAgent::Cached> and L<HTML::TableExtract> (both loaded lazily).
 
 =back
 
