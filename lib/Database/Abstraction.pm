@@ -21,6 +21,121 @@ package Database::Abstraction;
 # TODO: Log queries and the time that they took to execute per database
 # TODO: Use DBD::JSON if one is ever written
 
+# ---------------------------------------------------------------------------
+# KNOWN GAPS & ROADMAP (gap-analysis 2026-09-24, derived from analogous work
+# in Database::Join 0.006.1)
+#
+# The items below are enhancements that Database::Join needed from its DA
+# components but could not rely on because DA does not yet provide them.
+# Implementing them here would let callers (including Database::Join) delegate
+# the work to DA rather than re-implementing it above the abstraction layer.
+#
+# POST-RELEASE ROADMAP
+#
+# TODO: dbi_source() method for SQLite/DBI-backed instances
+#   Database::Join performs zero-copy ATTACH for sources that implement
+#   dbi_source(), returning {dbh => $sqlite_dbh, table => $name}.  Currently
+#   callers must subclass DA and add this themselves.  A default implementation
+#   in DA should return {dbh => $self->{$table}, table => $table_name} when the
+#   backend is SQLite, and undef for slurp-only backends.  This would enable
+#   Database::Join to ATTACH any SQLite-backed DA without routing rows through
+#   Perl, and would let nested Database::Join objects expose themselves as
+#   attachable sources to parent joins.
+#
+# TODO: limit => N / offset => M on selectall_arrayref and selectall_array
+#   The chained query builder (query()->limit(N)->offset(M)) already supports
+#   pagination, but the direct method forms do not.  Adding limit/offset to
+#   selectall_arrayref and selectall_array would:
+#   - SQL path: append LIMIT ? OFFSET ? as bind parameters (injection-safe).
+#   - Slurp path: splice() the ordered result after in-memory filtering.
+#   - offset without limit: LIMIT -1 OFFSET ? on SQLite (all rows from M).
+#   - Invalid values: carp and ignore, consistent with Database::Join behaviour.
+#   Mirroring this in DA means Database::Join's array path can delegate
+#   pagination to each DA instead of doing its own splice on the merged result.
+#
+# TODO: order_by parameter on selectall_arrayref and selectall_array
+#   selectall_arrayref currently always appends ORDER BY $id (the primary-key
+#   column) on DBI backends, with no way to request a different sort column or
+#   direction without using the query builder.  Adding order_by => 'col' (ASC)
+#   and order_by => ['col', 'DESC'] would give callers ad-hoc control.
+#   - SQL path: validated column name appended as ORDER BY col [DESC].
+#   - Slurp path: sort the result array by the named column (string cmp).
+#   - Unknown column or invalid direction: carp and fall back to id-column sort.
+#   Database::Join already implements this for merged results; DA doing it
+#   natively would remove the duplicate logic.
+#
+# TODO: Heuristic type inference in slurp mode
+#   schema() currently reports every slurp-mode column (CSV, JSON, XLSX, XML,
+#   HTML, DBM::Deep) as type TEXT because the data arrives as plain strings.
+#   Scanning the first N rows (e.g. N=100) to detect columns whose values are
+#   all integers (INTEGER), all floating-point (REAL), or all ISO-8601 dates
+#   (DATE/TIMESTAMP) would make schema() useful for type-aware consumers.
+#   In particular, Database::Join::_validate_schema_types() compares schema()
+#   types across databases: if DA reports TEXT for everything, the comparison
+#   is meaningless for slurp-backed sources even when one column is clearly
+#   INTEGER in the file.  A constructor option (infer_types => 1, off by
+#   default for backward compat) would enable the inference pass.
+#
+# TODO: base_criteria / filters constructor parameter
+#   Analogous to Database::Join's filters => {db_idx => {col => val}}.
+#   A base_criteria hashref supplied at construction time would be ANDed into
+#   every SELECT automatically, without callers needing to repeat it on each
+#   call.  Use cases: row-level security (tenant_id => $tid), soft-delete
+#   filtering (deleted_at => undef), status gates (active => 1).
+#   - SQL path: criteria merged into the WHERE clause before caller criteria.
+#   - Slurp path: applied as an additional grep filter after slurp.
+#   - Deep-copy at construction for the same security reason as DJ's filters.
+#   Unlike DJ's per-database filter map, DA's base_criteria would be a flat
+#   hashref since there is only one underlying table per DA object.
+#
+# TODO: Streaming / cursor interface for large result sets
+#   selectall_arrayref materialises the full result into a Perl array, which
+#   is RAM-proportional to the result size.  For large tables a streaming
+#   interface — each_row(sub { my $row = shift; ... }) or a cursor() returning
+#   an iterator object — would allow constant-memory processing.
+#   - SQL path: the sth->fetchrow_hashref loop is already row-by-row; the
+#     wrapper is trivial.
+#   - Slurp path: iterate over values(%data) or @{$data} without copying.
+#   - Database::Join's SQLite backend currently fetches all rows via
+#     fetchrow_hashref in a loop; a streaming DA would let it avoid the
+#     intermediate array entirely.
+#
+# TODO: Schema-aware numeric comparison in slurp-mode in-memory scan
+#   The slurp path compares all criteria values as strings, so
+#   score => { '>' => 90 } on a TEXT-typed column gives wrong results when
+#   values like '9' compare as greater than '10' under string ordering.
+#   When schema() reports a column as INTEGER or REAL, the _match_criterion
+#   helper should switch to numeric comparison (0+$row_val > 0+$crit_val).
+#   This would make the slurp path produce the same results as the SQL path
+#   for numeric columns, eliminating a silent correctness split between
+#   small (slurp) and large (SQL) datasets.
+#
+# TODO: Consistent columns() ordering across backends
+#   The slurp path returns sort keys %{$first_row} (alphabetical).
+#   The SQL path returns columns in declaration order (from DBI's NAME attr).
+#   This ordering inconsistency can break column-position assumptions in code
+#   that switches between backends (e.g., switching a CSV to SQLite).
+#   Options: always sort alphabetically, or document the ordering contract per
+#   backend in the POD so callers know not to rely on position.
+#
+# TODO: Parallel remote file fetching for the host => '...' backend
+#   When host is set, candidate file extensions are probed sequentially via
+#   SSH (File::Slurp::Remote).  Fetching all candidates concurrently using
+#   threads or IO::Async would reduce new() latency for remote sources.
+#   Only worthwhile when filename is not given explicitly (i.e. when probing
+#   multiple extensions is unavoidable).  The win is proportional to SSH
+#   round-trip time; on LAN hosts it is negligible.
+#
+# TODO: updated() returning live mtime for file-backed backends
+#   DSN and URL backends set _updated = time() (connection time) rather than
+#   any file timestamp.  File-based backends (CSV, SQLite, etc.) correctly use
+#   stat()[9].  Callers using updated() for cache-invalidation therefore get
+#   different semantics depending on backend type.  For DSN connections that
+#   point at a file (e.g. dbi:SQLite:dbname=/path/to/file.sqlite), updated()
+#   could stat the file and return its mtime, giving callers a consistent
+#   contract regardless of how the connection was opened.
+# ---------------------------------------------------------------------------
+
 use warnings;
 use strict;
 use autodie qw(:all);
