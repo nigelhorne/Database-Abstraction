@@ -1,5 +1,11 @@
 Revision history for Database-Abstraction
 
+0.46
+	[ Bug Fixes ]
+	- HTML::TableExtract added to META_MERGE recommends in Makefile.PL
+	  (was already in TEST_REQUIRES but missing from the public recommends
+	  block, so CPAN clients did not surface it as an optional dependency).
+
 0.45	Tue Sep 22 04:56:49 PM EDT 2026
 	[ Enhancements ]
 	- JSON URL backend: when the url constructor parameter is used and the server
