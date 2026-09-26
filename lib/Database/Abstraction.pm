@@ -21,17 +21,6 @@ package Database::Abstraction;
 # TODO: Log queries and the time that they took to execute per database
 # TODO: Use DBD::JSON if one is ever written
 
-# ---------------------------------------------------------------------------
-# KNOWN GAPS & ROADMAP (gap-analysis 2026-09-24, derived from analogous work
-# in Database::Join 0.006.1)
-#
-# The items below are enhancements that Database::Join needed from its DA
-# components but could not rely on because DA does not yet provide them.
-# Implementing them here would let callers (including Database::Join) delegate
-# the work to DA rather than re-implementing it above the abstraction layer.
-#
-# ---------------------------------------------------------------------------
-
 use warnings;
 use strict;
 use autodie qw(:all);
