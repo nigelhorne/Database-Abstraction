@@ -552,6 +552,32 @@ my $rows = $db->selectall_arrayref(
 );
 ```
 
+Pass `limit => N` and/or `offset => M` for pagination:
+
+```perl
+my $page = $db->selectall_arrayref(status => 'active', limit => 10, offset => 20);
+```
+
+Both values must be non-negative integers; invalid values are ignored with a
+`carp` warning.  When `offset` is given without `limit` the SQL backend
+uses `LIMIT -1` on SQLite (meaning "no upper bound") so the `OFFSET` clause
+is legal.
+
+Pass `sort_by => 'col'` (ascending) or `sort_by => ['col', 'DESC']`
+to request a specific sort column and direction instead of the default primary-key
+ordering:
+
+```perl
+my $rows = $db->selectall_arrayref(sort_by => 'name');
+my $rows = $db->selectall_arrayref(sort_by => ['score', 'DESC']);
+```
+
+The column name is validated against the same identifier rules as all other
+column parameters.  An unsafe name or an unrecognised direction (anything other
+than `ASC` or `DESC`, case-insensitive) is ignored with a `carp` warning and
+the default sort order is used instead.  Sorting is applied before
+`limit`/`offset` pagination.
+
 Results are returned in the cache (if configured) and the returned array
 reference is made read-only unless `no_fixate` was set.
 
@@ -566,7 +592,9 @@ in scalar context, or `$db->query->limit(1)->all()`, to fetch just one row.
    a. No criteria -> return all rows as arrayref.
    b. entry-only lookup -> return [$data{entry}].
    c. Otherwise -> scan rows in-memory with _match_criterion.
-3. Otherwise build SQL: SELECT * FROM table [JOIN] [WHERE] ORDER BY id.
+   In all slurp cases: sort by sort_by column (if given), then apply offset/limit.
+3. Otherwise build SQL: SELECT * FROM table [JOIN] [WHERE]
+   ORDER BY sort_by [else id] [LIMIT] [OFFSET].
 4. Check cache; return cached arrayref on HIT.
 5. prepare_cached + execute; fetch all rows.
 6. Store result in cache; fixate the array; return arrayref.
@@ -590,7 +618,9 @@ In **scalar context** it applies `LIMIT 1` and returns just the first
 matching hash reference - making it more efficient than `selectall_arrayref`
 when you only need one row.  In **list context** all matching rows are returned.
 
-Accepts the same criteria and `join` parameter as ["selectall\_arrayref"](#selectall_arrayref).
+Accepts the same criteria, `join`, `limit`, `offset`, and `sort_by`
+parameters as ["selectall\_arrayref"](#selectall_arrayref).  When `limit` is given in scalar context
+it overrides the implicit `LIMIT 1`.
 
 ### Selectall\_Hash
 

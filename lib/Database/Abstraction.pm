@@ -32,17 +32,6 @@ package Database::Abstraction;
 #
 # POST-RELEASE ROADMAP
 #
-# TODO: order_by parameter on selectall_arrayref and selectall_array
-#   selectall_arrayref currently always appends ORDER BY $id (the primary-key
-#   column) on DBI backends, with no way to request a different sort column or
-#   direction without using the query builder.  Adding order_by => 'col' (ASC)
-#   and order_by => ['col', 'DESC'] would give callers ad-hoc control.
-#   - SQL path: validated column name appended as ORDER BY col [DESC].
-#   - Slurp path: sort the result array by the named column (string cmp).
-#   - Unknown column or invalid direction: carp and fall back to id-column sort.
-#   Database::Join already implements this for merged results; DA doing it
-#   natively would remove the duplicate logic.
-#
 # TODO: Heuristic type inference in slurp mode
 #   schema() currently reports every slurp-mode column (CSV, JSON, XLSX, XML,
 #   HTML, DBM::Deep) as type TEXT because the data arrives as plain strings.
@@ -1463,6 +1452,19 @@ C<carp> warning.  When C<offset> is given without C<limit> the SQL backend
 uses C<LIMIT -1> on SQLite (meaning "no upper bound") so the C<OFFSET> clause
 is legal.
 
+Pass C<sort_by =E<gt> 'col'> (ascending) or C<sort_by =E<gt> ['col', 'DESC']>
+to request a specific sort column and direction instead of the default primary-key
+ordering:
+
+    my $rows = $db->selectall_arrayref(sort_by => 'name');
+    my $rows = $db->selectall_arrayref(sort_by => ['score', 'DESC']);
+
+The column name is validated against the same identifier rules as all other
+column parameters.  An unsafe name or an unrecognised direction (anything other
+than C<ASC> or C<DESC>, case-insensitive) is ignored with a C<carp> warning and
+the default sort order is used instead.  Sorting is applied before
+C<limit>/C<offset> pagination.
+
 Results are returned in the cache (if configured) and the returned array
 reference is made read-only unless C<no_fixate> was set.
 
@@ -1476,7 +1478,9 @@ in scalar context, or C<< $db->query->limit(1)->all() >>, to fetch just one row.
        a. No criteria -> return all rows as arrayref.
        b. entry-only lookup -> return [$data{entry}].
        c. Otherwise -> scan rows in-memory with _match_criterion.
-    3. Otherwise build SQL: SELECT * FROM table [JOIN] [WHERE] ORDER BY id.
+       In all slurp cases: sort by sort_by column (if given), then apply offset/limit.
+    3. Otherwise build SQL: SELECT * FROM table [JOIN] [WHERE]
+       ORDER BY sort_by [else id] [LIMIT] [OFFSET].
     4. Check cache; return cached arrayref on HIT.
     5. prepare_cached + execute; fetch all rows.
     6. Store result in cache; fixate the array; return arrayref.
@@ -1498,6 +1502,7 @@ sub selectall_arrayref {
 		$params = Params::Get::get_params(undef, \@_) // {};
 		my $bl = delete $params->{'limit'};
 		my $bo = delete $params->{'offset'};
+		my ($bsc, $bsd) = _parse_sort_by(delete($params->{'sort_by'}), 'selectall_arrayref');
 		if(defined($bl) && $bl !~ /\A\d+\z/) {
 			Carp::carp('selectall_arrayref: limit must be a non-negative integer, ignoring');
 			undef $bl;
@@ -1507,6 +1512,13 @@ sub selectall_arrayref {
 			undef $bo;
 		}
 		my $rows = $self->_scan_berkeley($params);
+		if(defined $bsc) {
+			my $desc = ($bsd eq 'DESC');
+			@{$rows} = sort {
+				$desc ? (($b->{$bsc} // '') cmp ($a->{$bsc} // ''))
+				      : (($a->{$bsc} // '') cmp ($b->{$bsc} // ''))
+			} @{$rows};
+		}
 		if(defined($bl) || defined($bo)) {
 			splice(@{$rows}, 0, int($bo)) if $bo;
 			splice(@{$rows}, int($bl))    if defined $bl;
@@ -1548,6 +1560,8 @@ sub selectall_arrayref {
 		}
 	}
 
+	my ($sort_col, $sort_dir) = _parse_sort_by(delete($params->{'sort_by'}), 'selectall_arrayref');
+
 	if(!$join_clause && $self->{'data'} && !$self->_has_complex_criteria($params)) {
 		if(scalar(keys %{$params}) == 0) {
 			$self->_trace("$table: selectall_arrayref fast track return");
@@ -1561,6 +1575,13 @@ sub selectall_arrayref {
 			} else {
 				@rc = @{$self->{'data'}};
 			}
+			if(defined $sort_col) {
+				my $desc = ($sort_dir eq 'DESC');
+				@rc = sort {
+					$desc ? (($b->{$sort_col} // '') cmp ($a->{$sort_col} // ''))
+					      : (($a->{$sort_col} // '') cmp ($b->{$sort_col} // ''))
+				} @rc;
+			}
 			if(defined($offset) || defined($limit)) {
 				splice(@rc, 0, $offset) if $offset;
 				splice(@rc, $limit)     if defined $limit;
@@ -1572,6 +1593,13 @@ sub selectall_arrayref {
 			return set_return([], { type => 'arrayref' })
 				unless exists($self->{'data'}->{$params->{'entry'}});
 			my @rc = ($self->{'data'}->{$params->{'entry'}});
+			if(defined $sort_col) {
+				my $desc = ($sort_dir eq 'DESC');
+				@rc = sort {
+					$desc ? (($b->{$sort_col} // '') cmp ($a->{$sort_col} // ''))
+					      : (($a->{$sort_col} // '') cmp ($b->{$sort_col} // ''))
+				} @rc;
+			}
 			if(defined($offset) || defined($limit)) {
 				splice(@rc, 0, $offset) if $offset;
 				splice(@rc, $limit)     if defined $limit;
@@ -1588,6 +1616,13 @@ sub selectall_arrayref {
 				my $row = $_;
 				all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params->{$_}) } @param_keys
 			} values %{$self->{'data'}};
+			if(defined $sort_col) {
+				my $desc = ($sort_dir eq 'DESC');
+				@rc = sort {
+					$desc ? (($b->{$sort_col} // '') cmp ($a->{$sort_col} // ''))
+					      : (($a->{$sort_col} // '') cmp ($b->{$sort_col} // ''))
+				} @rc;
+			}
 			if(defined($offset) || defined($limit)) {
 				splice(@rc, 0, $offset) if $offset;
 				splice(@rc, $limit)     if defined $limit;
@@ -1602,6 +1637,13 @@ sub selectall_arrayref {
 				my $row = $_;
 				all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params->{$_}) } @param_keys
 			} @{$self->{'data'}};
+			if(defined $sort_col) {
+				my $desc = ($sort_dir eq 'DESC');
+				@rc = sort {
+					$desc ? (($b->{$sort_col} // '') cmp ($a->{$sort_col} // ''))
+					      : (($a->{$sort_col} // '') cmp ($b->{$sort_col} // ''))
+				} @rc;
+			}
 			if(defined($offset) || defined($limit)) {
 				splice(@rc, 0, $offset) if $offset;
 				splice(@rc, $limit)     if defined $limit;
@@ -1624,7 +1666,9 @@ sub selectall_arrayref {
 	} else {
 		$query .= " WHERE $where" if $where;
 	}
-	if(!$self->{'no_entry'}) {
+	if(defined $sort_col) {
+		$query .= " ORDER BY $sort_col $sort_dir";
+	} elsif(!$self->{'no_entry'}) {
 		$query .= ' ORDER BY ' . $self->{'id'};
 	}
 	if(defined($limit)) {
@@ -1713,9 +1757,9 @@ In B<scalar context> it applies C<LIMIT 1> and returns just the first
 matching hash reference - making it more efficient than C<selectall_arrayref>
 when you only need one row.  In B<list context> all matching rows are returned.
 
-Accepts the same criteria, C<join>, C<limit>, and C<offset> parameters as
-L</selectall_arrayref>.  When C<limit> is given in scalar context it overrides
-the implicit C<LIMIT 1>.
+Accepts the same criteria, C<join>, C<limit>, C<offset>, and C<sort_by>
+parameters as L</selectall_arrayref>.  When C<limit> is given in scalar context
+it overrides the implicit C<LIMIT 1>.
 
 =cut
 
@@ -1729,6 +1773,7 @@ sub selectall_array
 		my $params = Params::Get::get_params(undef, \@_) // {};
 		my $bl = delete $params->{'limit'};
 		my $bo = delete $params->{'offset'};
+		my ($bsc, $bsd) = _parse_sort_by(delete($params->{'sort_by'}), 'selectall_array');
 		if(defined($bl) && $bl !~ /\A\d+\z/) {
 			Carp::carp('selectall_array: limit must be a non-negative integer, ignoring');
 			undef $bl;
@@ -1738,6 +1783,13 @@ sub selectall_array
 			undef $bo;
 		}
 		my $rows = $self->_scan_berkeley($params);
+		if(defined $bsc) {
+			my $desc = ($bsd eq 'DESC');
+			@{$rows} = sort {
+				$desc ? (($b->{$bsc} // '') cmp ($a->{$bsc} // ''))
+				      : (($a->{$bsc} // '') cmp ($b->{$bsc} // ''))
+			} @{$rows};
+		}
 		if(defined($bl) || defined($bo)) {
 			splice(@{$rows}, 0, int($bo)) if $bo;
 			splice(@{$rows}, int($bl))    if defined $bl;
@@ -1773,12 +1825,21 @@ sub selectall_array
 		}
 	}
 
+	my ($sort_col, $sort_dir) = _parse_sort_by(delete($params->{'sort_by'}), 'selectall_array');
+
 	if(!$join_clause && $self->{'data'} && !$self->_has_complex_criteria($params)) {
 		if(scalar(keys %{$params}) == 0) {
 			$self->_trace("$table: selectall_array fast track return");
 			my @rc = ref($self->{'data'}) eq 'HASH'
 				? values %{$self->{'data'}}
 				: @{$self->{'data'}};
+			if(defined $sort_col) {
+				my $desc = ($sort_dir eq 'DESC');
+				@rc = sort {
+					$desc ? (($b->{$sort_col} // '') cmp ($a->{$sort_col} // ''))
+					      : (($a->{$sort_col} // '') cmp ($b->{$sort_col} // ''))
+				} @rc;
+			}
 			if(defined($offset) || defined($limit)) {
 				splice(@rc, 0, $offset) if $offset;
 				splice(@rc, $limit)     if defined $limit;
@@ -1808,6 +1869,13 @@ sub selectall_array
 				my $row = $_;
 				all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params->{$_}) } @param_keys
 			} values %{$self->{'data'}};
+			if(defined $sort_col) {
+				my $desc = ($sort_dir eq 'DESC');
+				@rc = sort {
+					$desc ? (($b->{$sort_col} // '') cmp ($a->{$sort_col} // ''))
+					      : (($a->{$sort_col} // '') cmp ($b->{$sort_col} // ''))
+				} @rc;
+			}
 			if(defined($offset) || defined($limit)) {
 				splice(@rc, 0, $offset) if $offset;
 				splice(@rc, $limit)     if defined $limit;
@@ -1822,6 +1890,13 @@ sub selectall_array
 				my $row = $_;
 				all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params->{$_}) } @param_keys
 			} @{$self->{'data'}};
+			if(defined $sort_col) {
+				my $desc = ($sort_dir eq 'DESC');
+				@rc = sort {
+					$desc ? (($b->{$sort_col} // '') cmp ($a->{$sort_col} // ''))
+					      : (($a->{$sort_col} // '') cmp ($b->{$sort_col} // ''))
+				} @rc;
+			}
 			if(defined($offset) || defined($limit)) {
 				splice(@rc, 0, $offset) if $offset;
 				splice(@rc, $limit)     if defined $limit;
@@ -1844,7 +1919,9 @@ sub selectall_array
 	} else {
 		$query .= " WHERE $where" if $where;
 	}
-	if(!$self->{'no_entry'}) {
+	if(defined $sort_col) {
+		$query .= " ORDER BY $sort_col $sort_dir";
+	} elsif(!$self->{'no_entry'}) {
 		$query .= ' ORDER BY ' . $self->{'id'};
 	}
 	if(defined($limit)) {
@@ -2830,6 +2907,28 @@ sub _build_joins
 	}
 
 	return join(' ', @clauses);
+}
+
+# Parse a sort_by parameter value into ($col, $dir).
+# Accepts: scalar column name (ASC), or [$col, $dir] arrayref.
+# Validates column against $SAFE_QUALIFIED and direction as ASC/DESC.
+# Carps and returns (undef, 'ASC') on invalid input so callers fall back
+# to the default id-column sort.
+sub _parse_sort_by
+{
+	my ($sb, $method) = @_;
+	return (undef, 'ASC') unless defined $sb;
+	my ($col, $dir) = ref($sb) eq 'ARRAY' ? @{$sb}[0, 1] : ($sb, undef);
+	$dir = defined($dir) ? uc($dir) : 'ASC';
+	unless(defined($col) && $col =~ $SAFE_QUALIFIED) {
+		Carp::carp("$method: unsafe sort_by column, ignoring");
+		return (undef, 'ASC');
+	}
+	unless($dir eq 'ASC' || $dir eq 'DESC') {
+		Carp::carp("$method: invalid sort_by direction '$dir', ignoring");
+		return (undef, 'ASC');
+	}
+	return ($col, $dir);
 }
 
 # Return true when $params contains operator hashrefs, -or, or -and groupings
