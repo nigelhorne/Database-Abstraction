@@ -46,6 +46,16 @@ Revision history for Database-Abstraction
 	  fetchrow_hashref), the chained query builder, and BerkeleyDB/slurp
 	  backends.  Keys are validated against the same identifier rules as
 	  the id parameter; the hashref is shallow-copied at construction.
+	- Remote file backend: extension probing is now parallel.  When host is
+	  set and filename is not given, _open() forks one child per candidate
+	  extension; all SSH calls (via File::Slurp::Remote) run concurrently.
+	  The parent waits for all children and then proceeds with whatever was
+	  written to the temp directory.  Children exit via POSIX::_exit(0) to
+	  avoid running Perl cleanup (File::Temp::Dir DESTROY) in the child.
+	  Falls back to sequential for any extension whose fork() fails.
+	  When filename IS given, a single targeted SSH fetch replaces the full
+	  probe entirely (previously all 16 extensions were fetched even when
+	  the filename was known).
 	- columns(): now always returns column names in alphabetical order
 	  regardless of backend.  Previously the DBI path returned columns in
 	  declaration order (from $sth->{NAME}) while the slurp path returned

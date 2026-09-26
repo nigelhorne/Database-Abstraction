@@ -33,14 +33,6 @@ package Database::Abstraction;
 # POST-RELEASE ROADMAP
 #
 #
-# TODO: Parallel remote file fetching for the host => '...' backend
-#   When host is set, candidate file extensions are probed sequentially via
-#   SSH (File::Slurp::Remote).  Fetching all candidates concurrently using
-#   threads or IO::Async would reduce new() latency for remote sources.
-#   Only worthwhile when filename is not given explicitly (i.e. when probing
-#   multiple extensions is unavoidable).  The win is proportional to SSH
-#   round-trip time; on LAN hosts it is negligible.
-#
 # TODO: updated() returning live mtime for file-backed backends
 #   DSN and URL backends set _updated = time() (connection time) rather than
 #   any file timestamp.  File-based backends (CSV, SQLite, etc.) correctly use
@@ -1028,20 +1020,74 @@ sub _open :Protected
 			$dir = Cwd::abs_path($self->{'directory'} || $defaults{'directory'});
 		} else {
 			require File::Slurp::Remote;
+			require POSIX;
 			my $remote_dir = $self->{'directory'} || $defaults{'directory'};
 			my $tmpdir_obj = File::Temp->newdir(CLEANUP => 1);
 			$self->{'_remote_tmpdir'} = $tmpdir_obj;	# auto-cleans on DESTROY
 			my $tmpdir = $tmpdir_obj->dirname();
-			for my $ext (qw(sql sqlite sqlite3 dbm deep db csv.gz db.gz psv tsv xls xlsx csv xml json)) {
-				my $remote_file = "$remote_dir/$dbname.$ext";
+			my @probe_exts = qw(sql sqlite sqlite3 dbm deep db csv.gz db.gz psv tsv xls xlsx csv xml json);
+
+			if(my $filename = $self->{'filename'} || $defaults{'filename'}) {
+				# Explicit filename given — one SSH fetch, no extension probing needed.
+				# Validate the same way _open() will when it processes the filename later.
+				Carp::croak(ref($self), ": unsafe filename '$filename'")
+					unless $filename =~ /\A[a-zA-Z0-9_.-]+\z/ && $filename !~ /\.\./;
+				my $remote_file = "$remote_dir/$filename";
 				my $content = eval { scalar File::Slurp::Remote::read_remote_file($host, $remote_file) };
-				next unless defined($content) && length($content);
-				my $local = File::Spec->catfile($tmpdir, "$dbname.$ext");
-				open(my $fh, '>', $local);
-				binmode $fh;
-				print $fh $content;
-				close $fh;
-				$self->_debug("fetched remote $host:$remote_file");
+				if(defined($content) && length($content)) {
+					my $local = File::Spec->catfile($tmpdir, $filename);
+					open(my $fh, '>', $local);
+					binmode $fh;
+					print $fh $content;
+					close $fh;
+					$self->_debug("fetched remote $host:$remote_file");
+				}
+			} else {
+				# No explicit filename — probe all candidate extensions.
+				# Fork one child per extension so all SSH calls run concurrently.
+				# Falls back to sequential for any extension whose fork() fails.
+				# Children MUST exit via POSIX::_exit(0) to skip Perl's cleanup
+				# phase; a normal exit(0) would run DESTROY on the inherited
+				# File::Temp::Dir, deleting the tmpdir while the parent still needs it.
+				my (@pids, @fallback_exts);
+				for my $ext (@probe_exts) {
+					my $pid = eval { fork() };
+					if(!defined $pid) {
+						# fork() failed or unavailable — defer to sequential pass
+						push @fallback_exts, $ext;
+						next;
+					}
+					if($pid == 0) {
+						# child: fetch one extension; eval guards against autodie croaks
+						eval {
+							my $remote_file = "$remote_dir/$dbname.$ext";
+							my $content = File::Slurp::Remote::read_remote_file($host, $remote_file);
+							if(defined($content) && length($content)) {
+								my $local = File::Spec->catfile($tmpdir, "$dbname.$ext");
+								open(my $fh, '>', $local);
+								binmode $fh;
+								print $fh $content;
+								close $fh;
+							}
+						};
+						POSIX::_exit(0);
+					}
+					push @pids, $pid;
+				}
+				waitpid($_, 0) for @pids;
+
+				# Sequential pass for any extensions that couldn't be forked
+				for my $ext (@fallback_exts) {
+					my $remote_file = "$remote_dir/$dbname.$ext";
+					my $content = eval { scalar File::Slurp::Remote::read_remote_file($host, $remote_file) };
+					next unless defined($content) && length($content);
+					my $local = File::Spec->catfile($tmpdir, "$dbname.$ext");
+					open(my $fh, '>', $local);
+					binmode $fh;
+					print $fh $content;
+					close $fh;
+					$self->_debug("fetched remote $host:$remote_file");
+				}
 			}
 			$dir = $tmpdir;
 		}
