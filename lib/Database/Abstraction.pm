@@ -32,18 +32,6 @@ package Database::Abstraction;
 #
 # POST-RELEASE ROADMAP
 #
-# TODO: Streaming / cursor interface for large result sets
-#   selectall_arrayref materialises the full result into a Perl array, which
-#   is RAM-proportional to the result size.  For large tables a streaming
-#   interface — each_row(sub { my $row = shift; ... }) or a cursor() returning
-#   an iterator object — would allow constant-memory processing.
-#   - SQL path: the sth->fetchrow_hashref loop is already row-by-row; the
-#     wrapper is trivial.
-#   - Slurp path: iterate over values(%data) or @{$data} without copying.
-#   - Database::Join's SQLite backend currently fetches all rows via
-#     fetchrow_hashref in a loop; a streaming DA would let it avoid the
-#     intermediate array entirely.
-#
 # TODO: Schema-aware numeric comparison in slurp-mode in-memory scan
 #   The slurp path compares all criteria values as strings, so
 #   score => { '>' => 90 } on a TEXT-typed column gives wrong results when
@@ -1786,6 +1774,217 @@ sub selectall_hashref
 {
 	my $self = shift;
 	return $self->selectall_arrayref(@_);
+}
+
+=head2 each_row
+
+    $db->each_row(\&callback);
+    $db->each_row(\&callback, status => 'active');
+    $db->each_row(\&callback, sort_by => 'name', limit => 100, offset => 20);
+
+Iterates over matching rows one at a time, calling C<\&callback> once per
+row with the row hashref as the sole argument.  Uses B<constant memory> on
+the SQL path: rows are fetched from the database one at a time via
+C<fetchrow_hashref> without materialising the full result array.  On the
+slurp/in-memory path data is already in RAM, so memory use is equivalent to
+L</selectall_arrayref>.
+
+Accepts the same criteria, C<join>, C<sort_by>, C<limit>, and C<offset>
+parameters as L</selectall_arrayref>.
+
+Returns the number of rows passed to C<\&callback>.
+
+Exceptions raised inside C<\&callback> abort iteration and propagate to
+the caller; the DBI statement handle is left in a valid state (C<finish()>
+is called on exception).
+
+B<Note:> rows on the SQL path are not fixated (made read-only) because they
+are discarded after each callback invocation.  Slurp-path rows are already
+fixated from the initial load.
+
+=cut
+
+sub each_row
+{
+	my $self = shift;
+	my $callback = shift;
+
+	Carp::croak(ref($self), ': each_row: callback must be a code reference')
+		unless ref($callback) eq 'CODE';
+
+	$self->_open_table({});
+
+	my $params;
+
+	if($self->{'berkeley'}) {
+		$params = Params::Get::get_params(undef, \@_) // {};
+		my $bl = delete $params->{'limit'};
+		my $bo = delete $params->{'offset'};
+		my ($bsc, $bsd) = _parse_sort_by(delete($params->{'sort_by'}), 'each_row');
+		if(defined($bl) && $bl !~ /\A\d+\z/) {
+			Carp::carp('each_row: limit must be a non-negative integer, ignoring');
+			undef $bl;
+		}
+		if(defined($bo) && $bo !~ /\A\d+\z/) {
+			Carp::carp('each_row: offset must be a non-negative integer, ignoring');
+			undef $bo;
+		}
+		$params = $self->_merge_base_criteria($params);
+		my $rows = $self->_scan_berkeley($params);
+		if(defined $bsc) {
+			my $desc = ($bsd eq 'DESC');
+			@{$rows} = sort {
+				$desc ? (($b->{$bsc} // '') cmp ($a->{$bsc} // ''))
+				      : (($a->{$bsc} // '') cmp ($b->{$bsc} // ''))
+			} @{$rows};
+		}
+		if(defined($bl) || defined($bo)) {
+			splice(@{$rows}, 0, int($bo)) if $bo;
+			splice(@{$rows}, int($bl))    if defined $bl;
+		}
+		my $n = 0;
+		for my $row (@{$rows}) {
+			$callback->($row);
+			$n++;
+		}
+		return $n;
+	}
+
+	if($self->{'no_entry'}) {
+		$params = Params::Get::get_params(undef, \@_);
+	} elsif(scalar(@_)) {
+		$params = Params::Get::get_params('entry', @_);
+	}
+
+	my $table = $self->_open_table($params);
+
+	$params //= {};
+
+	my $join_clause = '';
+	if(my $join_spec = delete $params->{'join'}) {
+		$join_clause = $self->_build_joins($join_spec);
+	}
+
+	my $limit  = delete $params->{'limit'};
+	my $offset = delete $params->{'offset'};
+	if(defined $limit) {
+		if($limit !~ /\A\d+\z/) {
+			Carp::carp('each_row: limit must be a non-negative integer, ignoring');
+			undef $limit;
+		} else {
+			$limit = int($limit);
+		}
+	}
+	if(defined $offset) {
+		if($offset !~ /\A\d+\z/) {
+			Carp::carp('each_row: offset must be a non-negative integer, ignoring');
+			undef $offset;
+		} else {
+			$offset = int($offset);
+		}
+	}
+
+	my ($sort_col, $sort_dir) = _parse_sort_by(delete($params->{'sort_by'}), 'each_row');
+	$params = $self->_merge_base_criteria($params);
+
+	if(!$join_clause && $self->{'data'} && !$self->_has_complex_criteria($params)) {
+		my @rc;
+		if(scalar(keys %{$params}) == 0) {
+			@rc = ref($self->{'data'}) eq 'HASH' ? values %{$self->{'data'}} : @{$self->{'data'}};
+		} elsif((scalar(keys %{$params}) == 1) && defined($params->{'entry'}) && !$self->{'no_entry'}) {
+			return 0 unless exists($self->{'data'}->{$params->{'entry'}});
+			@rc = ($self->{'data'}->{$params->{'entry'}});
+		} elsif(ref($self->{'data'}) eq 'HASH') {
+			$self->_debug("$table: each_row in-memory scan with criteria");
+			my @param_keys = keys %{$params};
+			@rc = grep {
+				my $row = $_;
+				all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params->{$_}) } @param_keys
+			} values %{$self->{'data'}};
+		} elsif(ref($self->{'data'}) eq 'ARRAY' && !$self->{$table}) {
+			$self->_debug("$table: each_row in-memory array scan with criteria");
+			my @param_keys = keys %{$params};
+			@rc = grep {
+				my $row = $_;
+				all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params->{$_}) } @param_keys
+			} @{$self->{'data'}};
+		}
+		if(@rc) {
+			if(defined $sort_col) {
+				my $desc = ($sort_dir eq 'DESC');
+				@rc = sort {
+					$desc ? (($b->{$sort_col} // '') cmp ($a->{$sort_col} // ''))
+					      : (($a->{$sort_col} // '') cmp ($b->{$sort_col} // ''))
+				} @rc;
+			}
+			if(defined($offset) || defined($limit)) {
+				splice(@rc, 0, $offset) if $offset;
+				splice(@rc, $limit)     if defined $limit;
+			}
+		}
+		my $n = 0;
+		for my $row (@rc) {
+			$callback->($row);
+			$n++;
+		}
+		return $n;
+	}
+
+	my ($where, $wargs) = $self->_build_where($params);
+	my @query_args = @{$wargs};
+
+	my $query = "SELECT * FROM $table";
+	$query .= " $join_clause" if $join_clause;
+	if($join_clause) {
+		$query .= " WHERE $where" if $where;
+	} elsif(($self->{'type'} eq 'CSV') && !$self->{'no_entry'}) {
+		my $id = $self->{'id'};
+		$query .= " WHERE $id IS NOT NULL AND $id NOT LIKE '#%'";
+		$query .= " AND ($where)" if $where;
+	} else {
+		$query .= " WHERE $where" if $where;
+	}
+	if(defined $sort_col) {
+		$query .= " ORDER BY $sort_col $sort_dir";
+	} elsif(!$self->{'no_entry'}) {
+		$query .= ' ORDER BY ' . $self->{'id'};
+	}
+	if(defined($limit)) {
+		$query .= ' LIMIT ?';
+		push @query_args, $limit;
+	} elsif(defined($offset)) {
+		my $dbh = $self->{$table};
+		$query .= ' LIMIT -1'
+			if ($dbh && (($dbh->{Driver}{Name} // '') eq 'SQLite'))
+			|| (($self->{'_dialect'} // '') eq 'sqlite');
+	}
+	if(defined($offset)) {
+		$query .= ' OFFSET ?';
+		push @query_args, $offset;
+	}
+
+	if(defined($query_args[0])) {
+		$self->_debug("each_row $query: ", join(', ', @query_args));
+	} else {
+		$self->_debug("each_row $query");
+	}
+
+	my $sth = $self->{$table}->prepare_cached($query)
+		or Carp::croak(ref($self), ": each_row prepare failed: ", $self->{$table}->errstr());
+	$sth->execute(@query_args) || croak("$query: @query_args");
+
+	my $n = 0;
+	eval {
+		while(my $row = $sth->fetchrow_hashref()) {
+			$callback->($row);
+			$n++;
+		}
+	};
+	if(my $err = $@) {
+		$sth->finish();
+		die $err;
+	}
+	return $n;
 }
 
 =head2 selectall_array

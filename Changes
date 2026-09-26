@@ -29,6 +29,15 @@ Revision history for Database-Abstraction
 	  URL, DBM::Deep).  Scans up to 100 rows per column and promotes types
 	  from TEXT to INTEGER, REAL, TIMESTAMP, or DATE.  Off by default for
 	  backward compatibility.
+	- each_row(\&callback, ...): new streaming select method that calls
+	  \&callback once per matching row without materialising the full result
+	  array.  SQL path: constant-memory (rows fetched one at a time via
+	  fetchrow_hashref).  Slurp/in-memory path: iterates the already-loaded
+	  data.  Accepts the same criteria, join, sort_by, limit, and offset
+	  parameters as selectall_arrayref.  Returns the count of rows visited.
+	  Exceptions inside the callback propagate after finishing the statement
+	  handle.  Also adds query->each(\&callback) as a terminal method on the
+	  chained query builder.
 	- base_criteria constructor parameter: a hashref of column-value pairs
 	  that is ANDed into every SELECT automatically.  Use cases include
 	  row-level security (tenant_id => $tid), soft-delete filtering

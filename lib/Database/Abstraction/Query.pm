@@ -473,6 +473,66 @@ sub count
 	return $row ? $row->[0] : 0;
 }
 
+=head2 each
+
+    $q->each(\&callback);
+    $q->each(sub { my $row = shift; print $row->{'name'}, "\n" });
+
+B<Terminal method.>  Iterates over matching rows one at a time, calling
+C<\&callback> once per row with the row hashref as the sole argument.
+Uses constant memory on the SQL path (see L<Database::Abstraction/each_row>).
+
+Applies any C<where()>, C<join()>, C<order_by()>, C<limit()>, and C<offset()>
+set on the builder.
+
+Returns the number of rows passed to C<\&callback>.
+
+=cut
+
+sub each
+{
+	my ($self, $callback) = @_;
+	my $db = $self->{'_db'};
+
+	croak('Database::Abstraction::Query::each: callback must be a code reference')
+		unless ref($callback) eq 'CODE';
+
+	$db->_open_table({});
+
+	if($db->{'berkeley'} || ($db->{'type'} // '') =~ /\A(?:Deep|XLSX)\z/) {
+		my $backend = $db->{'berkeley'} ? 'BerkeleyDB' : ($db->{'type'} // '');
+		croak(ref($db), ": query->each() with JOINs is not supported on $backend")
+			if @{$self->{'_joins'}};
+		my $rows = $db->selectall_arrayref({%{$self->{'_where'}}});
+		_apply_perl_sort_limit($rows, $self->{'_order_by'}, $self->{'_offset'}, $self->{'_limit'});
+		my $n = 0;
+		for my $row (@{$rows}) {
+			$callback->($row);
+			$n++;
+		}
+		return $n;
+	}
+
+	my ($query, $args, $table) = $self->_build_sql(0);
+	$db->_debug("Query->each: $query");
+
+	my $sth = $db->{$table}->prepare_cached($query);
+	$sth->execute(@{$args}) or croak("$query: @{$args}");
+
+	my $n = 0;
+	eval {
+		while(my $row = $sth->fetchrow_hashref()) {
+			$callback->($row);
+			$n++;
+		}
+	};
+	if(my $err = $@) {
+		$sth->finish();
+		die $err;
+	}
+	return $n;
+}
+
 =head1 SEE ALSO
 
 L<Database::Abstraction> - the parent module and its L<Database::Abstraction/QUERY CRITERIA> section.
