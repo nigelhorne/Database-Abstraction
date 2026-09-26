@@ -293,9 +293,9 @@ a.intra-dot:hover { color: #7700bb; }
 <div class="nav"><a href="../../../index.html">Index</a>
  <a href="Abstraction/Query.pm.html">Next ➡</a></div><div class='summary'>
 <strong>Structural Coverage (Approximate)</strong><p>
-TER1 (Statement): 70.66%<br>
-TER2 (Branch): 63.45%<br>
-TER3 (LCSAJ): 94.4% (101/107)<br>
+TER1 (Statement): 72.37%<br>
+TER2 (Branch): 65.40%<br>
+TER3 (LCSAJ): 100.0% (107/107)<br>
 Approximate LCSAJ segments: 1131<br>
 </div>
 
@@ -1280,7 +1280,7 @@ is( func(VALUE_AT_BOUNDARY), EXPECTED, &#39;Test boundary behaviour&#39; );
 </span><span class="">  884: 		$self-&gt;{&#39;type&#39;} = &#39;DBI&#39;;
 </span><span class="">  885: 		$self-&gt;{$table} = $dbh;
 </span><span class="">  886: 		$self-&gt;{&#39;_updated&#39;} = time();
-</span><span class="survived-2 tooltip" data-tooltip="Return value mutation survived. Add tests asserting exact return values. Boolean logic mutation survived. Add tests covering both true and false paths.">  887: 		return $self;
+</span><span class="survived-2 tooltip" data-tooltip="Boolean logic mutation survived. Add tests covering both true and false paths. Return value mutation survived. Add tests asserting exact return values.">  887: 		return $self;
 </span>
 					<details class="mutant-details">
 					<summary>Mutants (Total: 2, Killed: 0, Survived: 2)</summary>
@@ -1391,7 +1391,7 @@ is( func(INPUT), EXPECTED, &#39;Verify correct return value&#39; );
 </span><span class="">  974: 		$self-&gt;{&#39;_updated&#39;} = time();
 </span><span class="">  975: 		$self-&gt;_fixate($self-&gt;{&#39;data&#39;}) if $self-&gt;{&#39;data&#39;} &amp;&amp; ref($self-&gt;{&#39;data&#39;}) eq &#39;HASH&#39;;
 </span><span class="">  976: 		$self-&gt;{$table} = undef;	# No DBI handle; all queries use the in-memory data path
-</span><span class="survived-2 tooltip" data-tooltip="Return value mutation survived. Add tests asserting exact return values. Boolean logic mutation survived. Add tests covering both true and false paths.">  977: 		return $self;
+</span><span class="survived-2 tooltip" data-tooltip="Boolean logic mutation survived. Add tests covering both true and false paths. Return value mutation survived. Add tests asserting exact return values.">  977: 		return $self;
 </span>
 					<details class="mutant-details">
 					<summary>Mutants (Total: 2, Killed: 0, Survived: 2)</summary>
@@ -2084,7 +2084,7 @@ is( func(VALUE_AT_BOUNDARY), EXPECTED, &#39;Test boundary behaviour&#39; );
 </span><span class=""> 1605: 			my @rc;
 </span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1606: 			if(ref($self-&gt;{&#39;data&#39;}) eq &#39;HASH&#39;) {
 </span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1607: 				$self-&gt;_debug(&quot;$table: returning &quot;, scalar keys %{$self-&gt;{&#39;data&#39;}}, &#39; entries&#39;);
-</span><span class="survived-3 tooltip" data-tooltip="Mutation survived. Add targeted tests to validate this branch. Boundary mutation survived. Add tests around edge values (e.g. min, max, off-by-one)."> 1608: 				if(scalar keys %{$self-&gt;{&#39;data&#39;}} &lt;= 10) {
+</span><span class="survived-3 tooltip" data-tooltip="Boundary mutation survived. Add tests around edge values (e.g. min, max, off-by-one). Mutation survived. Add targeted tests to validate this branch."> 1608: 				if(scalar keys %{$self-&gt;{&#39;data&#39;}} &lt;= 10) {
 </span>
 					<details class="mutant-details">
 					<summary>Mutants (Total: 4, Killed: 0, Survived: 4)</summary>
@@ -2381,7 +2381,7 @@ is( func(VALUE_AT_BOUNDARY), EXPECTED, &#39;Test boundary behaviour&#39; );
 </span><span class=""> 1854: 			$callback-&gt;($row);
 </span><span class=""> 1855: 			$n++;
 </span><span class=""> 1856: 		}
-</span><span class="survived-2 tooltip" data-tooltip="Boolean logic mutation survived. Add tests covering both true and false paths. Return value mutation survived. Add tests asserting exact return values."> 1857: 		return $n;
+</span><span class="survived-2 tooltip" data-tooltip="Return value mutation survived. Add tests asserting exact return values. Boolean logic mutation survived. Add tests covering both true and false paths."> 1857: 		return $n;
 </span>
 					<details class="mutant-details">
 					<summary>Mutants (Total: 2, Killed: 0, Survived: 2)</summary>
@@ -2504,7 +2504,7 @@ is( func(VALUE_AT_BOUNDARY), EXPECTED, &#39;Test boundary behaviour&#39; );
 </span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."> 1937: 		return $n;
 </span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class=""> 1938: 	}
 </span><span class=""> 1939: 
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot-uncovered">●</span><span class="lcsaj-tip-text">[NOT COVERED] 1940 → 1945 → 1954</span></span> 1940: 	my ($where, $wargs) = $self-&gt;_build_where($params);
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1940 → 1945 → 1954</span></span> 1940: 	my ($where, $wargs) = $self-&gt;_build_where($params);
 </span><span class=""> 1941: 	my @query_args = @{$wargs};
 </span><span class=""> 1942: 
 </span><span class=""> 1943: 	my $query = &quot;SELECT * FROM $table&quot;;
@@ -2524,12 +2524,12 @@ is( func(VALUE_AT_BOUNDARY), EXPECTED, &#39;Test boundary behaviour&#39; );
 </span><span class=""> 1951: 	} else {
 </span><span class=""> 1952: 		$query .= &quot; WHERE $where&quot; if $where;
 </span><span class=""> 1953: 	}
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."><span class="lcsaj-tip"><span class="lcsaj-dot-uncovered">●</span><span class="lcsaj-tip-text">[NOT COVERED] 1954 → 1954 → 1959</span></span> 1954: 	if(defined $sort_col) {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1954 → 1954 → 1959</span></span> 1954: 	if(defined $sort_col) {
 </span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1955: 		$query .= &quot; ORDER BY $sort_col $sort_dir&quot;;
 </span><span class=""> 1956: 	} elsif(!$self-&gt;{&#39;no_entry&#39;}) {
 </span><span class=""> 1957: 		$query .= &#39; ORDER BY &#39; . $self-&gt;{&#39;id&#39;};
 </span><span class=""> 1958: 	}
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."><span class="lcsaj-tip"><span class="lcsaj-dot-uncovered">●</span><span class="lcsaj-tip-text">[NOT COVERED] 1959 → 1959 → 1968</span></span> 1959: 	if(defined($limit)) {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1959 → 1959 → 1968</span></span> 1959: 	if(defined($limit)) {
 </span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1960: 		$query .= &#39; LIMIT ?&#39;;
 </span><span class=""> 1961: 		push @query_args, $limit;
 </span><span class=""> 1962: 	} elsif(defined($offset)) {
@@ -2538,12 +2538,12 @@ is( func(VALUE_AT_BOUNDARY), EXPECTED, &#39;Test boundary behaviour&#39; );
 </span><span class=""> 1965: 			if ($dbh &amp;&amp; (($dbh-&gt;{Driver}{Name} // &#39;&#39;) eq &#39;SQLite&#39;))
 </span><span class=""> 1966: 			|| (($self-&gt;{&#39;_dialect&#39;} // &#39;&#39;) eq &#39;sqlite&#39;);
 </span><span class=""> 1967: 	}
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."><span class="lcsaj-tip"><span class="lcsaj-dot-uncovered">●</span><span class="lcsaj-tip-text">[NOT COVERED] 1968 → 1968 → 1973</span></span> 1968: 	if(defined($offset)) {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1968 → 1968 → 1973</span></span> 1968: 	if(defined($offset)) {
 </span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 1969: 		$query .= &#39; OFFSET ?&#39;;
 </span><span class=""> 1970: 		push @query_args, $offset;
 </span><span class=""> 1971: 	}
 </span><span class=""> 1972: 
-</span><span class="survived-1 tooltip" data-tooltip="Mutation survived. Add targeted tests to validate this branch."><span class="lcsaj-tip"><span class="lcsaj-dot-uncovered">●</span><span class="lcsaj-tip-text">[NOT COVERED] 1973 → 1973 → 1979</span></span> 1973: 	if(defined($query_args[0])) {
+</span><span class="survived-1 tooltip" data-tooltip="Mutation survived. Add targeted tests to validate this branch."><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1973 → 1973 → 1979</span></span> 1973: 	if(defined($query_args[0])) {
 </span>
 					<details class="mutant-details">
 					<summary>Mutants (Total: 1, Killed: 0, Survived: 1)</summary>
@@ -2555,7 +2555,7 @@ is( func(VALUE_AT_BOUNDARY), EXPECTED, &#39;Test boundary behaviour&#39; );
 </span><span class=""> 1976: 		$self-&gt;_debug(&quot;each_row $query&quot;);
 </span><span class=""> 1977: 	}
 </span><span class=""> 1978: 
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot-uncovered">●</span><span class="lcsaj-tip-text">[NOT COVERED] 1979 → 1990 → 1994</span></span> 1979: 	my $sth = $self-&gt;{$table}-&gt;prepare_cached($query)
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">1979 → 1990 → 1994</span></span> 1979: 	my $sth = $self-&gt;{$table}-&gt;prepare_cached($query)
 </span><span class=""> 1980: 		or Carp::croak(ref($self), &quot;: each_row prepare failed: &quot;, $self-&gt;{$table}-&gt;errstr());
 </span><span class=""> 1981: 	$sth-&gt;execute(@query_args) || croak(&quot;$query: @query_args&quot;);
 </span><span class=""> 1982: 
@@ -2576,7 +2576,7 @@ is( func(VALUE_AT_BOUNDARY), EXPECTED, &#39;Test boundary behaviour&#39; );
 <span class=""> 1991: 		$sth-&gt;finish();
 </span><span class=""> 1992: 		die $err;
 </span><span class=""> 1993: 	}
-</span><span class="survived-2 tooltip" data-tooltip="Return value mutation survived. Add tests asserting exact return values. Boolean logic mutation survived. Add tests covering both true and false paths."> 1994: 	return $n;
+</span><span class="survived-2 tooltip" data-tooltip="Boolean logic mutation survived. Add tests covering both true and false paths. Return value mutation survived. Add tests asserting exact return values."> 1994: 	return $n;
 </span>
 					<details class="mutant-details">
 					<summary>Mutants (Total: 2, Killed: 0, Survived: 2)</summary>
@@ -2814,7 +2814,7 @@ is( func(INPUT), EXPECTED, &#39;Verify correct return value&#39; );
 <span class=""> 2151: 				splice(@rc, 0, $offset) if $offset;
 </span><span class=""> 2152: 				splice(@rc, $limit)     if defined $limit;
 </span><span class=""> 2153: 			}
-</span><span class="survived-2 tooltip" data-tooltip="Boolean logic mutation survived. Add tests covering both true and false paths. Return value mutation survived. Add tests asserting exact return values."> 2154: 			return @rc;
+</span><span class="survived-2 tooltip" data-tooltip="Return value mutation survived. Add tests asserting exact return values. Boolean logic mutation survived. Add tests covering both true and false paths."> 2154: 			return @rc;
 </span>
 					<details class="mutant-details">
 					<summary>Mutants (Total: 2, Killed: 0, Survived: 2)</summary>
