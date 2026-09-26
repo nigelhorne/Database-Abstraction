@@ -494,6 +494,19 @@ string which is taken to be `directory`.
     Zero-based index of the HTML `<table>` to extract when the `url`
     backend is used.  Default is `0` (the first table on the page).
 
+- `infer_types`
+
+    Set to `1` to enable heuristic type inference in `schema()` for
+    slurp-backed sources (CSV, JSON, XLSX, XML, HTML URL, DBM::Deep).
+    Default is `0` (off; all columns reported as `TEXT` for backward
+    compatibility).
+
+    When enabled, `schema()` scans the first 100 rows and promotes column
+    types: all-integer values => `INTEGER`; all-floating-point values =>
+    `REAL`; all ISO-8601 timestamps => `TIMESTAMP`; all ISO-8601 dates =>
+    `DATE`; otherwise `TEXT`.  `NULL` (`undef` or empty string) values
+    are skipped during the scan.
+
 #### Caching and Logging
 
 - `cache`
@@ -741,7 +754,14 @@ The schema is determined by the backend:
 
 - **SQLite** - `PRAGMA table_info(table)`
 - **Other DBI drivers** - `$dbh->column_info(...)`
-- **Slurp mode** - inferred from the first row (all columns typed as `TEXT`)
+- **Slurp mode** - inferred from the first row; all columns typed as
+`TEXT` by default.  When `infer_types => 1` was passed to the
+constructor, up to 100 rows are scanned per column and the type is
+promoted: all-integer values => `INTEGER`; all-float values =>
+`REAL`; all ISO-8601 timestamps (`YYYY-MM-DDThh:mm`) => `TIMESTAMP`;
+all ISO-8601 dates (`YYYY-MM-DD`) => `DATE`; otherwise `TEXT`.
+`undef` and empty-string values are treated as SQL `NULL` and skipped
+during the scan.
 - **BerkeleyDB** - always returns `entry` (pk) and `value`
 
 The result is cached inside the object after the first call.

@@ -24,6 +24,11 @@ Revision history for Database-Abstraction
 	  primary-key sort.  Slurp/in-memory paths sort @rc with string cmp
 	  before applying offset/limit pagination.  Unsafe column names and
 	  invalid direction strings are ignored with a carp warning.
+	- schema(): new constructor option infer_types => 1 enables heuristic
+	  type inference for slurp-mode sources (CSV, JSON, XLSX, XML, HTML
+	  URL, DBM::Deep).  Scans up to 100 rows per column and promotes types
+	  from TEXT to INTEGER, REAL, TIMESTAMP, or DATE.  Off by default for
+	  backward compatibility.
 	[ Documentation ]
 	- CLAUDE.md: five stale LWP::UserAgent references corrected to
 	  LWP::UserAgent::Cached (lines in HTML URL backend, lazy-load, and

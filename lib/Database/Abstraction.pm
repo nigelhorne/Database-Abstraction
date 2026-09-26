@@ -32,18 +32,6 @@ package Database::Abstraction;
 #
 # POST-RELEASE ROADMAP
 #
-# TODO: Heuristic type inference in slurp mode
-#   schema() currently reports every slurp-mode column (CSV, JSON, XLSX, XML,
-#   HTML, DBM::Deep) as type TEXT because the data arrives as plain strings.
-#   Scanning the first N rows (e.g. N=100) to detect columns whose values are
-#   all integers (INTEGER), all floating-point (REAL), or all ISO-8601 dates
-#   (DATE/TIMESTAMP) would make schema() useful for type-aware consumers.
-#   In particular, Database::Join::_validate_schema_types() compares schema()
-#   types across databases: if DA reports TEXT for everything, the comparison
-#   is meaningless for slurp-backed sources even when one column is clearly
-#   INTEGER in the file.  A constructor option (infer_types => 1, off by
-#   default for backward compat) would enable the inference pass.
-#
 # TODO: base_criteria / filters constructor parameter
 #   Analogous to Database::Join's filters => {db_idx => {col => val}}.
 #   A base_criteria hashref supplied at construction time would be ANDed into
@@ -137,6 +125,14 @@ use constant	DEFAULT_MAX_SLURP_SIZE => 16 * 1024;	# CSV files <= than this size 
 # SAFE_QUALIFIED:  allows a single dot for table.column notation in JOINs.
 my $SAFE_IDENTIFIER = qr/\A[a-zA-Z_][a-zA-Z0-9_]*\z/;
 my $SAFE_QUALIFIED  = qr/\A[a-zA-Z_][a-zA-Z0-9_.]*\z/;
+
+# Type-inference regexes and sample size for schema() when infer_types => 1.
+# Compiled once at load; reused in _infer_type() across all schema() calls.
+use constant INFER_TYPE_SAMPLE_SIZE => 100;
+my $INFER_INT_RE  = qr/\A-?\d+\z/;
+my $INFER_REAL_RE = qr/\A-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?\z/;
+my $INFER_TS_RE   = qr/\A\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\d|3[01])[T ]\d{2}:\d{2}/;
+my $INFER_DATE_RE = qr/\A\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\d|3[01])\z/;
 
 # Module-level constant: valid JOIN types after uc() normalisation.
 # Built once at compile time; reused by every _build_joins call.
@@ -676,6 +672,19 @@ Set to C<0> to disable the AUTOLOAD column shortcut.  Default is C<1>
 
 Zero-based index of the HTML C<< <table> >> to extract when the C<url>
 backend is used.  Default is C<0> (the first table on the page).
+
+=item * C<infer_types>
+
+Set to C<1> to enable heuristic type inference in C<schema()> for
+slurp-backed sources (CSV, JSON, XLSX, XML, HTML URL, DBM::Deep).
+Default is C<0> (off; all columns reported as C<TEXT> for backward
+compatibility).
+
+When enabled, C<schema()> scans the first 100 rows and promotes column
+types: all-integer values => C<INTEGER>; all-floating-point values =>
+C<REAL>; all ISO-8601 timestamps => C<TIMESTAMP>; all ISO-8601 dates =>
+C<DATE>; otherwise C<TEXT>.  C<NULL> (C<undef> or empty string) values
+are skipped during the scan.
 
 =back
 
@@ -2435,7 +2444,14 @@ The schema is determined by the backend:
 
 =item * B<Other DBI drivers> - C<< $dbh->column_info(...) >>
 
-=item * B<Slurp mode> - inferred from the first row (all columns typed as C<TEXT>)
+=item * B<Slurp mode> - inferred from the first row; all columns typed as
+C<TEXT> by default.  When C<< infer_types => 1 >> was passed to the
+constructor, up to 100 rows are scanned per column and the type is
+promoted: all-integer values => C<INTEGER>; all-float values =>
+C<REAL>; all ISO-8601 timestamps (C<YYYY-MM-DDThh:mm>) => C<TIMESTAMP>;
+all ISO-8601 dates (C<YYYY-MM-DD>) => C<DATE>; otherwise C<TEXT>.
+C<undef> and empty-string values are treated as SQL C<NULL> and skipped
+during the scan.
 
 =item * B<BerkeleyDB> - always returns C<entry> (pk) and C<value>
 
@@ -2462,16 +2478,29 @@ sub schema {
 
 	if(my $data = $self->{'data'}) {
 		my $first;
+		my @sample;
 		if(ref($data) eq 'HASH') {
 			($first) = values %{$data};
+			if($self->{'infer_types'} && $first) {
+				my @rows  = values %{$data};
+				my $last  = $#rows < INFER_TYPE_SAMPLE_SIZE - 1 ? $#rows : INFER_TYPE_SAMPLE_SIZE - 1;
+				@sample = @rows[0 .. $last];
+			}
 		} elsif(ref($data) eq 'ARRAY' && @{$data}) {
 			$first = $data->[0];
+			if($self->{'infer_types'}) {
+				my $last = $#{$data} < INFER_TYPE_SAMPLE_SIZE - 1 ? $#{$data} : INFER_TYPE_SAMPLE_SIZE - 1;
+				@sample = @{$data}[0 .. $last];
+			}
 		}
 		if($first) {
 			my $id = $self->{'id'};
 			for my $col (keys %{$first}) {
+				my $type = @sample
+					? _infer_type([map { exists($_->{$col}) ? $_->{$col} : undef } @sample])
+					: 'TEXT';
 				$schema{$col} = {
-					type     => 'TEXT',
+					type     => $type,
 					nullable => ($col eq $id ? 0 : 1),
 					default  => undef,
 					pk       => ($col eq $id ? 1 : 0),
@@ -2907,6 +2936,24 @@ sub _build_joins
 	}
 
 	return join(' ', @clauses);
+}
+
+# Infer a SQL type token from an arrayref of sample values for one column.
+# Returns 'INTEGER', 'REAL', 'TIMESTAMP', 'DATE', or 'TEXT' (the default).
+# undef and empty-string values are treated as NULL and skipped; a column
+# whose entire sample is NULL is typed TEXT (most permissive safe default).
+# Order of checks: INTEGER before REAL (integers also match REAL); TIMESTAMP
+# before DATE (timestamps start like dates but have a time component).
+sub _infer_type
+{
+	my ($vals) = @_;
+	my @non_null = grep { defined($_) && $_ ne '' } @{$vals};
+	return 'TEXT' unless @non_null;
+	return 'INTEGER'   unless grep { $_ !~ $INFER_INT_RE  } @non_null;
+	return 'REAL'      unless grep { $_ !~ $INFER_REAL_RE } @non_null;
+	return 'TIMESTAMP' unless grep { $_ !~ $INFER_TS_RE   } @non_null;
+	return 'DATE'      unless grep { $_ !~ $INFER_DATE_RE } @non_null;
+	return 'TEXT';
 }
 
 # Parse a sort_by parameter value into ($col, $dir).
