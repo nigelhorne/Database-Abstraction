@@ -330,7 +330,10 @@ sub _build_sql
 		$query .= ' ' . $db->_build_joins($self->{'_joins'});
 	}
 
-	my ($where, $wargs) = $db->_build_where($self->{'_where'});
+	my $qwhere = $db->{'base_criteria'}
+		? { %{$db->{'base_criteria'}}, %{$self->{'_where'}} }
+		: $self->{'_where'};
+	my ($where, $wargs) = $db->_build_where($qwhere);
 	my @args = @{$wargs};
 
 	if(@{$self->{'_joins'}}) {

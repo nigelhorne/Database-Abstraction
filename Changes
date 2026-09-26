@@ -29,6 +29,14 @@ Revision history for Database-Abstraction
 	  URL, DBM::Deep).  Scans up to 100 rows per column and promotes types
 	  from TEXT to INTEGER, REAL, TIMESTAMP, or DATE.  Off by default for
 	  backward compatibility.
+	- base_criteria constructor parameter: a hashref of column-value pairs
+	  that is ANDed into every SELECT automatically.  Use cases include
+	  row-level security (tenant_id => $tid), soft-delete filtering
+	  (deleted_at => undef), and status gates (active => 1).  Works on
+	  all four select methods (selectall_arrayref, selectall_array, count,
+	  fetchrow_hashref), the chained query builder, and BerkeleyDB/slurp
+	  backends.  Keys are validated against the same identifier rules as
+	  the id parameter; the hashref is shallow-copied at construction.
 	[ Documentation ]
 	- CLAUDE.md: five stale LWP::UserAgent references corrected to
 	  LWP::UserAgent::Cached (lines in HTML URL backend, lazy-load, and
