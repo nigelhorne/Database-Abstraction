@@ -33,14 +33,6 @@ package Database::Abstraction;
 # POST-RELEASE ROADMAP
 #
 #
-# TODO: Consistent columns() ordering across backends
-#   The slurp path returns sort keys %{$first_row} (alphabetical).
-#   The SQL path returns columns in declaration order (from DBI's NAME attr).
-#   This ordering inconsistency can break column-position assumptions in code
-#   that switches between backends (e.g., switching a CSV to SQLite).
-#   Options: always sort alphabetically, or document the ordering contract per
-#   backend in the POD so callers know not to rely on position.
-#
 # TODO: Parallel remote file fetching for the host => '...' backend
 #   When host is set, candidate file extensions are probed sequentially via
 #   SSH (File::Slurp::Remote).  Fetching all candidates concurrently using
@@ -2595,11 +2587,15 @@ Returns an array reference of column names for the current table.
 
     my $cols = $db->columns();    # e.g. ['entry', 'name', 'score', 'status']
 
-The column list is determined by the backend:
+Column names are always returned in alphabetical (lexicographic) order,
+regardless of backend. This makes the result stable and portable when the
+same logical table is backed by different engines (CSV => SQLite, etc.).
+
+The source of column names varies by backend:
 
 =over 4
 
-=item * B<Slurp mode> - sorted keys of the first row in memory.
+=item * B<Slurp mode> - keys of the first row in memory.
 
 =item * B<SQLite / other DBI> - a zero-row C<SELECT *> exposes the driver's
 C<NAME> attribute.
@@ -2635,7 +2631,7 @@ sub columns {
 	} else {
 		my $sth = $self->{$table}->prepare_cached("SELECT * FROM $table WHERE 1=0");
 		$sth->execute();
-		@cols = @{$sth->{NAME}};
+		@cols = sort @{$sth->{NAME}};
 		$sth->finish();
 	}
 

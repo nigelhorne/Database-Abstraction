@@ -46,6 +46,12 @@ Revision history for Database-Abstraction
 	  fetchrow_hashref), the chained query builder, and BerkeleyDB/slurp
 	  backends.  Keys are validated against the same identifier rules as
 	  the id parameter; the hashref is shallow-copied at construction.
+	- columns(): now always returns column names in alphabetical order
+	  regardless of backend.  Previously the DBI path returned columns in
+	  declaration order (from $sth->{NAME}) while the slurp path returned
+	  sorted keys.  The fix is a single sort on $sth->{NAME}.  The result is
+	  the same portable, reproducible ordering whether the table is backed by
+	  CSV, SQLite, or any other DBI driver.
 	- Schema-aware numeric comparison in slurp-mode in-memory scan:
 	  _match_criterion now accepts an optional column name and checks the
 	  cached schema (if schema() has been called) to determine whether to

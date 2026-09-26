@@ -773,9 +773,13 @@ Returns an array reference of column names for the current table.
 my $cols = $db->columns();    # e.g. ['entry', 'name', 'score', 'status']
 ```
 
-The column list is determined by the backend:
+Column names are always returned in alphabetical (lexicographic) order,
+regardless of backend. This makes the result stable and portable when the
+same logical table is backed by different engines (CSV => SQLite, etc.).
 
-- **Slurp mode** - sorted keys of the first row in memory.
+The source of column names varies by backend:
+
+- **Slurp mode** - keys of the first row in memory.
 - **SQLite / other DBI** - a zero-row `SELECT *` exposes the driver's
 `NAME` attribute.
 - **BerkeleyDB** - always returns `['entry', 'value']`.
