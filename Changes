@@ -71,6 +71,13 @@ Revision history for Database-Abstraction
 	  (slurp) and large (SQL) datasets.  Only fires when schema() has
 	  been called first (or infer_types => 1 combined with an explicit
 	  schema() call); defaults to string comparison otherwise.
+	- updated(): SQLite DSN connections now return a live stat() mtime
+	  rather than the connection timestamp.  When the backing DSN matches
+	  dbi:SQLite:dbname=... the file path is extracted and stat()-ed on
+	  every updated() call, so callers get cache-invalidation semantics
+	  consistent with file-based backends regardless of how the connection
+	  was opened.  Non-SQLite DSN backends and URL backends continue to
+	  return the connection time.
 	[ Documentation ]
 	- CLAUDE.md: five stale LWP::UserAgent references corrected to
 	  LWP::UserAgent::Cached (lines in HTML URL backend, lazy-load, and

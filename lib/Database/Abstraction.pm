@@ -30,17 +30,6 @@ package Database::Abstraction;
 # Implementing them here would let callers (including Database::Join) delegate
 # the work to DA rather than re-implementing it above the abstraction layer.
 #
-# POST-RELEASE ROADMAP
-#
-#
-# TODO: updated() returning live mtime for file-backed backends
-#   DSN and URL backends set _updated = time() (connection time) rather than
-#   any file timestamp.  File-based backends (CSV, SQLite, etc.) correctly use
-#   stat()[9].  Callers using updated() for cache-invalidation therefore get
-#   different semantics depending on backend type.  For DSN connections that
-#   point at a file (e.g. dbi:SQLite:dbname=/path/to/file.sqlite), updated()
-#   could stat the file and return its mtime, giving callers a consistent
-#   contract regardless of how the connection was opened.
 # ---------------------------------------------------------------------------
 
 use warnings;
@@ -2615,14 +2604,33 @@ sub execute
 
 =head2 updated
 
-Returns the Unix timestamp of the last database update (mtime for
-file-based backends, or the time of the most recent C<new()> call for
-DSN-based connections).
+Returns the Unix timestamp of the last database update.
+
+For file-based backends (CSV, XML, SQLite via C<directory>), this is the
+mtime of the backing file, set at C<new()> time.
+
+For SQLite DSN connections (C<dbi:SQLite:dbname=...>), the file path is
+extracted from the DSN and C<stat()>-ed live on every call, so callers
+get a current mtime suitable for cache-invalidation even when the database
+was opened via a DSN rather than a C<directory>.
+
+For all other DSN-based connections (PostgreSQL, MySQL, etc.) and for
+URL-based backends, returns the Unix timestamp of the most recent
+C<new()> call (connection time).
 
 =cut
 
 sub updated {
 	my $self = shift;
+
+	if(($self->{'_dialect'} // '') eq 'sqlite') {
+		my $dsn = $self->{'dsn'};
+		if(defined($dsn) && $dsn =~ /\Adbi:SQLite:(?:dbname=)?(.+)\z/i) {
+			my $path = $1;
+			my @st = stat($path);
+			return $st[9] if @st;
+		}
+	}
 
 	return $self->{'_updated'};
 }
