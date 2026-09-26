@@ -20,7 +20,7 @@ https://pjcj.net
 <h1>Branch Coverage</h1>
 <table>
 <tr><td class="h" align="right">File:</td><td align="left">blib/lib/Database/Abstraction.pm</td></tr>
-<tr><td class="h" align="right">Coverage:</td><td align="left" class="c0">65.4%</td></tr>
+<tr><td class="h" align="right">Coverage:</td><td align="left" class="c0">66.5%</td></tr>
 </table>
 <div><br/></div>
 <table>
@@ -64,7 +64,7 @@ https://pjcj.net
 <tr><td class="h"><a id="L785">785</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $$src{&quot;table&quot;} =~ /$SAFE_QUALIFIED/</td></tr>
 <tr><td class="h"><a id="L787">787</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $$src{&quot;base_criteria&quot;})</td></tr>
 <tr><td class="h"><a id="L789">789</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ref $bc eq &quot;HASH&quot;</td></tr>
-<tr><td class="h"><a id="L792">792</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if $k =~ /\A-/</td></tr>
+<tr><td class="h"><a id="L792">792</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $k =~ /\A-/</td></tr>
 <tr><td class="h"><a id="L793">793</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $k =~ /$SAFE_QUALIFIED/</td></tr>
 <tr><td class="h"><a id="L823">823</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $logger = $$params{&quot;logger&quot;})</td></tr>
 <tr><td class="h"><a id="L824">824</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (&amp;Scalar::Util::blessed($logger)) { }</td></tr>
@@ -172,10 +172,10 @@ https://pjcj.net
 <tr><td class="h"><a id="L1565">1565</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&#39;no_entry&#39;}) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif (scalar @_) { }</td></tr>
 <tr><td class="h"><a id="L1576">1576</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $join_spec = delete $params-&gt;{&#39;join&#39;})</td></tr>
-<tr><td class="h"><a id="L1582">1582</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $limit)</td></tr>
-<tr><td class="h"><a id="L1583">1583</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if (not $limit =~ /\A\d+\z/) { }</td></tr>
-<tr><td class="h"><a id="L1590">1590</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $offset)</td></tr>
-<tr><td class="h"><a id="L1591">1591</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if (not $offset =~ /\A\d+\z/) { }</td></tr>
+<tr><td class="h"><a id="L1582">1582</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $limit)</td></tr>
+<tr><td class="h"><a id="L1583">1583</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (not $limit =~ /\A\d+\z/) { }</td></tr>
+<tr><td class="h"><a id="L1590">1590</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $offset)</td></tr>
+<tr><td class="h"><a id="L1591">1591</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (not $offset =~ /\A\d+\z/) { }</td></tr>
 <tr><td class="h"><a id="L1602">1602</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (not $join_clause and $$self{&quot;data&quot;} and not $self-&gt;_has_complex_criteria($params))</td></tr>
 <tr><td class="h"><a id="L1603">1603</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (scalar keys %{$params;} == 0) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif (scalar keys %{$params;} == 1 and defined $$params{&#39;entry&#39;} and not $$self{&#39;no_entry&#39;}) { }</td></tr>
@@ -185,9 +185,9 @@ https://pjcj.net
 <tr><td class="h"><a id="L1608">1608</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if (scalar keys %{$$self{&quot;data&quot;};} &lt;= 10)</td></tr>
 <tr><td class="h"><a id="L1615">1615</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $sort_col)</td></tr>
 <tr><td class="h"><a id="L1619">1619</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">$desc ? :</td></tr>
-<tr><td class="h"><a id="L1622">1622</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $offset or defined $limit)</td></tr>
-<tr><td class="h"><a id="L1623">1623</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if $offset</td></tr>
-<tr><td class="h"><a id="L1624">1624</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if defined $limit</td></tr>
+<tr><td class="h"><a id="L1622">1622</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $offset or defined $limit)</td></tr>
+<tr><td class="h"><a id="L1623">1623</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $offset</td></tr>
+<tr><td class="h"><a id="L1624">1624</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if defined $limit</td></tr>
 <tr><td class="h"><a id="L1631">1631</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless exists $$self{&quot;data&quot;}{$$params{&quot;entry&quot;}}</td></tr>
 <tr><td class="h"><a id="L1633">1633</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $sort_col)</td></tr>
 <tr><td class="h"><a id="L1637">1637</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">$desc ? :</td></tr>
@@ -419,8 +419,8 @@ https://pjcj.net
 <tr><td class="h"></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">elsif (ref $data eq &#39;ARRAY&#39; and @{$data;}) { }</td></tr>
 <tr><td class="h"><a id="L2756">2756</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&quot;infer_types&quot;} and $first)</td></tr>
 <tr><td class="h"><a id="L2758">2758</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">$#rows &lt; 99 ? :</td></tr>
-<tr><td class="h"><a id="L2763">2763</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($$self{&quot;infer_types&quot;})</td></tr>
-<tr><td class="h"><a id="L2764">2764</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">$#{$data;} &lt; 99 ? :</td></tr>
+<tr><td class="h"><a id="L2763">2763</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&quot;infer_types&quot;})</td></tr>
+<tr><td class="h"><a id="L2764">2764</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">$#{$data;} &lt; 99 ? :</td></tr>
 <tr><td class="h"><a id="L2768">2768</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if ($first)</td></tr>
 <tr><td class="h"><a id="L2772">2772</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">exists $_-&gt;{$col} ? :</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">@sample ? :</td></tr>
@@ -591,8 +591,8 @@ https://pjcj.net
 <tr><td class="h"><a id="L3671">3671</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $dbh = $$self{$table})</td></tr>
 <tr><td class="h"><a id="L3686">3686</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless do {
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BEGIN {
-&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;autodie::Scope::GuardStack/guard5&#39;} = &#39;autodie::Scope::Guard=CODE(0x56130135cd38)&#39;;
-&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;no Fatal&#39;} = &#39;HASH(0x56130135ccc0)&#39;;
+&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;autodie::Scope::GuardStack/guard5&#39;} = &#39;autodie::Scope::Guard=CODE(0x55f6eb2f8a38)&#39;;
+&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;no Fatal&#39;} = &#39;HASH(0x55f6eb2f89c0)&#39;;
 }
 &#11;open $fh, &quot;&lt;&quot;, $file
 }</td></tr>
@@ -606,8 +606,8 @@ https://pjcj.net
 <tr><td class="h"><a id="L3740">3740</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $lc_bare eq $me</td></tr>
 <tr><td class="h"><a id="L3756">3756</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless do {
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BEGIN {
-&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;autodie::Scope::GuardStack/guard6&#39;} = &#39;autodie::Scope::Guard=CODE(0x56130136aa40)&#39;;
-&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;no Fatal&#39;} = &#39;HASH(0x56130136a9e0)&#39;;
+&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;autodie::Scope::GuardStack/guard6&#39;} = &#39;autodie::Scope::Guard=CODE(0x55f6eb306780)&#39;;
+&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;no Fatal&#39;} = &#39;HASH(0x55f6eb306720)&#39;;
 }
 &#11;open $fh, &quot;&lt;&quot;, $file
 }</td></tr>
