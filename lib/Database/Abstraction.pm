@@ -32,15 +32,6 @@ package Database::Abstraction;
 #
 # POST-RELEASE ROADMAP
 #
-# TODO: Schema-aware numeric comparison in slurp-mode in-memory scan
-#   The slurp path compares all criteria values as strings, so
-#   score => { '>' => 90 } on a TEXT-typed column gives wrong results when
-#   values like '9' compare as greater than '10' under string ordering.
-#   When schema() reports a column as INTEGER or REAL, the _match_criterion
-#   helper should switch to numeric comparison (0+$row_val > 0+$crit_val).
-#   This would make the slurp path produce the same results as the SQL path
-#   for numeric columns, eliminating a silent correctness split between
-#   small (slurp) and large (SQL) datasets.
 #
 # TODO: Consistent columns() ordering across backends
 #   The slurp path returns sort keys %{$first_row} (alphabetical).
@@ -1644,7 +1635,7 @@ sub selectall_arrayref {
 			my @param_keys = keys %{$params};
 			my @rc = grep {
 				my $row = $_;
-				all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params->{$_}) } @param_keys
+				all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params->{$_}, $_) } @param_keys
 			} values %{$self->{'data'}};
 			if(defined $sort_col) {
 				my $desc = ($sort_dir eq 'DESC');
@@ -1665,7 +1656,7 @@ sub selectall_arrayref {
 			my @param_keys = keys %{$params};
 			my @rc = grep {
 				my $row = $_;
-				all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params->{$_}) } @param_keys
+				all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params->{$_}, $_) } @param_keys
 			} @{$self->{'data'}};
 			if(defined $sort_col) {
 				my $desc = ($sort_dir eq 'DESC');
@@ -1899,14 +1890,14 @@ sub each_row
 			my @param_keys = keys %{$params};
 			@rc = grep {
 				my $row = $_;
-				all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params->{$_}) } @param_keys
+				all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params->{$_}, $_) } @param_keys
 			} values %{$self->{'data'}};
 		} elsif(ref($self->{'data'}) eq 'ARRAY' && !$self->{$table}) {
 			$self->_debug("$table: each_row in-memory array scan with criteria");
 			my @param_keys = keys %{$params};
 			@rc = grep {
 				my $row = $_;
-				all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params->{$_}) } @param_keys
+				all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params->{$_}, $_) } @param_keys
 			} @{$self->{'data'}};
 		}
 		if(@rc) {
@@ -2110,7 +2101,7 @@ sub selectall_array
 			my @param_keys = keys %{$params};
 			my @rc = grep {
 				my $row = $_;
-				all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params->{$_}) } @param_keys
+				all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params->{$_}, $_) } @param_keys
 			} values %{$self->{'data'}};
 			if(defined $sort_col) {
 				my $desc = ($sort_dir eq 'DESC');
@@ -2131,7 +2122,7 @@ sub selectall_array
 			my @param_keys = keys %{$params};
 			my @rc = grep {
 				my $row = $_;
-				all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params->{$_}) } @param_keys
+				all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params->{$_}, $_) } @param_keys
 			} @{$self->{'data'}};
 			if(defined $sort_col) {
 				my $desc = ($sort_dir eq 'DESC');
@@ -2312,7 +2303,7 @@ sub count
 			# intermediate @rows array of N references on the stack.
 			return scalar grep {
 				my $row = $_;
-				all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params->{$_}) } @param_keys
+				all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params->{$_}, $_) } @param_keys
 			} (ref($self->{'data'}) eq 'HASH' ? values %{$self->{'data'}} : @{$self->{'data'}});
 		}
 	}
@@ -2422,7 +2413,7 @@ sub fetchrow_hashref {
 		return undef unless exists($self->{'data'}->{$params->{'entry'}});
 		my $row = $self->{'data'}->{$params->{'entry'}};
 		if(my $bc = $self->{'base_criteria'}) {
-			return undef unless all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $bc->{$_}) } keys %{$bc};
+			return undef unless all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $bc->{$_}, $_) } keys %{$bc};
 		}
 		return $row;
 	}
@@ -2957,7 +2948,7 @@ sub AUTOLOAD {
 			return map { exists($_->{$column}) ? $_->{$column} : undef }
 			       grep {
 			           my $row = $_;
-			           all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params{$_}) } @param_keys
+			           all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params{$_}, $_) } @param_keys
 			       } @_rows;
 		}
 		my $id = $self->{'id'};
@@ -3438,7 +3429,7 @@ sub _scan_berkeley
 			my $row = { entry => $k, value => $bdb->{$k} };
 			my $match = 1;
 			for my $col (@cols) {
-				unless($self->_match_criterion($row->{$col}, $params->{$col})) {
+				unless($self->_match_criterion($row->{$col}, $params->{$col}, $col)) {
 					$match = 0;
 					last;
 				}
@@ -3544,15 +3535,30 @@ sub _like_match
 
 sub _match_criterion
 {
-	my ($self, $row_val, $crit_val) = @_;
+	my ($self, $row_val, $crit_val, $col) = @_;
+
+	# Use numeric equality/membership operators when the schema (if already
+	# cached) reports the column as INTEGER or REAL.  The numeric ordering
+	# operators (>, <, >=, <=, -between) already use Perl's numeric context
+	# regardless; only equality-family operators need the type-aware path.
+	my $numeric = ($col && $self->{'_schema'})
+		? do { my $t = ($self->{'_schema'}{$col} // {})->{'type'} // 'TEXT';
+		       $t eq 'INTEGER' || $t eq 'REAL' }
+		: 0;
 
 	if(ref($crit_val) eq 'HASH') {
 		for my $op (keys %{$crit_val}) {
 			my $operand = $crit_val->{$op};
 			if($op eq '-in') {
-				return 0 unless defined($row_val) && grep { $row_val eq $_ } @{$operand};
+				return 0 unless defined($row_val)
+					&& ($numeric
+						? grep { $row_val == $_ } @{$operand}
+						: grep { $row_val eq $_ } @{$operand});
 			} elsif($op eq '-not_in') {
-				return 0 if defined($row_val) && grep { $row_val eq $_ } @{$operand};
+				return 0 if defined($row_val)
+					&& ($numeric
+						? grep { $row_val == $_ } @{$operand}
+						: grep { $row_val eq $_ } @{$operand});
 			} elsif($op eq '-between') {
 				return 0 unless defined($row_val) && $row_val >= $operand->[0] && $row_val <= $operand->[1];
 			} elsif($op eq '-like') {
@@ -3564,6 +3570,8 @@ sub _match_criterion
 			} elsif($op eq '!=') {
 				if(!defined($operand)) {
 					return 0 unless defined($row_val);
+				} elsif($numeric) {
+					return 0 unless defined($row_val) && $row_val != $operand;
 				} else {
 					return 0 unless defined($row_val) && $row_val ne $operand;
 				}
@@ -3582,6 +3590,7 @@ sub _match_criterion
 
 	return !defined($row_val) && !defined($crit_val) ? 1
 		: !defined($row_val) || !defined($crit_val) ? 0
+		: $numeric ? $row_val == $crit_val
 		: $row_val eq $crit_val;
 }
 

@@ -46,6 +46,15 @@ Revision history for Database-Abstraction
 	  fetchrow_hashref), the chained query builder, and BerkeleyDB/slurp
 	  backends.  Keys are validated against the same identifier rules as
 	  the id parameter; the hashref is shallow-copied at construction.
+	- Schema-aware numeric comparison in slurp-mode in-memory scan:
+	  _match_criterion now accepts an optional column name and checks the
+	  cached schema (if schema() has been called) to determine whether to
+	  use numeric (==) or string (eq) equality.  When a column is typed
+	  INTEGER or REAL, equality, !=, -in, and -not_in all use numeric
+	  operators, eliminating silent correctness splits between small
+	  (slurp) and large (SQL) datasets.  Only fires when schema() has
+	  been called first (or infer_types => 1 combined with an explicit
+	  schema() call); defaults to string comparison otherwise.
 	[ Documentation ]
 	- CLAUDE.md: five stale LWP::UserAgent references corrected to
 	  LWP::UserAgent::Cached (lines in HTML URL backend, lazy-load, and
