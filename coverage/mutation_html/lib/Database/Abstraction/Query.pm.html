@@ -293,9 +293,9 @@ a.intra-dot:hover { color: #7700bb; }
 <div class="nav"><a href="../Abstraction.pm.html">⬅ Previous</a> <a href="../../../../index.html">Index</a>
 </div><div class='summary'>
 <strong>Structural Coverage (Approximate)</strong><p>
-TER1 (Statement): 80.45%<br>
-TER2 (Branch): 80.68%<br>
-TER3 (LCSAJ): 83.3% (10/12)<br>
+TER1 (Statement): 89.94%<br>
+TER2 (Branch): 86.36%<br>
+TER3 (LCSAJ): 100.0% (12/12)<br>
 Approximate LCSAJ segments: 89<br>
 </div>
 
@@ -832,7 +832,7 @@ Approximate LCSAJ segments: 89<br>
 </span><span class="">  491: 
 </span><span class="">  492: sub each
 </span><span class="">  493: {
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot-uncovered">●</span><span class="lcsaj-tip-text">[NOT COVERED] 494 → 502 → 516</span></span>  494: 	my ($self, $callback) = @_;
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">494 → 502 → 516</span></span>  494: 	my ($self, $callback) = @_;
 </span><span class="">  495: 	my $db = $self-&gt;{&#39;_db&#39;};
 </span><span class="">  496: 
 </span><span class="">  497: 	croak(&#39;Database::Abstraction::Query::each: callback must be a code reference&#39;)
@@ -854,7 +854,7 @@ Approximate LCSAJ segments: 89<br>
 </span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  513: 		return $n;
 </span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  514: 	}
 </span><span class="">  515: 
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot-uncovered">●</span><span class="lcsaj-tip-text">[NOT COVERED] 516 → 529 → 533</span></span>  516: 	my ($query, $args, $table) = $self-&gt;_build_sql(0);
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">516 → 529 → 533</span></span>  516: 	my ($query, $args, $table) = $self-&gt;_build_sql(0);
 </span><span class="">  517: 	$db-&gt;_debug(&quot;Query-&gt;each: $query&quot;);
 </span><span class="">  518: 
 </span><span class="">  519: 	my $sth = $db-&gt;{$table}-&gt;prepare_cached($query);
