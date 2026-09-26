@@ -6,6 +6,11 @@ Revision history for Database-Abstraction
 	  (was already in TEST_REQUIRES but missing from the public recommends
 	  block, so CPAN clients did not surface it as an optional dependency).
 	[ Enhancements ]
+	- selectall_arrayref / selectall_array: accept limit => N and offset => M
+	  parameters for pagination.  SQL path uses LIMIT ?/OFFSET ? bind params;
+	  slurp/in-memory paths splice() the result.  Offset-only on SQLite uses
+	  LIMIT -1 OFFSET ? (SQLite requires a LIMIT clause with OFFSET).  Invalid
+	  (non-integer) values are ignored with a carp warning.
 	- dbi_source(): new public method returning {dbh, table} on SQLite-backed
 	  instances, undef on all other backends (slurp-mode CSV, JSON, XLSX,
 	  HTML URL, DBM::Deep, BerkeleyDB, PostgreSQL, MySQL).  Enables

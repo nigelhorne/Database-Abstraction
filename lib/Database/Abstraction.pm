@@ -32,17 +32,6 @@ package Database::Abstraction;
 #
 # POST-RELEASE ROADMAP
 #
-# TODO: limit => N / offset => M on selectall_arrayref and selectall_array
-#   The chained query builder (query()->limit(N)->offset(M)) already supports
-#   pagination, but the direct method forms do not.  Adding limit/offset to
-#   selectall_arrayref and selectall_array would:
-#   - SQL path: append LIMIT ? OFFSET ? as bind parameters (injection-safe).
-#   - Slurp path: splice() the ordered result after in-memory filtering.
-#   - offset without limit: LIMIT -1 OFFSET ? on SQLite (all rows from M).
-#   - Invalid values: carp and ignore, consistent with Database::Join behaviour.
-#   Mirroring this in DA means Database::Join's array path can delegate
-#   pagination to each DA instead of doing its own splice on the merged result.
-#
 # TODO: order_by parameter on selectall_arrayref and selectall_array
 #   selectall_arrayref currently always appends ORDER BY $id (the primary-key
 #   column) on DBI backends, with no way to request a different sort column or
@@ -1465,6 +1454,15 @@ Pass a C<join> key to combine with another table:
         join      => { table => 'dept', on => 'e.dept_id = dept.id' },
     );
 
+Pass C<limit =E<gt> N> and/or C<offset =E<gt> M> for pagination:
+
+    my $page = $db->selectall_arrayref(status => 'active', limit => 10, offset => 20);
+
+Both values must be non-negative integers; invalid values are ignored with a
+C<carp> warning.  When C<offset> is given without C<limit> the SQL backend
+uses C<LIMIT -1> on SQLite (meaning "no upper bound") so the C<OFFSET> clause
+is legal.
+
 Results are returned in the cache (if configured) and the returned array
 reference is made read-only unless C<no_fixate> was set.
 
@@ -1498,7 +1496,22 @@ sub selectall_arrayref {
 
 	if($self->{'berkeley'}) {
 		$params = Params::Get::get_params(undef, \@_) // {};
-		return set_return($self->_scan_berkeley($params), { type => 'arrayref' });
+		my $bl = delete $params->{'limit'};
+		my $bo = delete $params->{'offset'};
+		if(defined($bl) && $bl !~ /\A\d+\z/) {
+			Carp::carp('selectall_arrayref: limit must be a non-negative integer, ignoring');
+			undef $bl;
+		}
+		if(defined($bo) && $bo !~ /\A\d+\z/) {
+			Carp::carp('selectall_arrayref: offset must be a non-negative integer, ignoring');
+			undef $bo;
+		}
+		my $rows = $self->_scan_berkeley($params);
+		if(defined($bl) || defined($bo)) {
+			splice(@{$rows}, 0, int($bo)) if $bo;
+			splice(@{$rows}, int($bl))    if defined $bl;
+		}
+		return set_return($rows, { type => 'arrayref' });
 	}
 
 	if($self->{'no_entry'}) {
@@ -1516,24 +1529,54 @@ sub selectall_arrayref {
 		$join_clause = $self->_build_joins($join_spec);
 	}
 
+	my $limit  = delete $params->{'limit'};
+	my $offset = delete $params->{'offset'};
+	if(defined $limit) {
+		if($limit !~ /\A\d+\z/) {
+			Carp::carp('selectall_arrayref: limit must be a non-negative integer, ignoring');
+			undef $limit;
+		} else {
+			$limit = int($limit);
+		}
+	}
+	if(defined $offset) {
+		if($offset !~ /\A\d+\z/) {
+			Carp::carp('selectall_arrayref: offset must be a non-negative integer, ignoring');
+			undef $offset;
+		} else {
+			$offset = int($offset);
+		}
+	}
+
 	if(!$join_clause && $self->{'data'} && !$self->_has_complex_criteria($params)) {
 		if(scalar(keys %{$params}) == 0) {
 			$self->_trace("$table: selectall_arrayref fast track return");
+			my @rc;
 			if(ref($self->{'data'}) eq 'HASH') {
 				$self->_debug("$table: returning ", scalar keys %{$self->{'data'}}, ' entries');
 				if(scalar keys %{$self->{'data'}} <= 10) {
 					$self->_debug(do { require Data::Dumper; Data::Dumper::Dumper($self->{'data'}) });
 				}
-				my @rc = values %{$self->{'data'}};
-				return set_return(\@rc, { type => 'arrayref' });
+				@rc = values %{$self->{'data'}};
+			} else {
+				@rc = @{$self->{'data'}};
 			}
-			return set_return($self->{'data'}, { type => 'arrayref'});
+			if(defined($offset) || defined($limit)) {
+				splice(@rc, 0, $offset) if $offset;
+				splice(@rc, $limit)     if defined $limit;
+			}
+			return set_return(\@rc, { type => 'arrayref' });
 		} elsif((scalar(keys %{$params}) == 1) && defined($params->{'entry'}) && !$self->{'no_entry'}) {
 			# exists() guard: fixate() locks all keys in the slurp hash; return []
 			# (not [undef]) when the key is missing so callers get an empty result
 			return set_return([], { type => 'arrayref' })
 				unless exists($self->{'data'}->{$params->{'entry'}});
-			return set_return([$self->{'data'}->{$params->{'entry'}}], { type => 'arrayref' });
+			my @rc = ($self->{'data'}->{$params->{'entry'}});
+			if(defined($offset) || defined($limit)) {
+				splice(@rc, 0, $offset) if $offset;
+				splice(@rc, $limit)     if defined $limit;
+			}
+			return set_return(\@rc, { type => 'arrayref' });
 		} elsif(ref($self->{'data'}) eq 'HASH') {
 			# Scan in-memory hash for simple column criteria without touching DBI.
 			# fixate() locks hash keys, so use exists() to avoid throwing on unknown columns.
@@ -1545,6 +1588,10 @@ sub selectall_arrayref {
 				my $row = $_;
 				all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params->{$_}) } @param_keys
 			} values %{$self->{'data'}};
+			if(defined($offset) || defined($limit)) {
+				splice(@rc, 0, $offset) if $offset;
+				splice(@rc, $limit)     if defined $limit;
+			}
 			return set_return(\@rc, { type => 'arrayref' });
 		} elsif(ref($self->{'data'}) eq 'ARRAY' && !$self->{$table}) {
 			# In-memory scan for array-backed no_entry stores (JSON, XLSX, HTML URL)
@@ -1555,6 +1602,10 @@ sub selectall_arrayref {
 				my $row = $_;
 				all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params->{$_}) } @param_keys
 			} @{$self->{'data'}};
+			if(defined($offset) || defined($limit)) {
+				splice(@rc, 0, $offset) if $offset;
+				splice(@rc, $limit)     if defined $limit;
+			}
 			return set_return(\@rc, { type => 'arrayref' });
 		}
 	}
@@ -1575,6 +1626,20 @@ sub selectall_arrayref {
 	}
 	if(!$self->{'no_entry'}) {
 		$query .= ' ORDER BY ' . $self->{'id'};
+	}
+	if(defined($limit)) {
+		$query .= ' LIMIT ?';
+		push @query_args, $limit;
+	} elsif(defined($offset)) {
+		# SQLite requires a LIMIT clause when OFFSET is present; -1 means no limit
+		my $dbh = $self->{$table};
+		$query .= ' LIMIT -1'
+			if ($dbh && (($dbh->{Driver}{Name} // '') eq 'SQLite'))
+			|| (($self->{'_dialect'} // '') eq 'sqlite');
+	}
+	if(defined($offset)) {
+		$query .= ' OFFSET ?';
+		push @query_args, $offset;
 	}
 
 	if(defined($query_args[0])) {
@@ -1648,7 +1713,9 @@ In B<scalar context> it applies C<LIMIT 1> and returns just the first
 matching hash reference - making it more efficient than C<selectall_arrayref>
 when you only need one row.  In B<list context> all matching rows are returned.
 
-Accepts the same criteria and C<join> parameter as L</selectall_arrayref>.
+Accepts the same criteria, C<join>, C<limit>, and C<offset> parameters as
+L</selectall_arrayref>.  When C<limit> is given in scalar context it overrides
+the implicit C<LIMIT 1>.
 
 =cut
 
@@ -1660,7 +1727,21 @@ sub selectall_array
 
 	if($self->{'berkeley'}) {
 		my $params = Params::Get::get_params(undef, \@_) // {};
+		my $bl = delete $params->{'limit'};
+		my $bo = delete $params->{'offset'};
+		if(defined($bl) && $bl !~ /\A\d+\z/) {
+			Carp::carp('selectall_array: limit must be a non-negative integer, ignoring');
+			undef $bl;
+		}
+		if(defined($bo) && $bo !~ /\A\d+\z/) {
+			Carp::carp('selectall_array: offset must be a non-negative integer, ignoring');
+			undef $bo;
+		}
 		my $rows = $self->_scan_berkeley($params);
+		if(defined($bl) || defined($bo)) {
+			splice(@{$rows}, 0, int($bo)) if $bo;
+			splice(@{$rows}, int($bl))    if defined $bl;
+		}
 		return wantarray ? @{$rows} : $rows->[0];
 	}
 
@@ -1673,17 +1754,49 @@ sub selectall_array
 		$join_clause = $self->_build_joins($join_spec);
 	}
 
+	my $limit  = delete $params->{'limit'};
+	my $offset = delete $params->{'offset'};
+	if(defined $limit) {
+		if($limit !~ /\A\d+\z/) {
+			Carp::carp('selectall_array: limit must be a non-negative integer, ignoring');
+			undef $limit;
+		} else {
+			$limit = int($limit);
+		}
+	}
+	if(defined $offset) {
+		if($offset !~ /\A\d+\z/) {
+			Carp::carp('selectall_array: offset must be a non-negative integer, ignoring');
+			undef $offset;
+		} else {
+			$offset = int($offset);
+		}
+	}
+
 	if(!$join_clause && $self->{'data'} && !$self->_has_complex_criteria($params)) {
 		if(scalar(keys %{$params}) == 0) {
 			$self->_trace("$table: selectall_array fast track return");
-			if(ref($self->{'data'}) eq 'HASH') {
-				return values %{$self->{'data'}};
+			my @rc = ref($self->{'data'}) eq 'HASH'
+				? values %{$self->{'data'}}
+				: @{$self->{'data'}};
+			if(defined($offset) || defined($limit)) {
+				splice(@rc, 0, $offset) if $offset;
+				splice(@rc, $limit)     if defined $limit;
 			}
-			return @{$self->{'data'}};
+			return @rc;
 		} elsif((scalar(keys %{$params}) == 1) && defined($params->{'entry'}) && !$self->{'no_entry'}) {
 			# exists() guard: fixate() locks all keys; return empty list (not undef)
 			# for a missing entry so callers in list context get 0 elements not 1
 			return () unless exists($self->{'data'}->{$params->{'entry'}});
+			if(defined($offset) || defined($limit)) {
+				# limit/offset: build list, splice, then return context-appropriately
+				my @rc = ($self->{'data'}->{$params->{'entry'}});
+				splice(@rc, 0, $offset) if $offset;
+				splice(@rc, $limit)     if defined $limit;
+				return wantarray ? @rc : $rc[0];
+			}
+			# Preserve original scalar-context behaviour: return the hashref directly
+			# (not the count of a 1-element list).
 			return $self->{'data'}->{$params->{'entry'}};
 		} elsif(ref($self->{'data'}) eq 'HASH') {
 			# Same as selectall_arrayref scan but returns a list
@@ -1695,16 +1808,25 @@ sub selectall_array
 				my $row = $_;
 				all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params->{$_}) } @param_keys
 			} values %{$self->{'data'}};
+			if(defined($offset) || defined($limit)) {
+				splice(@rc, 0, $offset) if $offset;
+				splice(@rc, $limit)     if defined $limit;
+			}
 			return @rc;
 		} elsif(ref($self->{'data'}) eq 'ARRAY' && !$self->{$table}) {
 			# In-memory scan for array-backed no_entry stores (JSON, XLSX, HTML URL)
 			# where there is no DBI handle.  Mirrors the equivalent path in count().
 			$self->_debug("$table: selectall_array in-memory array scan with criteria");
 			my @param_keys = keys %{$params};
-			return grep {
+			my @rc = grep {
 				my $row = $_;
 				all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params->{$_}) } @param_keys
 			} @{$self->{'data'}};
+			if(defined($offset) || defined($limit)) {
+				splice(@rc, 0, $offset) if $offset;
+				splice(@rc, $limit)     if defined $limit;
+			}
+			return @rc;
 		}
 	}
 
@@ -1725,8 +1847,28 @@ sub selectall_array
 	if(!$self->{'no_entry'}) {
 		$query .= ' ORDER BY ' . $self->{'id'};
 	}
-	if(!wantarray) {
-		$query .= ' LIMIT 1';
+	if(defined($limit)) {
+		$query .= ' LIMIT ?';
+		push @query_args, $limit;
+		if(defined($offset)) {
+			$query .= ' OFFSET ?';
+			push @query_args, $offset;
+		}
+	} elsif(!wantarray) {
+		if(defined($offset)) {
+			$query .= ' LIMIT 1 OFFSET ?';
+			push @query_args, $offset;
+		} else {
+			$query .= ' LIMIT 1';
+		}
+	} elsif(defined($offset)) {
+		# List context, offset but no limit — SQLite requires LIMIT with OFFSET
+		my $dbh = $self->{$table};
+		$query .= ' LIMIT -1'
+			if ($dbh && (($dbh->{Driver}{Name} // '') eq 'SQLite'))
+			|| (($self->{'_dialect'} // '') eq 'sqlite');
+		$query .= ' OFFSET ?';
+		push @query_args, $offset;
 	}
 
 	if(defined($query_args[0])) {
