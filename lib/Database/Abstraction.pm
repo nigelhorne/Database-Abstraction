@@ -34,7 +34,7 @@ use Fcntl;	# For O_RDONLY
 use Cwd;
 use File::Spec;
 use File::Temp;
-use List::Util qw(all);
+use List::Util qw(all any);
 use Log::Abstraction 0.33;
 use Object::Configure 0.16;
 use Params::Get 0.17;
@@ -2474,21 +2474,19 @@ sub fetchrow_hashref {
 	} else {
 		$self->_debug("fetchrow_hashref $query");
 	}
-	# TODO: Data Flow Anomaly - D~: $key is computed unconditionally (string concat +
-	# join) even when no cache is configured.  When $self->{cache} is undef the
-	# assembled string is a dead store.  Cost is trivial but the logic would be
-	# cleaner inside the if($c) block below.
-	my $key = ref($self) . '::';
-	if(defined($query_args[0])) {
-		if(wantarray) {
-			$key .= 'array ';
+	# Premise: $key is only needed when a cache is configured.
+	# Conclusion: assemble it lazily inside the cache block — no dead store on
+	# the common (no-cache) path.
+	my $c = $self->{'cache'};
+	my $key;    # declared here so the second if($c) block (cache SET) can see it
+	if($c) {
+		$key = ref($self) . '::';
+		if(defined($query_args[0])) {
+			$key .= 'array ' if wantarray;
+			$key .= "fetchrow $query " . join(', ', @query_args);
+		} else {
+			$key .= "fetchrow $query";
 		}
-		$key .= "fetchrow $query " . join(', ', @query_args);
-	} else {
-		$key .= "fetchrow $query";
-	}
-	my $c;
-	if($c = $self->{cache}) {
 		if(my $rc = $c->get($key)) {
 			if(wantarray) {
 				if(ref($rc) eq 'ARRAY') {
@@ -3267,11 +3265,17 @@ sub _has_complex_criteria
 {
 	my ($self, $params) = @_;
 	return 0 unless defined $params;
+	# -or / -and keys short-circuit immediately: no value scan needed.
 	return 1 if exists $params->{'-or'} || exists $params->{'-and'};
-	for my $v (values %{$params}) {
-		return 1 if ref($v);
-	}
-	return 0;
+	# LOGICAL INVARIANT: when this returns false, NO value in %$params is a
+	# reference.  This is the Boolean gate that makes _match_criterion's
+	# hashref branch provably unreachable from the public select API:
+	#   Premise A — in-memory scan path requires: !_has_complex_criteria(params)
+	#   Premise B — _has_complex_criteria returns true if any value is a ref
+	#   Conclusion — inside the in-memory scan, every crit_val is a scalar/undef
+	# any() short-circuits on the first truthy element; the for-loop equivalent
+	# would iterate through all values before returning false in the common case.
+	return (any { ref($_) } values %{$params}) ? 1 : 0;
 }
 
 # Build the WHERE clause body (everything after "WHERE") from a criteria hash.
@@ -3453,7 +3457,9 @@ sub _scan_berkeley
 	if(delete $params->{'join'}) {
 		Carp::croak(ref($self), ': BerkeleyDB does not support JOINs');
 	}
-	if(grep { $_ eq '-or' || $_ eq '-and' } keys %{$params}) {
+	# any() short-circuits: once the first -or/-and key is found the croak fires
+	# without scanning the remaining keys — O(1) best case vs O(K) for grep.
+	if(any { $_ eq '-or' || $_ eq '-and' } keys %{$params}) {
 		Carp::croak(ref($self), ': BerkeleyDB does not support -or/-and groupings');
 	}
 
