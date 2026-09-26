@@ -4,7 +4,7 @@ Database::Abstraction - Read-only Database Abstraction Layer (ORM)
 
 ## Version
 
-Version 0.45
+Version 0.46
 
 ## Description
 
@@ -715,6 +715,31 @@ The schema is determined by the backend:
 - **BerkeleyDB** - always returns `entry` (pk) and `value`
 
 The result is cached inside the object after the first call.
+
+### Dbi\_Source
+
+Returns a hashref `{ dbh => $dbh, table => $name }` when the backend
+is a live SQLite connection, or `undef` for every other backend (slurp-mode
+CSV, JSON, XLSX, HTML URL, DBM::Deep, BerkeleyDB, PostgreSQL, MySQL, ...).
+
+The hashref is consumed by `Database::Join` to perform a zero-copy
+`ATTACH DATABASE` so rows never pass through Perl.
+Nested `Database::Join` objects that are themselves SQLite-backed expose themselves
+as attachable sources to parent joins through the same interface.
+
+Subclasses may override this method to expose non-SQLite DBI connections
+if their join layer supports them.
+
+#### Api Specification
+
+##### Arguments
+
+None beyond the implicit invocant.
+
+##### Returns
+
+A hashref `{ dbh => DBI::db, table => Str }` on a SQLite-backed
+instance, or `undef` on all other backends.
 
 ### Query
 

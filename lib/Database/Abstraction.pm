@@ -32,16 +32,6 @@ package Database::Abstraction;
 #
 # POST-RELEASE ROADMAP
 #
-# TODO: dbi_source() method for SQLite/DBI-backed instances
-#   Database::Join performs zero-copy ATTACH for sources that implement
-#   dbi_source(), returning {dbh => $sqlite_dbh, table => $name}.  Currently
-#   callers must subclass DA and add this themselves.  A default implementation
-#   in DA should return {dbh => $self->{$table}, table => $table_name} when the
-#   backend is SQLite, and undef for slurp-only backends.  This would enable
-#   Database::Join to ATTACH any SQLite-backed DA without routing rows through
-#   Perl, and would let nested Database::Join objects expose themselves as
-#   attachable sources to parent joins.
-#
 # TODO: limit => N / offset => M on selectall_arrayref and selectall_array
 #   The chained query builder (query()->limit(N)->offset(M)) already supports
 #   pagination, but the direct method forms do not.  Adding limit/offset to
@@ -180,7 +170,7 @@ Database::Abstraction - Read-only Database Abstraction Layer (ORM)
 
 =head1 VERSION
 
-Version 0.45
+Version 0.46
 
 =cut
 
@@ -2300,6 +2290,45 @@ sub schema {
 	}
 
 	return $self->{'_schema'} = \%schema;
+}
+
+=head2 dbi_source
+
+Returns a hashref C<{ dbh =E<gt> $dbh, table =E<gt> $name }> when the backend
+is a live SQLite connection, or C<undef> for every other backend (slurp-mode
+CSV, JSON, XLSX, HTML URL, DBM::Deep, BerkeleyDB, PostgreSQL, MySQL, ...).
+
+The hashref is consumed by C<Database::Join> to perform a zero-copy
+C<ATTACH DATABASE> so rows never pass through Perl.
+Nested C<Database::Join> objects that are themselves SQLite-backed expose themselves
+as attachable sources to parent joins through the same interface.
+
+Subclasses may override this method to expose non-SQLite DBI connections
+if their join layer supports them.
+
+=head3 API SPECIFICATION
+
+=head4 Arguments
+
+None beyond the implicit invocant.
+
+=head4 Returns
+
+A hashref C<{ dbh =E<gt> DBI::db, table =E<gt> Str }> on a SQLite-backed
+instance, or C<undef> on all other backends.
+
+=cut
+
+sub dbi_source
+{
+	my $self = shift;
+
+	my $table = $self->_open_table({});
+	my $dbh   = $self->{$table};
+
+	return undef unless $dbh && ref($dbh) && (($dbh->{Driver}{Name} // '') eq 'SQLite');
+
+	return { dbh => $dbh, table => $table };
 }
 
 =head2 query
