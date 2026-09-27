@@ -17,7 +17,7 @@ Database::Abstraction::Query - Fluent, chainable query builder for Database::Abs
 
 =head1 VERSION
 
-Version 0.45
+Version 0.46
 
 =cut
 
@@ -409,7 +409,7 @@ efficiency (only the LIMIT is overridden; offset is still applied).
 sub first
 {
 	my $self = shift;
-	my $db   = $self->{'_db'};
+	my $db = $self->{'_db'};
 
 	$db->_open_table({});
 

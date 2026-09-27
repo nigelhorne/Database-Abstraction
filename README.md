@@ -761,9 +761,19 @@ database file directly.
 
 ### Updated
 
-Returns the Unix timestamp of the last database update (mtime for
-file-based backends, or the time of the most recent `new()` call for
-DSN-based connections).
+Returns the Unix timestamp of the last database update.
+
+For file-based backends (CSV, XML, SQLite via `directory`), this is the
+mtime of the backing file, set at `new()` time.
+
+For SQLite DSN connections (`dbi:SQLite:dbname=...`), the file path is
+extracted from the DSN and `stat()`-ed live on every call, so callers
+get a current mtime suitable for cache-invalidation even when the database
+was opened via a DSN rather than a `directory`.
+
+For all other DSN-based connections (PostgreSQL, MySQL, etc.) and for
+URL-based backends, returns the Unix timestamp of the most recent
+`new()` call (connection time).
 
 ### Columns
 

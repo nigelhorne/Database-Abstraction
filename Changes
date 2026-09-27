@@ -1,6 +1,6 @@
 Revision history for Database-Abstraction
 
-0.46
+0.46	Sat Sep 26 08:22:16 PM EDT 2026
 	[ Bug Fixes ]
 	- HTML::TableExtract added to META_MERGE recommends in Makefile.PL
 	  (was already in TEST_REQUIRES but missing from the public recommends
