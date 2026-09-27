@@ -358,7 +358,7 @@ Approximate LCSAJ segments: 89<br>
 </span><span class="">   17: 
 </span><span class="">   18: =head1 VERSION
 </span><span class="">   19: 
-</span><span class="">   20: Version 0.45
+</span><span class="">   20: Version 0.46
 </span><span class="">   21: 
 </span><span class="">   22: =cut
 </span><span class="">   23: 
@@ -750,7 +750,7 @@ Approximate LCSAJ segments: 89<br>
 </span><span class="">  409: sub first
 </span><span class="">  410: {
 </span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">411 → 416 → 428</span></span>  411: 	my $self = shift;
-</span><span class="">  412: 	my $db   = $self-&gt;{&#39;_db&#39;};
+</span><span class="">  412: 	my $db = $self-&gt;{&#39;_db&#39;};
 </span><span class="">  413: 
 </span><span class="">  414: 	$db-&gt;_open_table({});
 </span><span class="">  415: 
@@ -851,8 +851,29 @@ Approximate LCSAJ segments: 89<br>
 </span><span class="">  510: 			$callback-&gt;($row);
 </span><span class="">  511: 			$n++;
 </span><span class="">  512: 		}
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  513: 		return $n;
-</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  514: 	}
+</span><span class="survived-2 tooltip" data-tooltip="Return value mutation survived. Add tests asserting exact return values. Boolean logic mutation survived. Add tests covering both true and false paths.">  513: 		return $n;
+</span>
+					<details class="mutant-details">
+					<summary>Mutants (Total: 2, Killed: 0, Survived: 2)</summary>
+					<ul>
+				<li><b>BOOL_NEGATE_513_3: Negate boolean return expression</b><br>MEDIUM: Add tests asserting both true and false outcomes
+
+								<div class="suggested-test">
+								<div class="suggest-label">🧪 Suggested Test</div>
+								<pre># Boolean branch test suggestion
+ok( !func(INPUT), &#39;Verify boolean branch behaviour&#39; );
+</pre>
+								</div>
+							</li><li><b>RETURN_UNDEF_513_3: Replace return expression with undef</b><br>LOW: Mutation survived, but impact may be minor
+
+								<div class="suggested-test">
+								<div class="suggest-label">🧪 Suggested Test</div>
+								<pre># Return value assertion
+is( func(INPUT), EXPECTED, &#39;Verify correct return value&#39; );
+</pre>
+								</div>
+							</li></ul></details>
+<span class="">  514: 	}
 </span><span class="">  515: 
 </span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">516 → 529 → 533</span></span>  516: 	my ($query, $args, $table) = $self-&gt;_build_sql(0);
 </span><span class="">  517: 	$db-&gt;_debug(&quot;Query-&gt;each: $query&quot;);
