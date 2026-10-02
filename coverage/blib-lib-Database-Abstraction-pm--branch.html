@@ -20,7 +20,7 @@ https://pjcj.net
 <h1>Branch Coverage</h1>
 <table>
 <tr><td class="h" align="right">File:</td><td align="left">blib/lib/Database/Abstraction.pm</td></tr>
-<tr><td class="h" align="right">Coverage:</td><td align="left" class="c0">67.0%</td></tr>
+<tr><td class="h" align="right">Coverage:</td><td align="left" class="c0">67.1%</td></tr>
 </table>
 <div><br/></div>
 <table>
@@ -38,7 +38,7 @@ https://pjcj.net
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif (&amp;Scalar::Util::blessed($class)) { }</td></tr>
 <tr><td class="h"><a id="L716">716</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if (scalar keys %args &gt; 0)</td></tr>
 <tr><td class="h"><a id="L730">730</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $args{&quot;id&quot;})</td></tr>
-<tr><td class="h"><a id="L732">732</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">unless $args{&quot;id&quot;} =~ /$SAFE_IDENTIFIER/</td></tr>
+<tr><td class="h"><a id="L732">732</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $args{&quot;id&quot;} =~ /$SAFE_IDENTIFIER/</td></tr>
 <tr><td class="h"><a id="L734">734</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $args{&quot;table&quot;})</td></tr>
 <tr><td class="h"><a id="L736">736</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">unless $args{&quot;table&quot;} =~ /$SAFE_QUALIFIED/</td></tr>
 <tr><td class="h"><a id="L746">746</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $args{&quot;logger&quot;} and not &amp;Scalar::Util::blessed($args{&quot;logger&quot;}))</td></tr>
@@ -597,8 +597,8 @@ https://pjcj.net
 <tr><td class="h"><a id="L3677">3677</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $dbh = $$self{$table})</td></tr>
 <tr><td class="h"><a id="L3692">3692</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless do {
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BEGIN {
-&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;autodie::Scope::GuardStack/guard5&#39;} = &#39;autodie::Scope::Guard=CODE(0x555c616151e8)&#39;;
-&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;no Fatal&#39;} = &#39;HASH(0x555c61615170)&#39;;
+&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;autodie::Scope::GuardStack/guard5&#39;} = &#39;autodie::Scope::Guard=CODE(0x560f55468878)&#39;;
+&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;no Fatal&#39;} = &#39;HASH(0x560f55468800)&#39;;
 }
 &#11;open $fh, &quot;&lt;&quot;, $file
 }</td></tr>
@@ -612,8 +612,8 @@ https://pjcj.net
 <tr><td class="h"><a id="L3746">3746</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $lc_bare eq $me</td></tr>
 <tr><td class="h"><a id="L3762">3762</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless do {
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BEGIN {
-&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;autodie::Scope::GuardStack/guard6&#39;} = &#39;autodie::Scope::Guard=CODE(0x555c61627700)&#39;;
-&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;no Fatal&#39;} = &#39;HASH(0x555c616276a0)&#39;;
+&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;autodie::Scope::GuardStack/guard6&#39;} = &#39;autodie::Scope::Guard=CODE(0x560f5547af50)&#39;;
+&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;no Fatal&#39;} = &#39;HASH(0x560f5547aef0)&#39;;
 }
 &#11;open $fh, &quot;&lt;&quot;, $file
 }</td></tr>
