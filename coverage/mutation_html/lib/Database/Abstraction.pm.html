@@ -294,7 +294,7 @@ a.intra-dot:hover { color: #7700bb; }
  <a href="Abstraction/Query.pm.html">Next ➡</a></div><div class='summary'>
 <strong>Structural Coverage (Approximate)</strong><p>
 TER1 (Statement): 73.36%<br>
-TER2 (Branch): 66.90%<br>
+TER2 (Branch): 66.99%<br>
 TER3 (LCSAJ): 100.0% (105/105)<br>
 Approximate LCSAJ segments: 1131<br>
 </div>
@@ -2381,7 +2381,7 @@ is( func(VALUE_AT_BOUNDARY), EXPECTED, &#39;Test boundary behaviour&#39; );
 </span><span class=""> 1854: 			$callback-&gt;($row);
 </span><span class=""> 1855: 			$n++;
 </span><span class=""> 1856: 		}
-</span><span class="survived-2 tooltip" data-tooltip="Boolean logic mutation survived. Add tests covering both true and false paths. Return value mutation survived. Add tests asserting exact return values."> 1857: 		return $n;
+</span><span class="survived-2 tooltip" data-tooltip="Return value mutation survived. Add tests asserting exact return values. Boolean logic mutation survived. Add tests covering both true and false paths."> 1857: 		return $n;
 </span>
 					<details class="mutant-details">
 					<summary>Mutants (Total: 2, Killed: 0, Survived: 2)</summary>
@@ -2734,7 +2734,7 @@ is( func(INPUT), EXPECTED, &#39;Verify correct return value&#39; );
 </span><span class=""> 2104: 				my @rc = ($self-&gt;{&#39;data&#39;}-&gt;{$params-&gt;{&#39;entry&#39;}});
 </span><span class=""> 2105: 				splice(@rc, 0, $offset) if $offset;
 </span><span class=""> 2106: 				splice(@rc, $limit)     if defined $limit;
-</span><span class="survived-2 tooltip" data-tooltip="Boolean logic mutation survived. Add tests covering both true and false paths. Return value mutation survived. Add tests asserting exact return values."> 2107: 				return wantarray ? @rc : $rc[0];
+</span><span class="survived-2 tooltip" data-tooltip="Return value mutation survived. Add tests asserting exact return values. Boolean logic mutation survived. Add tests covering both true and false paths."> 2107: 				return wantarray ? @rc : $rc[0];
 </span>
 					<details class="mutant-details">
 					<summary>Mutants (Total: 2, Killed: 0, Survived: 2)</summary>
@@ -3741,7 +3741,7 @@ is( func(VALUE_AT_BOUNDARY), EXPECTED, &#39;Test boundary behaviour&#39; );
 </span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 2984: 			my @_rows = ref($self-&gt;{&#39;data&#39;}) eq &#39;ARRAY&#39; ? @{$self-&gt;{&#39;data&#39;}} : values %{$self-&gt;{&#39;data&#39;}};
 </span><span class=""> 2985: 			return map { exists($_-&gt;{$column}) ? $_-&gt;{$column} : undef }
 </span><span class=""> 2986: 			       grep {
-</span><span class="survived-2 tooltip" data-tooltip="Boolean logic mutation survived. Add tests covering both true and false paths. Return value mutation survived. Add tests asserting exact return values."> 2987: 			           my $row = $_;
+</span><span class="survived-2 tooltip" data-tooltip="Return value mutation survived. Add tests asserting exact return values. Boolean logic mutation survived. Add tests covering both true and false paths."> 2987: 			           my $row = $_;
 </span>
 					<details class="mutant-details">
 					<summary>Mutants (Total: 2, Killed: 0, Survived: 2)</summary>
