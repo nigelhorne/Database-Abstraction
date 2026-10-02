@@ -59,9 +59,36 @@ my $SAFE_QUALIFIED  = qr/\A[a-zA-Z_][a-zA-Z0-9_.]*\z/;
 # Compiled once at load; reused in _infer_type() across all schema() calls.
 use constant INFER_TYPE_SAMPLE_SIZE => 100;
 my $INFER_INT_RE  = qr/\A-?\d+\z/;
-my $INFER_REAL_RE = qr/\A-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?\z/;
-my $INFER_TS_RE   = qr/\A\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\d|3[01])[T ]\d{2}:\d{2}/;
-my $INFER_DATE_RE = qr/\A\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\d|3[01])\z/;
+my $INFER_REAL_RE = qr/
+    \A              # start of string
+    -?              # optional leading minus
+    \d+             # integer part -- required
+    (?:\.\d+)?      # optional decimal part
+    (?:             # optional exponent block:
+        [eE]        #   e or E marker
+        [+-]?       #   optional sign
+        \d+         #   exponent digits
+    )?
+    \z              # end of string
+/x;
+# No \z anchor: intentionally matches any valid timestamp prefix so that full
+# timestamps with seconds, fractional seconds, or timezone offsets are still
+# classified as TIMESTAMP -- e.g. 2024-01-01 12:34:00.000+05:30
+my $INFER_TS_RE   = qr/
+    \A                              # start of string
+    \d{4}                           # 4-digit year
+    - (?:0[1-9]|1[0-2])            # month 01-12
+    - (?:0[1-9]|[12]\d|3[01])      # day   01-31
+    [T\ ]                           # ISO 8601 date-time separator: T or space
+    \d{2}:\d{2}                     # HH:MM -- no end anchor, see note above
+/x;
+my $INFER_DATE_RE = qr/
+    \A                              # start of string
+    \d{4}                           # 4-digit year
+    - (?:0[1-9]|1[0-2])            # month 01-12
+    - (?:0[1-9]|[12]\d|3[01])      # day   01-31
+    \z                              # end of string
+/x;
 
 # Module-level constant: valid JOIN types after uc() normalisation.
 # Built once at compile time; reused by every _build_joins call.
@@ -778,7 +805,7 @@ sub new {
 		}
 		if(defined $src->{'url'}) {
 			croak("$class: unsafe url '$src->{url}'")
-				unless $src->{'url'} =~ /\Ahttps?:\/\//i;
+				unless $src->{'url'} =~ m{\Ahttps?://}i;
 		}
 		if(defined $src->{'table'}) {
 			croak("$class: unsafe table name '$src->{table}'")
@@ -860,9 +887,9 @@ sub _open :Protected
 	# DSN-based connection bypasses file detection entirely
 	if(my $dsn = $self->{'dsn'} || $defaults{'dsn'}) {
 		my $dialect = 'generic';
-		if    ($dsn =~ /^dbi:SQLite:/i) { $dialect = 'sqlite'   }
-		elsif ($dsn =~ /^dbi:Pg:/i)     { $dialect = 'postgres' }
-		elsif ($dsn =~ /^dbi:mysql:/i)  { $dialect = 'mysql'    }
+		if    ($dsn =~ /\Adbi:SQLite:/i) { $dialect = 'sqlite'   }
+		elsif ($dsn =~ /\Adbi:Pg:/i)     { $dialect = 'postgres' }
+		elsif ($dsn =~ /\Adbi:mysql:/i)  { $dialect = 'mysql'    }
 		$self->{'_dialect'} = $dialect;
 
 		$dbh = DBI->connect(
@@ -2933,7 +2960,7 @@ has been disabled with C<< auto_load => 0 >>.
 
 sub AUTOLOAD {
 	our $AUTOLOAD;
-	my ($column) = $AUTOLOAD =~ /::(\w+)\z/;
+	my ($column) = $AUTOLOAD =~ /::([A-Za-z_]\w*)\z/;
 
 	return if($column eq 'DESTROY');
 	return if($column =~ /\A_/);	# never treat private method names as column lookups
