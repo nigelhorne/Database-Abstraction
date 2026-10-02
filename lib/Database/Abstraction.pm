@@ -1549,11 +1549,11 @@ sub selectall_arrayref {
 		$params = $self->_merge_base_criteria($params);
 		my $rows = $self->_scan_berkeley($params);
 		if(defined $bsc) {
-			my $desc = ($bsd eq 'DESC');
-			@{$rows} = sort {
-				$desc ? (($b->{$bsc} // '') cmp ($a->{$bsc} // ''))
-				      : (($a->{$bsc} // '') cmp ($b->{$bsc} // ''))
-			} @{$rows};
+			if($bsd eq 'DESC') {
+				@{$rows} = sort { ($b->{$bsc} // '') cmp ($a->{$bsc} // '') } @{$rows};
+			} else {
+				@{$rows} = sort { ($a->{$bsc} // '') cmp ($b->{$bsc} // '') } @{$rows};
+			}
 		}
 		if(defined($bl) || defined($bo)) {
 			splice(@{$rows}, 0, int($bo)) if $bo;
@@ -1613,11 +1613,11 @@ sub selectall_arrayref {
 				@rc = @{$self->{'data'}};
 			}
 			if(defined $sort_col) {
-				my $desc = ($sort_dir eq 'DESC');
-				@rc = sort {
-					$desc ? (($b->{$sort_col} // '') cmp ($a->{$sort_col} // ''))
-					      : (($a->{$sort_col} // '') cmp ($b->{$sort_col} // ''))
-				} @rc;
+				if($sort_dir eq 'DESC') {
+					@rc = sort { ($b->{$sort_col} // '') cmp ($a->{$sort_col} // '') } @rc;
+				} else {
+					@rc = sort { ($a->{$sort_col} // '') cmp ($b->{$sort_col} // '') } @rc;
+				}
 			}
 			if(defined($offset) || defined($limit)) {
 				splice(@rc, 0, $offset) if $offset;
@@ -1631,11 +1631,11 @@ sub selectall_arrayref {
 				unless exists($self->{'data'}->{$params->{'entry'}});
 			my @rc = ($self->{'data'}->{$params->{'entry'}});
 			if(defined $sort_col) {
-				my $desc = ($sort_dir eq 'DESC');
-				@rc = sort {
-					$desc ? (($b->{$sort_col} // '') cmp ($a->{$sort_col} // ''))
-					      : (($a->{$sort_col} // '') cmp ($b->{$sort_col} // ''))
-				} @rc;
+				if($sort_dir eq 'DESC') {
+					@rc = sort { ($b->{$sort_col} // '') cmp ($a->{$sort_col} // '') } @rc;
+				} else {
+					@rc = sort { ($a->{$sort_col} // '') cmp ($b->{$sort_col} // '') } @rc;
+				}
 			}
 			if(defined($offset) || defined($limit)) {
 				splice(@rc, 0, $offset) if $offset;
@@ -1654,11 +1654,11 @@ sub selectall_arrayref {
 				all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params->{$_}, $_) } @param_keys
 			} values %{$self->{'data'}};
 			if(defined $sort_col) {
-				my $desc = ($sort_dir eq 'DESC');
-				@rc = sort {
-					$desc ? (($b->{$sort_col} // '') cmp ($a->{$sort_col} // ''))
-					      : (($a->{$sort_col} // '') cmp ($b->{$sort_col} // ''))
-				} @rc;
+				if($sort_dir eq 'DESC') {
+					@rc = sort { ($b->{$sort_col} // '') cmp ($a->{$sort_col} // '') } @rc;
+				} else {
+					@rc = sort { ($a->{$sort_col} // '') cmp ($b->{$sort_col} // '') } @rc;
+				}
 			}
 			if(defined($offset) || defined($limit)) {
 				splice(@rc, 0, $offset) if $offset;
@@ -1675,11 +1675,11 @@ sub selectall_arrayref {
 				all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params->{$_}, $_) } @param_keys
 			} @{$self->{'data'}};
 			if(defined $sort_col) {
-				my $desc = ($sort_dir eq 'DESC');
-				@rc = sort {
-					$desc ? (($b->{$sort_col} // '') cmp ($a->{$sort_col} // ''))
-					      : (($a->{$sort_col} // '') cmp ($b->{$sort_col} // ''))
-				} @rc;
+				if($sort_dir eq 'DESC') {
+					@rc = sort { ($b->{$sort_col} // '') cmp ($a->{$sort_col} // '') } @rc;
+				} else {
+					@rc = sort { ($a->{$sort_col} // '') cmp ($b->{$sort_col} // '') } @rc;
+				}
 			}
 			if(defined($offset) || defined($limit)) {
 				splice(@rc, 0, $offset) if $offset;
@@ -1756,7 +1756,7 @@ sub selectall_arrayref {
 
 		my $rc;
 		while(my $href = $sth->fetchrow_hashref()) {
-			push @{$rc}, $href if %{$href};
+			push @{$rc}, $href;
 		}
 		$c->set($key, $rc, $self->{'cache_duration'}) if $c;
 
@@ -1839,11 +1839,11 @@ sub each_row
 		$params = $self->_merge_base_criteria($params);
 		my $rows = $self->_scan_berkeley($params);
 		if(defined $bsc) {
-			my $desc = ($bsd eq 'DESC');
-			@{$rows} = sort {
-				$desc ? (($b->{$bsc} // '') cmp ($a->{$bsc} // ''))
-				      : (($a->{$bsc} // '') cmp ($b->{$bsc} // ''))
-			} @{$rows};
+			if($bsd eq 'DESC') {
+				@{$rows} = sort { ($b->{$bsc} // '') cmp ($a->{$bsc} // '') } @{$rows};
+			} else {
+				@{$rows} = sort { ($a->{$bsc} // '') cmp ($b->{$bsc} // '') } @{$rows};
+			}
 		}
 		if(defined($bl) || defined($bo)) {
 			splice(@{$rows}, 0, int($bo)) if $bo;
@@ -1918,11 +1918,11 @@ sub each_row
 		}
 		if(@rc) {
 			if(defined $sort_col) {
-				my $desc = ($sort_dir eq 'DESC');
-				@rc = sort {
-					$desc ? (($b->{$sort_col} // '') cmp ($a->{$sort_col} // ''))
-					      : (($a->{$sort_col} // '') cmp ($b->{$sort_col} // ''))
-				} @rc;
+				if($sort_dir eq 'DESC') {
+					@rc = sort { ($b->{$sort_col} // '') cmp ($a->{$sort_col} // '') } @rc;
+				} else {
+					@rc = sort { ($a->{$sort_col} // '') cmp ($b->{$sort_col} // '') } @rc;
+				}
 			}
 			if(defined($offset) || defined($limit)) {
 				splice(@rc, 0, $offset) if $offset;
@@ -2033,11 +2033,11 @@ sub selectall_array
 		$params = $self->_merge_base_criteria($params);
 		my $rows = $self->_scan_berkeley($params);
 		if(defined $bsc) {
-			my $desc = ($bsd eq 'DESC');
-			@{$rows} = sort {
-				$desc ? (($b->{$bsc} // '') cmp ($a->{$bsc} // ''))
-				      : (($a->{$bsc} // '') cmp ($b->{$bsc} // ''))
-			} @{$rows};
+			if($bsd eq 'DESC') {
+				@{$rows} = sort { ($b->{$bsc} // '') cmp ($a->{$bsc} // '') } @{$rows};
+			} else {
+				@{$rows} = sort { ($a->{$bsc} // '') cmp ($b->{$bsc} // '') } @{$rows};
+			}
 		}
 		if(defined($bl) || defined($bo)) {
 			splice(@{$rows}, 0, int($bo)) if $bo;
@@ -2084,11 +2084,11 @@ sub selectall_array
 				? values %{$self->{'data'}}
 				: @{$self->{'data'}};
 			if(defined $sort_col) {
-				my $desc = ($sort_dir eq 'DESC');
-				@rc = sort {
-					$desc ? (($b->{$sort_col} // '') cmp ($a->{$sort_col} // ''))
-					      : (($a->{$sort_col} // '') cmp ($b->{$sort_col} // ''))
-				} @rc;
+				if($sort_dir eq 'DESC') {
+					@rc = sort { ($b->{$sort_col} // '') cmp ($a->{$sort_col} // '') } @rc;
+				} else {
+					@rc = sort { ($a->{$sort_col} // '') cmp ($b->{$sort_col} // '') } @rc;
+				}
 			}
 			if(defined($offset) || defined($limit)) {
 				splice(@rc, 0, $offset) if $offset;
@@ -2120,11 +2120,11 @@ sub selectall_array
 				all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params->{$_}, $_) } @param_keys
 			} values %{$self->{'data'}};
 			if(defined $sort_col) {
-				my $desc = ($sort_dir eq 'DESC');
-				@rc = sort {
-					$desc ? (($b->{$sort_col} // '') cmp ($a->{$sort_col} // ''))
-					      : (($a->{$sort_col} // '') cmp ($b->{$sort_col} // ''))
-				} @rc;
+				if($sort_dir eq 'DESC') {
+					@rc = sort { ($b->{$sort_col} // '') cmp ($a->{$sort_col} // '') } @rc;
+				} else {
+					@rc = sort { ($a->{$sort_col} // '') cmp ($b->{$sort_col} // '') } @rc;
+				}
 			}
 			if(defined($offset) || defined($limit)) {
 				splice(@rc, 0, $offset) if $offset;
@@ -2141,11 +2141,11 @@ sub selectall_array
 				all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params->{$_}, $_) } @param_keys
 			} @{$self->{'data'}};
 			if(defined $sort_col) {
-				my $desc = ($sort_dir eq 'DESC');
-				@rc = sort {
-					$desc ? (($b->{$sort_col} // '') cmp ($a->{$sort_col} // ''))
-					      : (($a->{$sort_col} // '') cmp ($b->{$sort_col} // ''))
-				} @rc;
+				if($sort_dir eq 'DESC') {
+					@rc = sort { ($b->{$sort_col} // '') cmp ($a->{$sort_col} // '') } @rc;
+				} else {
+					@rc = sort { ($a->{$sort_col} // '') cmp ($b->{$sort_col} // '') } @rc;
+				}
 			}
 			if(defined($offset) || defined($limit)) {
 				splice(@rc, 0, $offset) if $offset;
@@ -2752,9 +2752,11 @@ sub schema {
 		if(ref($data) eq 'HASH') {
 			($first) = values %{$data};
 			if($self->{'infer_types'} && $first) {
-				my @rows  = values %{$data};
-				my $last  = $#rows < INFER_TYPE_SAMPLE_SIZE - 1 ? $#rows : INFER_TYPE_SAMPLE_SIZE - 1;
-				@sample = @rows[0 .. $last];
+				my $n = 0;
+				for my $row (values %{$data}) {
+					push @sample, $row;
+					last if ++$n >= INFER_TYPE_SAMPLE_SIZE;
+				}
 			}
 		} elsif(ref($data) eq 'ARRAY' && @{$data}) {
 			$first = $data->[0];
@@ -3219,10 +3221,10 @@ sub _infer_type
 	my ($vals) = @_;
 	my @non_null = grep { defined($_) && $_ ne '' } @{$vals};
 	return 'TEXT' unless @non_null;
-	return 'INTEGER'   unless grep { $_ !~ $INFER_INT_RE  } @non_null;
-	return 'REAL'      unless grep { $_ !~ $INFER_REAL_RE } @non_null;
-	return 'TIMESTAMP' unless grep { $_ !~ $INFER_TS_RE   } @non_null;
-	return 'DATE'      unless grep { $_ !~ $INFER_DATE_RE } @non_null;
+	return 'INTEGER'   if all { $_ =~ $INFER_INT_RE  } @non_null;
+	return 'REAL'      if all { $_ =~ $INFER_REAL_RE } @non_null;
+	return 'TIMESTAMP' if all { $_ =~ $INFER_TS_RE   } @non_null;
+	return 'DATE'      if all { $_ =~ $INFER_DATE_RE } @non_null;
 	return 'TEXT';
 }
 
