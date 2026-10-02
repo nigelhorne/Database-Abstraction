@@ -2479,7 +2479,13 @@ sub fetchrow_hashref {
 		Carp::croak(ref($self), ': fetchrow_hashref is meaningless on a NoSQL database');
 	}
 
-	my $target = delete($params->{'table'}) // $table;
+	my $raw_target = delete $params->{'table'};
+	if(defined $raw_target) {
+		$raw_target =~ s/\A.*:://;
+		Carp::croak(ref($self), ": unsafe table name '$raw_target'")
+			unless $raw_target =~ $SAFE_QUALIFIED;
+	}
+	my $target = $raw_target // $table;
 	my $join_spec = delete $params->{'join'};
 	$params = $self->_merge_base_criteria($params);
 	my $join_clause = $join_spec ? $self->_build_joins($join_spec) : '';
@@ -3683,6 +3689,8 @@ sub _open_table
 	my $table;
 	if($params->{'table'}) {
 		($table = $params->{'table'}) =~ s/\A.*:://;
+		Carp::croak(ref($self), ": unsafe table name '$table'")
+			unless $table =~ $SAFE_QUALIFIED;
 	} else {
 		$table = $self->{'_table_name'} //= do {
 			my $t = $self->{'table'} || ref($self);

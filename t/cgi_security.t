@@ -1355,4 +1355,71 @@ subtest 'SEC19: each_row re-throws callback exceptions with DBI handle properly 
 		'SEC19.2 all 3 rows returned from post-exception query (db connection state intact)');
 };
 
+# ---------------------------------------------------------------------------
+# SEC20: hostile table parameter in query methods is rejected before SQL build
+# ---------------------------------------------------------------------------
+
+subtest 'SEC20: hostile table param in query methods is rejected' => sub {
+	# Attack: query methods (selectall_arrayref, fetchrow_hashref, etc.) accept
+	# a "table" key in their criteria hash to override the FROM clause target.
+	# If this value reaches the SQL string unvalidated it becomes a FROM-clause
+	# injection vector: "SELECT * FROM hostile; DROP TABLE users".
+	# Fix: _open_table and fetchrow_hashref now validate the caller-supplied
+	# table name against $SAFE_QUALIFIED before interpolation.
+
+	plan skip_all => 'DBD::SQLite required' unless $HAVE_SQLITE;
+
+	local %ENV;
+	$ENV{REQUEST_METHOD} = 'GET';
+
+	my $db = _make_sqlite_db('Database::sec20', alice => 10, bob => 20);
+
+	# 20.1 Semicolon / statement-terminator via selectall_arrayref table param
+	throws_ok {
+		$db->selectall_arrayref(table => 'users; DROP TABLE users--')
+	} qr/unsafe table name/i,
+	  'SEC20.1 semicolon in selectall_arrayref table param croaks "unsafe table name"';
+
+	# 20.2 UNION keyword via selectall_arrayref table param (space not allowed)
+	throws_ok {
+		$db->selectall_arrayref(table => 'a UNION SELECT 1,2')
+	} qr/unsafe table name/i,
+	  'SEC20.2 UNION keyword in selectall_arrayref table param croaks';
+
+	# 20.3 Semicolon / statement-terminator via fetchrow_hashref table param
+	throws_ok {
+		$db->fetchrow_hashref(table => 'foo; DROP TABLE foo--')
+	} qr/unsafe table name/i,
+	  'SEC20.3 semicolon in fetchrow_hashref table param croaks "unsafe table name"';
+
+	# 20.4 Backtick injection via fetchrow_hashref table param
+	throws_ok {
+		$db->fetchrow_hashref(table => 'foo`id`')
+	} qr/unsafe table name/i,
+	  'SEC20.4 backtick in fetchrow_hashref table param croaks';
+
+	# 20.5 Null byte via selectall_array table param
+	throws_ok {
+		$db->selectall_array(table => "foo\x00evil")
+	} qr/unsafe table name/i,
+	  'SEC20.5 null byte in selectall_array table param croaks';
+
+	# 20.6 count() table param injection
+	throws_ok {
+		$db->count(table => 'foo; DELETE FROM foo--')
+	} qr/unsafe table name/i,
+	  'SEC20.6 semicolon in count table param croaks "unsafe table name"';
+
+	# 20.7 Valid dotted schema.table notation must pass (regression guard)
+	my $c;
+	lives_ok {
+		# The db is already open on a different table; just check that the guard
+		# does not croak on a syntactically valid qualified name.
+		# (The query itself may fail — we only verify no security croak fires.)
+		eval { $c = $db->count(table => 'schema.sometable') };
+	} 'SEC20.7 schema.table dotted notation is not rejected by the table guard';
+	unlike($@ // '', qr/unsafe table name/i,
+		'SEC20.7 no "unsafe table name" error for dotted notation');
+};
+
 done_testing();
