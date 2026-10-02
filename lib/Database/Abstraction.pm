@@ -995,7 +995,9 @@ sub _open :Protected
 	if(my $host = $self->{'host'} || $defaults{'host'}) {
 		if($self->_is_local_host($host)) {
 			$self->_debug("host '$host' is local; reading directory directly");
-			$dir = Cwd::abs_path($self->{'directory'} || $defaults{'directory'});
+			my $raw_dir = $self->{'directory'} || $defaults{'directory'};
+			Carp::croak(ref($self), ': no directory specified') unless $raw_dir;
+			$dir = Cwd::abs_path($raw_dir);
 		} else {
 			require File::Slurp::Remote;
 			require POSIX;
@@ -1070,7 +1072,9 @@ sub _open :Protected
 			$dir = $tmpdir;
 		}
 	} else {
-		$dir = Cwd::abs_path($self->{'directory'} || $defaults{'directory'});
+		my $raw_dir = $self->{'directory'} || $defaults{'directory'};
+		Carp::croak(ref($self), ': no directory specified') unless $raw_dir;
+		$dir = Cwd::abs_path($raw_dir);
 	}
 	# Probe for SQLite files (.sql, .sqlite, .sqlite3)
 	my $slurp_file;
