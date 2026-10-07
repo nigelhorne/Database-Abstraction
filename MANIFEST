@@ -84,6 +84,7 @@ t/portability.t
 t/psv.t
 t/query_builder.t
 t/redis.t
+t/redis_live.t
 t/remote.t
 t/remote_local.t
 t/schema.t
