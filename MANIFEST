@@ -65,7 +65,6 @@ t/lib/Database/test8.pm
 t/lib/Database/test_json.pm
 t/lib/Database/test_json_url.pm
 t/lib/Database/test_tsv.pm
-t/lib/MyLogger.pm
 t/locales.t
 t/logger.t
 t/logic.t
