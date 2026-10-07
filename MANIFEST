@@ -71,6 +71,7 @@ t/logger.t
 t/logic.t
 t/mutant_killers.t
 t/no_entry.t
+t/optional_deps.t
 t/passwd.t
 t/path.t
 t/pod-cm.t
