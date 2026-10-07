@@ -1,6 +1,6 @@
 Revision history for Database-Abstraction
 
-0.48
+0.48	Wed Oct  7 01:23:25 PM EDT 2026
 	[ Enhancements ]
 	- Redis backend: pass database => 'redis://[password@]host[:port][/db]'
 	  to connect to a Redis server.  Rows are stored as Redis Hashes at
