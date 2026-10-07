@@ -4,7 +4,7 @@ Database::Abstraction - Read-only Database Abstraction Layer (ORM)
 
 ## Version
 
-Version 0.46
+Version 0.47
 
 ## Description
 
@@ -568,6 +568,17 @@ arguments.
 ### Set\_Logger
 
 Sets the class, code reference, or file that will be used for logging.
+
+### Select
+
+Select a Redis database by number (0-15).  Clears the in-memory data cache so
+the next query re-slurps from the newly selected database.  Returns `$self`
+for chaining.  Croaks if the object is not backed by a Redis connection.
+
+```perl
+$db->select(3);          # switch to Redis DB 3
+my $count = $db->count;  # queries the new DB
+```
 
 ### Selectall\_Arrayref
 

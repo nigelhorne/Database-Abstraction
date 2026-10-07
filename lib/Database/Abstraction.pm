@@ -774,7 +774,7 @@ sub new {
 		$args{'logger'} = Log::Abstraction->new($args{'logger'});
 	}
 
-	unless($args{'dsn'} || $defaults{'dsn'} || $args{'url'} || $defaults{'url'}) {
+	unless($args{'dsn'} || $defaults{'dsn'} || $args{'url'} || $defaults{'url'} || $args{'database'} || $defaults{'database'}) {
 		croak("$class: where are the files?") unless($args{'directory'} || $defaults{'directory'});
 
 		# Skip the local -d check only for genuinely remote hosts.
@@ -806,6 +806,10 @@ sub new {
 		if(defined $src->{'url'}) {
 			croak("$class: unsafe url '$src->{url}'")
 				unless $src->{'url'} =~ m{\Ahttps?://}i;
+		}
+		if(defined $src->{'database'}) {
+			croak("$class: unsafe database '$src->{database}'")
+				unless $src->{'database'} =~ m{\Aredis://}i;
 		}
 		if(defined $src->{'table'}) {
 			croak("$class: unsafe table name '$src->{table}'")
@@ -856,6 +860,39 @@ sub set_logger
 		return $self;
 	}
 	Carp::croak('Usage: set_logger(logger => $logger)')
+}
+
+=head2	select
+
+Select a Redis database by number (0-15).  Clears the in-memory data cache so
+the next query re-slurps from the newly selected database.  Returns C<$self>
+for chaining.  Croaks if the object is not backed by a Redis connection.
+
+    $db->select(3);          # switch to Redis DB 3
+    my $count = $db->count;  # queries the new DB
+
+=cut
+
+sub select
+{
+	my $self = shift;
+	my $db_num = Params::Get::get_params('database', @_)->{'database'};
+
+	Carp::croak(ref($self), ': select: db number must be a non-negative integer')
+		unless defined($db_num) && $db_num =~ /\A\d+\z/;
+
+	$self->_open_table({});
+	Carp::croak(ref($self), ': select: not a Redis connection')
+		unless $self->{'_redis'};
+
+	$self->{'_redis'}->select(int($db_num));
+
+	# Clear cached data so next query re-slurps from the new database
+	delete $self->{'data'};
+	delete $self->{'_columns'};
+	delete $self->{'_schema'};
+
+	return $self;
 }
 
 # Open the database connection based on the specified type (e.g., SQLite, CSV).
@@ -910,6 +947,58 @@ sub _open :Protected
 
 		$self->{'type'} = 'DBI';
 		$self->{$table} = $dbh;
+		$self->{'_updated'} = time();
+		return $self;
+	}
+
+	# Redis backend — connects to a Redis server and slurps hash keys matching
+	# "tablename:*" into memory, mirroring the DBM::Deep slurp structure.
+	# Lazily loads Redis::Fast (preferred) or Redis.
+	if(my $db_url = $self->{'database'} || $defaults{'database'}) {
+		# Parse redis://[userinfo@]host[:port][/db_index]
+		my ($userinfo, $host, $port, $db_idx) =
+			$db_url =~ m{\Aredis://(?:([^@]*)@)?([^/:]*)?(?::(\d+))?(?:/(\d+))?\z}i;
+		$host   //= 'localhost';
+		$port   //= 6379;
+		$db_idx //= 0;
+		my $password;
+		if(defined $userinfo) {
+			$password = ($userinfo =~ /:(.*)/) ? $1 : (length($userinfo) ? $userinfo : undef);
+		}
+
+		unless($self->{'_redis'}) {
+			my $redis_class;
+			eval { require Redis::Fast; $redis_class = 'Redis::Fast' };
+			if($@) {
+				require Redis;
+				$redis_class = 'Redis';
+			}
+			$self->{'_redis'} = $redis_class->new(server => "$host:$port", reconnect => 2, every => 100);
+			$self->{'_redis'}->auth($password) if defined $password && length $password;
+		}
+		$self->{'_redis'}->select($db_idx) if $db_idx;
+
+		my $id   = $self->{'id'};
+		my @keys = $self->{'_redis'}->keys("${table}:*");
+
+		if($self->{'no_entry'}) {
+			my @data;
+			for my $key (@keys) {
+				my %fields = $self->{'_redis'}->hgetall($key);
+				push @data, \%fields if %fields;
+			}
+			$self->{'data'} = @data ? \@data : undef;
+		} else {
+			my %data;
+			for my $key (@keys) {
+				(my $entry = $key) =~ s/\A\Q${table}\E://;
+				my %fields = $self->{'_redis'}->hgetall($key);
+				$data{$entry} = { $id => $entry, %fields } if %fields;
+			}
+			$self->{'data'} = %data ? \%data : undef;
+		}
+
+		$self->{'type'}     = 'Redis';
 		$self->{'_updated'} = time();
 		return $self;
 	}
@@ -3201,6 +3290,11 @@ sub DESTROY
 		unlink($temp_path) if defined($temp_path) && -f $temp_path;
 	}
 	delete $self->{'_remote_tmpdir'};
+
+	# Disconnect Redis
+	if(my $redis = delete $self->{'_redis'}) {
+		eval { $redis->quit() };
+	}
 
 	# Clean up database handles
 	my $table_name = $self->{'table'} || ref($self);
