@@ -20,7 +20,7 @@ https://pjcj.net
 <h1>Branch Coverage</h1>
 <table>
 <tr><td class="h" align="right">File:</td><td align="left">blib/lib/Database/Abstraction.pm</td></tr>
-<tr><td class="h" align="right">Coverage:</td><td align="left" class="c0">74.5%</td></tr>
+<tr><td class="h" align="right">Coverage:</td><td align="left" class="c0">74.8%</td></tr>
 </table>
 <div><br/></div>
 <table>
@@ -42,7 +42,7 @@ https://pjcj.net
 <tr><td class="h"><a id="L761">761</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $args{&quot;table&quot;})</td></tr>
 <tr><td class="h"><a id="L763">763</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">unless $args{&quot;table&quot;} =~ /$SAFE_QUALIFIED/</td></tr>
 <tr><td class="h"><a id="L773">773</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $args{&quot;logger&quot;} and not &amp;Scalar::Util::blessed($args{&quot;logger&quot;}))</td></tr>
-<tr><td class="h"><a id="L777">777</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">unless ($args{&quot;dsn&quot;} or $defaults{&quot;dsn&quot;} or $args{&quot;url&quot;} or $defaults{&quot;url&quot;} or $args{&quot;database&quot;} or $defaults{&quot;database&quot;})</td></tr>
+<tr><td class="h"><a id="L777">777</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ($args{&quot;dsn&quot;} or $defaults{&quot;dsn&quot;} or $args{&quot;url&quot;} or $defaults{&quot;url&quot;} or $args{&quot;database&quot;} or $defaults{&quot;database&quot;})</td></tr>
 <tr><td class="h"><a id="L778">778</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $args{&quot;directory&quot;} or $defaults{&quot;directory&quot;}</td></tr>
 <tr><td class="h"><a id="L783">783</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ($given_host and not $class-&gt;_is_local_host($given_host))</td></tr>
 <tr><td class="h"><a id="L784">784</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless -d ($args{&#39;directory&#39;} || $defaults{&#39;directory&#39;})</td></tr>
@@ -60,8 +60,8 @@ https://pjcj.net
 &#12;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\z/x</td></tr>
 <tr><td class="h"><a id="L806">806</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $$src{&quot;url&quot;})</td></tr>
 <tr><td class="h"><a id="L808">808</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $$src{&quot;url&quot;} =~ m[\Ahttps?://]i</td></tr>
-<tr><td class="h"><a id="L810">810</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $$src{&quot;database&quot;})</td></tr>
-<tr><td class="h"><a id="L812">812</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">unless $$src{&quot;database&quot;} =~ m[\Aredis://]i</td></tr>
+<tr><td class="h"><a id="L810">810</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $$src{&quot;database&quot;})</td></tr>
+<tr><td class="h"><a id="L812">812</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $$src{&quot;database&quot;} =~ m[\Aredis://]i</td></tr>
 <tr><td class="h"><a id="L814">814</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $$src{&quot;table&quot;})</td></tr>
 <tr><td class="h"><a id="L816">816</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $$src{&quot;table&quot;} =~ /$SAFE_QUALIFIED/</td></tr>
 <tr><td class="h"><a id="L818">818</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $$src{&quot;base_criteria&quot;})</td></tr>
@@ -523,8 +523,8 @@ https://pjcj.net
 <tr><td class="h"><a id="L3812">3812</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $dbh = $$self{$table})</td></tr>
 <tr><td class="h"><a id="L3827">3827</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless do {
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BEGIN {
-&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;autodie::Scope::GuardStack/guard4&#39;} = &#39;autodie::Scope::Guard=CODE(0x55a8c348ed48)&#39;;
-&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;no Fatal&#39;} = &#39;HASH(0x55a8c31a3938)&#39;;
+&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;autodie::Scope::GuardStack/guard4&#39;} = &#39;autodie::Scope::Guard=CODE(0x5580e4dd5928)&#39;;
+&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;no Fatal&#39;} = &#39;HASH(0x5580e4aeaa10)&#39;;
 }
 &#11;open $fh, &quot;&lt;&quot;, $file
 }</td></tr>
@@ -538,8 +538,8 @@ https://pjcj.net
 <tr><td class="h"><a id="L3881">3881</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $lc_bare eq $me</td></tr>
 <tr><td class="h"><a id="L3897">3897</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless do {
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BEGIN {
-&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;autodie::Scope::GuardStack/guard5&#39;} = &#39;autodie::Scope::Guard=CODE(0x55a8c348f930)&#39;;
-&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;no Fatal&#39;} = &#39;HASH(0x55a8c348f8d0)&#39;;
+&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;autodie::Scope::GuardStack/guard5&#39;} = &#39;autodie::Scope::Guard=CODE(0x5580e4dd6510)&#39;;
+&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;no Fatal&#39;} = &#39;HASH(0x5580e4dd64b0)&#39;;
 }
 &#11;open $fh, &quot;&lt;&quot;, $file
 }</td></tr>

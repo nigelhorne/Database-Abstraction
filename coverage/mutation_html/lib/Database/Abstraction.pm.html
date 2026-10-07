@@ -293,8 +293,8 @@ a.intra-dot:hover { color: #7700bb; }
 <div class="nav"><a href="../../../index.html">Index</a>
  <a href="Abstraction/Query.pm.html">Next ➡</a></div><div class='summary'>
 <strong>Structural Coverage (Approximate)</strong><p>
-TER1 (Statement): 83.56%<br>
-TER2 (Branch): 74.53%<br>
+TER1 (Statement): 83.64%<br>
+TER2 (Branch): 74.84%<br>
 TER3 (LCSAJ): 100.0% (108/108)<br>
 Approximate LCSAJ segments: 959<br>
 </div>
@@ -1895,7 +1895,7 @@ is( func(VALUE_AT_BOUNDARY), EXPECTED, &#39;Test boundary behaviour&#39; );
 </span><span class=""> 1488: 							if(scalar(keys %{$xml}) == 1) {
 </span><span class=""> 1489: 								if($xml-&gt;{$table}) {
 </span><span class=""> 1490: 									@data = $xml-&gt;{$table};
-</span><span class="survived-2 tooltip" data-tooltip="Return value mutation survived. Add tests asserting exact return values. Boolean logic mutation survived. Add tests covering both true and false paths."> 1491: 								} else {
+</span><span class="survived-2 tooltip" data-tooltip="Boolean logic mutation survived. Add tests covering both true and false paths. Return value mutation survived. Add tests asserting exact return values."> 1491: 								} else {
 </span>
 					<details class="mutant-details">
 					<summary>Mutants (Total: 2, Killed: 0, Survived: 2)</summary>
@@ -3588,7 +3588,7 @@ is( func(VALUE_AT_BOUNDARY), EXPECTED, &#39;Test boundary behaviour&#39; );
 </span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 3021:     # Shortcut when the table has an &#39;entry&#39; key column
 </span><span class=""> 3022:     my $name = $db-&gt;name(&#39;key1&#39;);    # same as name(entry =&gt; &#39;key1&#39;)
 </span><span class=""> 3023: 
-</span><span class="survived-2 tooltip" data-tooltip="Boolean logic mutation survived. Add tests covering both true and false paths. Return value mutation survived. Add tests asserting exact return values."> 3024:     # Unique/distinct values
+</span><span class="survived-2 tooltip" data-tooltip="Return value mutation survived. Add tests asserting exact return values. Boolean logic mutation survived. Add tests covering both true and false paths."> 3024:     # Unique/distinct values
 </span>
 					<details class="mutant-details">
 					<summary>Mutants (Total: 2, Killed: 0, Survived: 2)</summary>
