@@ -11,6 +11,7 @@ BEGIN {
 use Test::Most;
 use Test::NoWarnings;
 use Test::Mockingbird;
+use Test::Returns;
 
 # Skip the whole file if neither Redis::Fast nor Redis is installed.
 BEGIN {
@@ -137,12 +138,11 @@ subtest 'R4: count() returns correct row count' => sub {
 };
 
 subtest 'R5: selectall_arrayref() returns all rows' => sub {
-	plan tests => 2;
+	plan tests => 1;
 	my ($mock, $guard) = _mock_redis();
 	my $db = Database::redis_test->new(database => $REDIS_URL);
 	my $rows = $db->selectall_arrayref();
-	isa_ok($rows, 'ARRAY', 'selectall_arrayref returns arrayref');
-	cmp_ok(scalar @{$rows}, '==', 3, 'three rows returned');
+	returns_is($rows, { type => 'arrayref', min => 3, max => 3 }, 'R5 returns 3-row arrayref');
 };
 
 subtest 'R6: selectall_arrayref() with entry criteria returns one row' => sub {
@@ -150,7 +150,7 @@ subtest 'R6: selectall_arrayref() with entry criteria returns one row' => sub {
 	my ($mock, $guard) = _mock_redis();
 	my $db = Database::redis_test->new(database => $REDIS_URL);
 	my $rows = $db->selectall_arrayref(entry => $ENTRY_ONE);
-	cmp_ok(scalar @{$rows}, '==', 1, 'one row returned');
+	returns_is($rows, { type => 'arrayref', min => 1, max => 1 }, 'one-row arrayref for entry criteria');
 	is($rows->[0]{'entry'}, $ENTRY_ONE, 'entry key matches');
 	is($rows->[0]{'name'},  'Alice',    'name field correct');
 };
@@ -160,7 +160,7 @@ subtest 'R7: fetchrow_hashref() returns a single row' => sub {
 	my ($mock, $guard) = _mock_redis();
 	my $db = Database::redis_test->new(database => $REDIS_URL);
 	my $row = $db->fetchrow_hashref($ENTRY_TWO);
-	ok(defined $row, 'fetchrow_hashref returns defined hashref');
+	returns_is($row, { type => 'hashref' }, 'fetchrow_hashref returns hashref');
 	is($row->{'name'}, 'Bob', 'correct name for row2');
 };
 
@@ -168,7 +168,7 @@ subtest 'R8: fetchrow_hashref() returns undef for missing entry' => sub {
 	plan tests => 1;
 	my ($mock, $guard) = _mock_redis();
 	my $db = Database::redis_test->new(database => $REDIS_URL);
-	ok(!defined $db->fetchrow_hashref('nonexistent'), 'undef for missing key');
+	returns_is($db->fetchrow_hashref('nonexistent'), { type => 'void' }, 'undef for missing key');
 };
 
 # ---------------------------------------------------------------------------
@@ -185,12 +185,11 @@ subtest 'R9: AUTOLOAD scalar lookup' => sub {
 # Section 4 — no_entry mode
 # ---------------------------------------------------------------------------
 subtest 'R10: no_entry mode — selectall_arrayref returns rows without entry key' => sub {
-	plan tests => 3;
+	plan tests => 2;
 	my ($mock, $guard) = _mock_redis(table => 'redis_ne');
 	my $db = Database::redis_ne->new(database => $REDIS_URL, no_entry => 1);
 	my $rows = $db->selectall_arrayref();
-	isa_ok($rows, 'ARRAY', 'arrayref returned in no_entry mode');
-	cmp_ok(scalar @{$rows}, '==', 3, 'three rows in no_entry mode');
+	returns_is($rows, { type => 'arrayref', min => 3, max => 3 }, '3-row arrayref in no_entry mode');
 	ok(!exists $rows->[0]{'entry'}, 'no injected entry key in no_entry mode');
 };
 
@@ -315,6 +314,6 @@ subtest 'R20: columns() returns sorted column names' => sub {
 	my ($mock, $guard) = _mock_redis();
 	my $db = Database::redis_test->new(database => $REDIS_URL);
 	my $cols = $db->columns();
-	isa_ok($cols, 'ARRAY', 'columns() returns arrayref');
+	returns_is($cols, { type => 'arrayref' }, 'columns() returns arrayref');
 	is_deeply([sort @{$cols}], $cols, 'columns() in alphabetical order');
 };

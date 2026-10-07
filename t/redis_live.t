@@ -18,6 +18,7 @@ use warnings;
 #   REDIS_SERVER=redis://localhost:6379 prove -l t/redis_live.t
 
 use Test::Most;
+use Test::Returns;
 
 # Skip at compile time if REDIS_SERVER is unset or Redis module missing.
 # (Test::NoWarnings is intentionally omitted — skip_all fired at runtime
@@ -32,6 +33,8 @@ BEGIN {
 
 use Readonly;
 use Scalar::Util qw(refaddr);
+use lib 't/lib';
+use Database::Abstraction;
 
 # ---------------------------------------------------------------------------
 # Normalise the server URL
@@ -129,9 +132,7 @@ END {
 # ---------------------------------------------------------------------------
 # Test plan  (no Test::NoWarnings — see comment at top)
 # ---------------------------------------------------------------------------
-plan tests => 24;
-
-use_ok('Database::Abstraction');
+plan tests => 23;
 
 # Helpers
 sub _db {
@@ -172,16 +173,15 @@ subtest 'L3: count() with scalar criteria' => sub {
 # Section 3 — selectall_arrayref
 # ---------------------------------------------------------------------------
 subtest 'L4: selectall_arrayref() returns all rows' => sub {
-	plan tests => 2;
+	plan tests => 1;
 	my $rows = _db()->selectall_arrayref();
-	isa_ok($rows, 'ARRAY', 'returns arrayref');
-	cmp_ok(scalar @{$rows}, '==', 3, 'three rows');
+	returns_is($rows, { type => 'arrayref', min => 3, max => 3 }, 'L4 returns 3-row arrayref');
 };
 
 subtest 'L5: selectall_arrayref() with entry criteria' => sub {
 	plan tests => 3;
 	my $rows = _db()->selectall_arrayref(entry => 'row1');
-	cmp_ok(scalar @{$rows}, '==', 1, 'one row for entry=row1');
+	returns_is($rows, { type => 'arrayref', min => 1, max => 1 }, 'one-row arrayref for entry=row1');
 	is($rows->[0]{'entry'}, 'row1',  'entry key correct');
 	is($rows->[0]{'name'},  'Alice', 'name field correct');
 };
@@ -189,14 +189,14 @@ subtest 'L5: selectall_arrayref() with entry criteria' => sub {
 subtest 'L6: selectall_arrayref() with scalar field criteria' => sub {
 	plan tests => 2;
 	my $rows = _db()->selectall_arrayref(active => '0');
-	cmp_ok(scalar @{$rows}, '==', 1, 'one inactive row');
+	returns_is($rows, { type => 'arrayref', min => 1, max => 1 }, 'one inactive row returned');
 	is($rows->[0]{'name'}, 'Charlie', 'correct inactive row');
 };
 
 subtest 'L7: selectall_arrayref() returns empty for no match' => sub {
 	plan tests => 1;
 	my $rows = _db()->selectall_arrayref(entry => 'nonexistent');
-	cmp_ok(scalar @{$rows}, '==', 0, 'empty result for missing entry');
+	returns_is($rows, { type => 'arrayref', min => 0, max => 0 }, 'empty arrayref for missing entry');
 };
 
 # ---------------------------------------------------------------------------
@@ -205,14 +205,14 @@ subtest 'L7: selectall_arrayref() returns empty for no match' => sub {
 subtest 'L8: fetchrow_hashref() returns correct row' => sub {
 	plan tests => 3;
 	my $row = _db()->fetchrow_hashref('row2');
-	ok(defined $row,            'defined hashref returned');
+	returns_is($row, { type => 'hashref' }, 'fetchrow_hashref returns hashref');
 	is($row->{'name'},  'Bob',  'name is Bob');
 	is($row->{'score'}, '20',   'score is 20');
 };
 
 subtest 'L9: fetchrow_hashref() returns undef for missing key' => sub {
 	plan tests => 1;
-	ok(!defined _db()->fetchrow_hashref('no_such_key'), 'undef for missing key');
+	returns_is(_db()->fetchrow_hashref('no_such_key'), { type => 'void' }, 'undef for missing key');
 };
 
 # ---------------------------------------------------------------------------
@@ -242,7 +242,7 @@ subtest 'L12: no_entry count()' => sub {
 subtest 'L13: no_entry rows have no injected entry key' => sub {
 	plan tests => 2;
 	my $rows = _db_ne()->selectall_arrayref();
-	cmp_ok(scalar @{$rows}, '==', 3, 'three rows in no_entry mode');
+	returns_is($rows, { type => 'arrayref', min => 3, max => 3 }, '3-row arrayref in no_entry mode');
 	ok(!exists $rows->[0]{'entry'}, 'no entry key injected in no_entry mode');
 };
 
@@ -252,7 +252,7 @@ subtest 'L13: no_entry rows have no injected entry key' => sub {
 subtest 'L14: columns() returns sorted list' => sub {
 	plan tests => 2;
 	my $cols = _db()->columns();
-	isa_ok($cols, 'ARRAY', 'columns() returns arrayref');
+	returns_is($cols, { type => 'arrayref' }, 'columns() returns arrayref');
 	is_deeply([sort @{$cols}], $cols, 'columns() in alphabetical order');
 };
 
@@ -312,7 +312,7 @@ subtest 'L19: repeated fetchrow_hashref() returns identical row' => sub {
 	my $db = _db();
 	my $r1 = $db->fetchrow_hashref('row1');
 	my $r2 = $db->fetchrow_hashref('row1');
-	ok(defined $r1, 'first call returns defined value');
+	returns_is($r1, { type => 'hashref' }, 'first call returns hashref');
 	is_deeply($r1, $r2, 'second call returns identical row');
 };
 
@@ -329,7 +329,7 @@ subtest 'L20: selectall_arrayref sort_by ascending' => sub {
 subtest 'L21: selectall_arrayref limit' => sub {
 	plan tests => 1;
 	my $rows = _db()->selectall_arrayref(sort_by => 'entry', limit => 2);
-	cmp_ok(scalar @{$rows}, '==', 2, 'limit => 2 returns two rows');
+	returns_is($rows, { type => 'arrayref', min => 2, max => 2 }, 'limit => 2 returns 2-row arrayref');
 };
 
 # ---------------------------------------------------------------------------
