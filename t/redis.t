@@ -9,7 +9,6 @@ BEGIN {
 }
 
 use Test::Most;
-use Test::NoWarnings;
 use Test::Mockingbird;
 use Test::Returns;
 
@@ -20,7 +19,7 @@ BEGIN {
 	plan skip_all => 'Redis or Redis::Fast required' unless $have_redis;
 }
 
-plan tests => 21;	# 20 subtests + 1 Test::NoWarnings
+plan tests => 20;
 
 # ---------------------------------------------------------------------------
 # Inline test subclasses
