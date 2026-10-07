@@ -25,7 +25,6 @@ use warnings;
 use strict;
 use autodie qw(:all);
 
-use boolean;
 use Carp;
 use Class::Abstract;
 use Data::Reuse;
@@ -60,34 +59,34 @@ my $SAFE_QUALIFIED  = qr/\A[a-zA-Z_][a-zA-Z0-9_.]*\z/;
 use constant INFER_TYPE_SAMPLE_SIZE => 100;
 my $INFER_INT_RE  = qr/\A-?\d+\z/;
 my $INFER_REAL_RE = qr/
-    \A              # start of string
-    -?              # optional leading minus
-    \d+             # integer part -- required
-    (?:\.\d+)?      # optional decimal part
-    (?:             # optional exponent block:
-        [eE]        #   e or E marker
-        [+-]?       #   optional sign
-        \d+         #   exponent digits
-    )?
-    \z              # end of string
+	\A              # start of string
+	-?              # optional leading minus
+	\d+             # integer part -- required
+	(?:\.\d+)?      # optional decimal part
+	(?:             # optional exponent block:
+		[eE]        #   e or E marker
+		[+-]?       #   optional sign
+		\d+         #   exponent digits
+	)?
+	\z              # end of string
 /x;
 # No \z anchor: intentionally matches any valid timestamp prefix so that full
 # timestamps with seconds, fractional seconds, or timezone offsets are still
 # classified as TIMESTAMP -- e.g. 2024-01-01 12:34:00.000+05:30
 my $INFER_TS_RE   = qr/
-    \A                              # start of string
-    \d{4}                           # 4-digit year
-    - (?:0[1-9]|1[0-2])            # month 01-12
-    - (?:0[1-9]|[12]\d|3[01])      # day   01-31
-    [T\ ]                           # ISO 8601 date-time separator: T or space
-    \d{2}:\d{2}                     # HH:MM -- no end anchor, see note above
+	\A                              # start of string
+	\d{4}                           # 4-digit year
+	- (?:0[1-9]|1[0-2])            # month 01-12
+	- (?:0[1-9]|[12]\d|3[01])      # day   01-31
+	[T\ ]                           # ISO 8601 date-time separator: T or space
+	\d{2}:\d{2}                     # HH:MM -- no end anchor, see note above
 /x;
 my $INFER_DATE_RE = qr/
-    \A                              # start of string
-    \d{4}                           # 4-digit year
-    - (?:0[1-9]|1[0-2])            # month 01-12
-    - (?:0[1-9]|[12]\d|3[01])      # day   01-31
-    \z                              # end of string
+	\A                              # start of string
+	\d{4}                           # 4-digit year
+	- (?:0[1-9]|1[0-2])            # month 01-12
+	- (?:0[1-9]|[12]\d|3[01])      # day   01-31
+	\z                              # end of string
 /x;
 
 # Module-level constant: valid JOIN types after uc() normalisation.
@@ -104,7 +103,7 @@ Version 0.47
 
 =cut
 
-our $VERSION = '0.47';
+our $VERSION = '0.48';
 
 =head1 DESCRIPTION
 
@@ -587,6 +586,26 @@ A URL (C<http://> or C<https://>) pointing to an HTML page that contains one
 or more C<< <table> >> elements.  When present, C<directory> is not required.
 The first row of the selected table is used as column headers.
 Requires L<LWP::UserAgent::Cached> and L<HTML::TableExtract> (both loaded lazily).
+
+=item * C<database>
+
+A Redis connection URL in the form C<redis://[password@]host[:port][/db_index]>.
+When present, C<directory>, C<dsn>, and C<url> are not required.  Rows are
+expected to be stored as Redis Hashes at keys of the form
+C<tablename:entry_value>; fields of each Hash become column values.  The
+module slurps all matching keys via C<KEYS tablename:*> + C<HGETALL> into the
+same in-memory structure used by the CSV and DBM::Deep backends, so all
+existing fast-paths (C<selectall_arrayref>, C<selectall_array>,
+C<fetchrow_hashref>, C<count>, C<columns>, C<schema>, AUTOLOAD) work without
+modification.  C<no_entry> mode is supported.
+
+L<Redis::Fast> is tried first (XS, faster); if unavailable, L<Redis>
+(pure-Perl) is used as a fallback.  Both are loaded lazily - neither is
+required when using file-based or DSN-based backends.  The URL scheme is
+validated at construction time (C<redis://> only; all other schemes croak).
+
+Use L</select> to switch the active Redis database on an already-open
+connection.
 
 =back
 

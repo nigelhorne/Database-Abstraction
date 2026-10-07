@@ -77,30 +77,33 @@ subtest 'A1: Redis and Redis::Fast both absent — database query fails graceful
 
 subtest 'A2: Redis::Fast absent — falls back to Redis (pure-Perl)' => sub {
 	SKIP: {
-		# Redis (pure-Perl) must be available; Redis::Fast must have been loaded so
-		# we can meaningfully hide it and prove the fallback fires.
+		# Both conditions must hold:
+		#   1. Redis (pure-Perl) is installed — it is the fallback we're proving.
+		#   2. Redis::Fast was successfully loaded during the probe at the top of
+		#      this file — only then can we meaningfully hide it to exercise the
+		#      fallback code path.
 		skip 'Redis pure-Perl module not installed', 2
 			unless eval { require Redis; 1 };
-		skip 'Redis::Fast was never loaded (no fallback to exercise)', 2
+		skip 'Redis::Fast was not available during probe (no fallback to exercise)', 2
 			unless $HAS_RFAST;
 
 		plan tests => 2;
 
 		Test::Without::Module->import('Redis::Fast');
-		# Remove cached handle so _open() reconnects and hits the fallback path.
+
 		my $db;
 		lives_ok {
 			$db = Database::od_redis->new(database => 'redis://localhost/0')
 		} 'new() lives when only Redis::Fast is hidden';
 
-		# We cannot guarantee a live Redis server in CI, so catching the connect
-		# error is acceptable — what matters is that the *module-load* path reached
-		# the Redis fallback (not a "Can't locate Redis::Fast" error).
+		# A live Redis server is not available in CI.  The important assertion is
+		# that any error is a *connection* failure, not a "Can't locate Redis::Fast"
+		# module-load failure — proving the fallback require Redis path was reached.
 		my $err = '';
 		eval { $db->count() };
 		$err = "$@" if $@;
 		unlike($err, qr/Can't locate Redis::Fast/,
-			'error (if any) is a connection error, not a missing-Redis::Fast error');
+			'error (if any) is a server-connection error, not a missing-module error');
 
 		Test::Without::Module->unimport('Redis::Fast');
 	}

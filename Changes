@@ -20,6 +20,7 @@ Revision history for Database-Abstraction
 	- DESTROY: Redis connections are cleanly closed via quit() on object
 	  destruction.
 	[ Tests ]
+	- Use Test::Log::Abstraction
 	- t/redis.t: 20 subtests covering all Redis backend behaviour via
 	  MockRedis (no live server required); skipped when neither Redis::Fast
 	  nor Redis is installed.
@@ -32,7 +33,15 @@ Revision history for Database-Abstraction
 	  pairs with formal Params::Validate::Strict schemas
 	  ({type=>'hashref'}, {type=>'void'}, {type=>'arrayref',min=>N,max=>N},
 	  {type=>'integer',min=>N,max=>N}, {type=>'object',isa=>'ClassName'},
-	  etc.).  All 2166 tests pass.
+	  etc.).
+	- t/optional_deps.t: 11 subtests verifying graceful behaviour when each
+	  optional runtime module is absent (Redis, Redis::Fast, Gzip::Faster,
+	  Text::xSV::Slurp, XML::Simple, DBM::Deep, Spreadsheet::ParseXLSX,
+	  LWP::UserAgent::Cached, HTML::TableExtract, File::Slurp::Remote).
+	  new() always succeeds; the first query either dies with a clear
+	  "Can't locate" message or (Text::xSV::Slurp + max_slurp_size=>0)
+	  falls back to the DBI/SQL path and returns correct data.
+	  All 2176 tests pass.
 
 0.47	Fri Oct  2 05:30:13 PM EDT 2026
 	[ Enhancements ]

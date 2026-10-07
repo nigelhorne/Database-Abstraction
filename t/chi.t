@@ -5,13 +5,13 @@ use warnings;
 use lib 't/lib';
 
 use File::Spec;
-use Test::Most tests => 22;
+use Test::Most tests => 21;
 use Test::Returns;
+use Test::Log::Abstraction;
 use FindBin qw($Bin);
 use Test::Needs 'CHI';
 
 CHI: {
-	use_ok('MyLogger');
 	use_ok('Database::test1');
 	CHI->import();
 
@@ -22,7 +22,7 @@ CHI: {
 	my $test1 = new_ok('Database::test1' => [{
 		cache => $cache,
 		directory => $directory,
-		logger => new_ok('MyLogger'),
+		logger => new_ok('Test::Log::Abstraction'),
 		max_slurp_size => 0,	# force to not use slurp and therefore to use SQL and cache
 	}]);
 
