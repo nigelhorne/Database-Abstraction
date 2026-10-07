@@ -6,6 +6,7 @@ use lib 't/lib';
 
 use File::Spec;
 use Test::Most tests => 22;
+use Test::Returns;
 use FindBin qw($Bin);
 use Test::Needs 'CHI';
 
@@ -50,7 +51,7 @@ CHI: {
 	$rc = $test1->selectall_hashref();
 	cmp_ok(scalar $cache->get_keys(), '==', 2, 'cache miss');
 	cmp_ok(ref($rc), 'eq', 'ARRAY', 'selectall hashref returns a reference to an array');
-	cmp_ok(scalar @{$rc}, '==', 4, 'selectall_hashref returns all matches');
+	returns_is($rc, { type => 'arrayref', min => 4, max => 4 }, 'selectall_hashref returns all matches');
 
 	if($ENV{'TEST_VERBOSE'}) {
 		foreach my $key($cache->get_keys()) {
