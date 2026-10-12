@@ -20,7 +20,7 @@ https://pjcj.net
 <h1>Branch Coverage</h1>
 <table>
 <tr><td class="h" align="right">File:</td><td align="left">blib/lib/Database/Abstraction.pm</td></tr>
-<tr><td class="h" align="right">Coverage:</td><td align="left" class="c1">76.6%</td></tr>
+<tr><td class="h" align="right">Coverage:</td><td align="left" class="c1">77.1%</td></tr>
 </table>
 <div><br/></div>
 <table>
@@ -382,23 +382,23 @@ https://pjcj.net
 <tr><td class="h"><a id="L3262">3262</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($fn eq &#39;count&#39; and not defined $col &amp;&amp; length $col) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($fn eq &#39;count_distinct&#39;) { }</td></tr>
 <tr><td class="h"><a id="L3273">3273</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $having)</td></tr>
-<tr><td class="h"><a id="L3274">3274</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless ref $having eq &quot;HASH&quot;</td></tr>
+<tr><td class="h"><a id="L3274">3274</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ref $having eq &quot;HASH&quot;</td></tr>
 <tr><td class="h"><a id="L3277">3277</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $k eq &quot;-or&quot; or $k eq &quot;-and&quot;</td></tr>
 <tr><td class="h"><a id="L3279">3279</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $by_name_set{$k} or $alias_set{$k}</td></tr>
 <tr><td class="h"><a id="L3284">3284</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $sort_by)</td></tr>
 <tr><td class="h"><a id="L3285">3285</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">ref $sort_by eq &#39;ARRAY&#39; ? :</td></tr>
-<tr><td class="h"><a id="L3288">3288</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">defined $sort_dir ? :</td></tr>
+<tr><td class="h"><a id="L3288">3288</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">defined $sort_dir ? :</td></tr>
 <tr><td class="h"><a id="L3290">3290</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $sort_col and $by_name_set{$sort_col} || $alias_set{$sort_col}</td></tr>
-<tr><td class="h"><a id="L3291">3291</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $sort_dir eq &quot;ASC&quot; or $sort_dir eq &quot;DESC&quot;</td></tr>
+<tr><td class="h"><a id="L3291">3291</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $sort_dir eq &quot;ASC&quot; or $sort_dir eq &quot;DESC&quot;</td></tr>
 <tr><td class="h"><a id="L3295">3295</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $limit)</td></tr>
 <tr><td class="h"><a id="L3296">3296</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (not $limit =~ /\A\d+\z/) { }</td></tr>
 <tr><td class="h"><a id="L3303">3303</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $offset)</td></tr>
 <tr><td class="h"><a id="L3304">3304</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (not $offset =~ /\A\d+\z/) { }</td></tr>
 <tr><td class="h"><a id="L3313">3313</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">defined $sort_col ? :</td></tr>
-<tr><td class="h"><a id="L3339">3339</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if $join_clause</td></tr>
-<tr><td class="h"><a id="L3345">3345</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($join_clause) { }</td></tr>
+<tr><td class="h"><a id="L3339">3339</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $join_clause</td></tr>
+<tr><td class="h"><a id="L3345">3345</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($join_clause) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif (($$self{&#39;type&#39;} // &#39;&#39;) eq &#39;CSV&#39; and not $$self{&#39;no_entry&#39;}) { }</td></tr>
-<tr><td class="h"><a id="L3346">3346</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if $where</td></tr>
+<tr><td class="h"><a id="L3346">3346</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if $where</td></tr>
 <tr><td class="h"><a id="L3350">3350</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if $where</td></tr>
 <tr><td class="h"><a id="L3352">3352</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $where</td></tr>
 <tr><td class="h"><a id="L3356">3356</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if @by_names</td></tr>
@@ -652,8 +652,8 @@ https://pjcj.net
 <tr><td class="h"><a id="L4484">4484</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $dbh = $$self{$table})</td></tr>
 <tr><td class="h"><a id="L4499">4499</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless do {
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BEGIN {
-&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;autodie::Scope::GuardStack/guard7&#39;} = &#39;autodie::Scope::Guard=CODE(0x55fe6c1462c0)&#39;;
-&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;no Fatal&#39;} = &#39;HASH(0x55fe6be178f0)&#39;;
+&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;autodie::Scope::GuardStack/guard7&#39;} = &#39;autodie::Scope::Guard=CODE(0x55cebc9a6c98)&#39;;
+&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;no Fatal&#39;} = &#39;HASH(0x55cebc6773d8)&#39;;
 }
 &#11;open $fh, &quot;&lt;&quot;, $file
 }</td></tr>
@@ -667,8 +667,8 @@ https://pjcj.net
 <tr><td class="h"><a id="L4553">4553</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $lc_bare eq $me</td></tr>
 <tr><td class="h"><a id="L4569">4569</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless do {
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BEGIN {
-&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;autodie::Scope::GuardStack/guard8&#39;} = &#39;autodie::Scope::Guard=CODE(0x55fe6c156a70)&#39;;
-&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;no Fatal&#39;} = &#39;HASH(0x55fe6c156a10)&#39;;
+&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;autodie::Scope::GuardStack/guard8&#39;} = &#39;autodie::Scope::Guard=CODE(0x55cebc9b7568)&#39;;
+&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;no Fatal&#39;} = &#39;HASH(0x55cebc9b7508)&#39;;
 }
 &#11;open $fh, &quot;&lt;&quot;, $file
 }</td></tr>
