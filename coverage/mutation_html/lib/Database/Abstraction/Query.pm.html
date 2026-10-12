@@ -293,7 +293,7 @@ a.intra-dot:hover { color: #7700bb; }
 <div class="nav"><a href="../Abstraction.pm.html">⬅ Previous</a> <a href="../../../../index.html">Index</a>
 </div><div class='summary'>
 <strong>Structural Coverage (Approximate)</strong><p>
-TER1 (Statement): 91.70%<br>
+TER1 (Statement): 91.38%<br>
 TER2 (Branch): 86.07%<br>
 TER3 (LCSAJ): 100.0% (16/16)<br>
 Approximate LCSAJ segments: 123<br>
@@ -352,677 +352,886 @@ Approximate LCSAJ segments: 123<br>
 </span><span class="">   11: use Carp;
 </span><span class="">   12: use Scalar::Util qw(blessed);
 </span><span class="">   13: 
-</span><span class="">   14: =head1 NAME
+</span><span class="">   14: =encoding utf8
 </span><span class="">   15: 
-</span><span class="">   16: Database::Abstraction::Query - Fluent, chainable query builder for Database::Abstraction
+</span><span class="">   16: =head1 NAME
 </span><span class="">   17: 
-</span><span class="">   18: =head1 VERSION
+</span><span class="">   18: Database::Abstraction::Query - Fluent, chainable query builder for Database::Abstraction
 </span><span class="">   19: 
-</span><span class="">   20: Version 0.49
+</span><span class="">   20: =head1 VERSION
 </span><span class="">   21: 
-</span><span class="">   22: =cut
+</span><span class="">   22: Version 0.49
 </span><span class="">   23: 
-</span><span class="">   24: our $VERSION = &#39;0.49&#39;;
+</span><span class="">   24: =cut
 </span><span class="">   25: 
-</span><span class="">   26: =head1 SYNOPSIS
+</span><span class="">   26: our $VERSION = &#39;0.49&#39;;
 </span><span class="">   27: 
-</span><span class="">   28:     my $db = Database::Foo-&gt;new(directory =&gt; &#39;/path/to/data&#39;);
+</span><span class="">   28: =head1 SYNOPSIS
 </span><span class="">   29: 
-</span><span class="">   30:     # --- Basic usage -----------------------------------------------
+</span><span class="">   30:     my $db = Database::Foo-&gt;new(directory =&gt; &#39;/path/to/data&#39;);
 </span><span class="">   31: 
-</span><span class="">   32:     # All rows
-</span><span class="">   33:     my $all = $db-&gt;query-&gt;all();
-</span><span class="">   34: 
-</span><span class="">   35:     # Filter, sort, page
-</span><span class="">   36:     my $rows = $db-&gt;query
-</span><span class="">   37:         -&gt;where(status =&gt; &#39;active&#39;)
-</span><span class="">   38:         -&gt;where(score  =&gt; { &#39;&gt;=&#39; =&gt; 80 })
-</span><span class="">   39:         -&gt;order_by(&#39;score DESC&#39;)
-</span><span class="">   40:         -&gt;limit(10)
-</span><span class="">   41:         -&gt;offset(20)
-</span><span class="">   42:         -&gt;all();
-</span><span class="">   43: 
-</span><span class="">   44:     # Single row
-</span><span class="">   45:     my $row = $db-&gt;query-&gt;where(name =&gt; &#39;Alice&#39;)-&gt;first();
-</span><span class="">   46: 
-</span><span class="">   47:     # Count
-</span><span class="">   48:     my $n = $db-&gt;query-&gt;where(status =&gt; &#39;active&#39;)-&gt;count();
-</span><span class="">   49: 
-</span><span class="">   50:     # --- Specific columns ------------------------------------------
+</span><span class="">   32:     # --- Basic usage -----------------------------------------------
+</span><span class="">   33: 
+</span><span class="">   34:     # All rows
+</span><span class="">   35:     my $all = $db-&gt;query-&gt;all();
+</span><span class="">   36: 
+</span><span class="">   37:     # Filter, sort, page
+</span><span class="">   38:     my $rows = $db-&gt;query
+</span><span class="">   39:         -&gt;where(status =&gt; &#39;active&#39;)
+</span><span class="">   40:         -&gt;where(score  =&gt; { &#39;&gt;=&#39; =&gt; 80 })
+</span><span class="">   41:         -&gt;order_by(&#39;score DESC&#39;)
+</span><span class="">   42:         -&gt;limit(10)
+</span><span class="">   43:         -&gt;offset(20)
+</span><span class="">   44:         -&gt;all();
+</span><span class="">   45: 
+</span><span class="">   46:     # Single row
+</span><span class="">   47:     my $row = $db-&gt;query-&gt;where(name =&gt; &#39;Alice&#39;)-&gt;first();
+</span><span class="">   48: 
+</span><span class="">   49:     # Count
+</span><span class="">   50:     my $n = $db-&gt;query-&gt;where(status =&gt; &#39;active&#39;)-&gt;count();
 </span><span class="">   51: 
-</span><span class="">   52:     my $names = $db-&gt;query-&gt;select(&#39;name, score&#39;)-&gt;where(status =&gt; &#39;active&#39;)-&gt;all();
+</span><span class="">   52:     # --- Specific columns ------------------------------------------
 </span><span class="">   53: 
-</span><span class="">   54:     # --- Joins -----------------------------------------------------
+</span><span class="">   54:     my $names = $db-&gt;query-&gt;select(&#39;name, score&#39;)-&gt;where(status =&gt; &#39;active&#39;)-&gt;all();
 </span><span class="">   55: 
-</span><span class="">   56:     my $joined = $db-&gt;query
-</span><span class="">   57:         -&gt;join({ table =&gt; &#39;dept&#39;, on =&gt; &#39;e.dept_id = dept.id&#39;, type =&gt; &#39;LEFT&#39; })
-</span><span class="">   58:         -&gt;where(dept_name =&gt; &#39;Engineering&#39;)
-</span><span class="">   59:         -&gt;all();
-</span><span class="">   60: 
-</span><span class="">   61:     # --- OR criteria -----------------------------------------------
+</span><span class="">   56:     # --- Joins -----------------------------------------------------
+</span><span class="">   57: 
+</span><span class="">   58:     my $joined = $db-&gt;query
+</span><span class="">   59:         -&gt;join({ table =&gt; &#39;dept&#39;, on =&gt; &#39;e.dept_id = dept.id&#39;, type =&gt; &#39;LEFT&#39; })
+</span><span class="">   60:         -&gt;where(dept_name =&gt; &#39;Engineering&#39;)
+</span><span class="">   61:         -&gt;all();
 </span><span class="">   62: 
-</span><span class="">   63:     my $either = $db-&gt;query
-</span><span class="">   64:         -&gt;where(-or =&gt; [
-</span><span class="">   65:             { status =&gt; &#39;active&#39;           },
-</span><span class="">   66:             { score  =&gt; { &#39;&gt;=&#39; =&gt; 95 }     },
-</span><span class="">   67:         ])
-</span><span class="">   68:         -&gt;all();
-</span><span class="">   69: 
-</span><span class="">   70: =head1 DESCRIPTION
+</span><span class="">   63:     # --- OR criteria -----------------------------------------------
+</span><span class="">   64: 
+</span><span class="">   65:     my $either = $db-&gt;query
+</span><span class="">   66:         -&gt;where(-or =&gt; [
+</span><span class="">   67:             { status =&gt; &#39;active&#39;           },
+</span><span class="">   68:             { score  =&gt; { &#39;&gt;=&#39; =&gt; 95 }     },
+</span><span class="">   69:         ])
+</span><span class="">   70:         -&gt;all();
 </span><span class="">   71: 
-</span><span class="">   72: C&lt;Database::Abstraction::Query&gt; is a fluent query builder returned by
-</span><span class="">   73: C&lt;&lt; $db-&gt;query() &gt;&gt;.  You assemble a query by chaining builder methods,
-</span><span class="">   74: then execute it with a terminal method.
-</span><span class="">   75: 
-</span><span class="">   76: =over 4
+</span><span class="">   72: =head1 DESCRIPTION
+</span><span class="">   73: 
+</span><span class="">   74: C&lt;Database::Abstraction::Query&gt; is a fluent query builder returned by
+</span><span class="">   75: C&lt;&lt; $db-&gt;query() &gt;&gt;.  You assemble a query by chaining builder methods,
+</span><span class="">   76: then execute it with a terminal method.
 </span><span class="">   77: 
-</span><span class="">   78: =item *
+</span><span class="">   78: =over 4
 </span><span class="">   79: 
-</span><span class="">   80: B&lt;Builder methods&gt; (C&lt;select&gt;, C&lt;where&gt;, C&lt;join&gt;, C&lt;order_by&gt;, C&lt;limit&gt;,
-</span><span class="">   81: C&lt;offset&gt;, C&lt;group_by&gt;, C&lt;measure&gt;, C&lt;having&gt;) all return C&lt;$self&gt;, so
-</span><span class="">   82: calls can be chained in any order.
-</span><span class="">   83: 
-</span><span class="">   84: =item *
+</span><span class="">   80: =item *
+</span><span class="">   81: 
+</span><span class="">   82: B&lt;Builder methods&gt; (C&lt;select&gt;, C&lt;where&gt;, C&lt;join&gt;, C&lt;order_by&gt;, C&lt;limit&gt;,
+</span><span class="">   83: C&lt;offset&gt;, C&lt;group_by&gt;, C&lt;measure&gt;, C&lt;having&gt;) all return C&lt;$self&gt;, so
+</span><span class="">   84: calls can be chained in any order.
 </span><span class="">   85: 
-</span><span class="">   86: B&lt;Terminal methods&gt; (C&lt;all&gt;, C&lt;first&gt;, C&lt;count&gt;) assemble the SQL, execute
-</span><span class="">   87: it, and return the result.  Each terminal method can be called on the same
-</span><span class="">   88: builder object independently - calling C&lt;first()&gt; does not modify the stored
-</span><span class="">   89: state (it temporarily sets LIMIT 1 internally).
-</span><span class="">   90: 
-</span><span class="">   91: =item *
+</span><span class="">   86: =item *
+</span><span class="">   87: 
+</span><span class="">   88: B&lt;Terminal methods&gt; (C&lt;all&gt;, C&lt;first&gt;, C&lt;count&gt;) assemble the SQL, execute
+</span><span class="">   89: it, and return the result.  Each terminal method can be called on the same
+</span><span class="">   90: builder object independently - calling C&lt;first()&gt; does not modify the stored
+</span><span class="">   91: state (it temporarily sets LIMIT 1 internally).
 </span><span class="">   92: 
-</span><span class="">   93: C&lt;where()&gt; calls are B&lt;merged with AND semantics&gt;: each call adds more
-</span><span class="">   94: required conditions.  To express OR conditions pass C&lt;&lt; -or =&gt; [...] &gt;&gt; as a
-</span><span class="">   95: key inside a single C&lt;where()&gt; call.
-</span><span class="">   96: 
-</span><span class="">   97: =item *
+</span><span class="">   93: =item *
+</span><span class="">   94: 
+</span><span class="">   95: C&lt;where()&gt; calls are B&lt;merged with AND semantics&gt;: each call adds more
+</span><span class="">   96: required conditions.  To express OR conditions pass C&lt;&lt; -or =&gt; [...] &gt;&gt; as a
+</span><span class="">   97: key inside a single C&lt;where()&gt; call.
 </span><span class="">   98: 
-</span><span class="">   99: The C&lt;join&gt; parameter accepts the same spec as the C&lt;join&gt; parameter in
-</span><span class="">  100: L&lt;Database::Abstraction/QUERY CRITERIA&gt;.
-</span><span class="">  101: 
-</span><span class="">  102: =item *
+</span><span class="">   99: =item *
+</span><span class="">  100: 
+</span><span class="">  101: The C&lt;join&gt; parameter accepts the same spec as the C&lt;join&gt; parameter in
+</span><span class="">  102: L&lt;Database::Abstraction/QUERY CRITERIA&gt;.
 </span><span class="">  103: 
-</span><span class="">  104: BerkeleyDB backends support C&lt;all()&gt;, C&lt;first()&gt;, and C&lt;count()&gt; with
-</span><span class="">  105: C&lt;where()&gt; criteria and C&lt;order_by()&gt;/C&lt;limit()&gt;/C&lt;offset()&gt; applied in Perl.
-</span><span class="">  106: The C&lt;join()&gt; builder method and the C&lt;select()&gt; column projection are not
-</span><span class="">  107: supported on BerkeleyDB and will raise an error.
-</span><span class="">  108: 
-</span><span class="">  109: =back
+</span><span class="">  104: =item *
+</span><span class="">  105: 
+</span><span class="">  106: BerkeleyDB backends support C&lt;all()&gt;, C&lt;first()&gt;, and C&lt;count()&gt; with
+</span><span class="">  107: C&lt;where()&gt; criteria and C&lt;order_by()&gt;/C&lt;limit()&gt;/C&lt;offset()&gt; applied in Perl.
+</span><span class="">  108: The C&lt;join()&gt; builder method and the C&lt;select()&gt; column projection are not
+</span><span class="">  109: supported on BerkeleyDB and will raise an error.
 </span><span class="">  110: 
-</span><span class="">  111: =head1 METHODS
+</span><span class="">  111: =back
 </span><span class="">  112: 
-</span><span class="">  113: =cut
+</span><span class="">  113: =head1 METHODS
 </span><span class="">  114: 
-</span><span class="">  115: =head2 new
+</span><span class="">  115: =cut
 </span><span class="">  116: 
-</span><span class="">  117:     my $q = Database::Abstraction::Query-&gt;new(_db =&gt; $db_object);
+</span><span class="">  117: =head2 new
 </span><span class="">  118: 
-</span><span class="">  119: Construct a new, empty query builder bound to C&lt;$db_object&gt;.  In practice
-</span><span class="">  120: you almost always call this via C&lt;&lt; $db-&gt;query() &gt;&gt; instead.
-</span><span class="">  121: 
-</span><span class="">  122: =cut
+</span><span class="">  119:     my $q = Database::Abstraction::Query-&gt;new(_db =&gt; $db_object);
+</span><span class="">  120: 
+</span><span class="">  121: Construct a new, empty query builder bound to C&lt;$db_object&gt;.  In practice
+</span><span class="">  122: you almost always call this via C&lt;&lt; $db-&gt;query() &gt;&gt; instead.
 </span><span class="">  123: 
-</span><span class="">  124: sub new
-</span><span class="">  125: {
-</span><span class="">  126: 	my ($class, %args) = @_;
-</span><span class="">  127: 
-</span><span class="">  128: 	my $db = $args{&#39;_db&#39;}
-</span><span class="">  129: 		or croak(&#39;Database::Abstraction::Query: _db is required&#39;);
-</span><span class="">  130: 
-</span><span class="">  131: 	croak(&#39;Database::Abstraction::Query: _db must be a Database::Abstraction object&#39;)
-</span><span class="">  132: 		unless blessed($db) &amp;&amp; $db-&gt;isa(&#39;Database::Abstraction&#39;);
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  133: 
-</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  134: 	return bless {
-</span><span class="">  135: 		_db       =&gt; $db,
-</span><span class="">  136: 		_select   =&gt; &#39;*&#39;,
-</span><span class="">  137: 		_where    =&gt; {},
-</span><span class="">  138: 		_joins    =&gt; [],
-</span><span class="">  139: 		_order_by =&gt; undef,
-</span><span class="">  140: 		_limit    =&gt; undef,
-</span><span class="">  141: 		_offset   =&gt; undef,
-</span><span class="">  142: 		_group_by =&gt; [],
-</span><span class="">  143: 		_measures =&gt; [],
-</span><span class="">  144: 		_having   =&gt; {},
-</span><span class="">  145: 	}, $class;
-</span><span class="">  146: }
-</span><span class="">  147: 
-</span><span class="">  148: =head2 select
+</span><span class="">  124: =cut
+</span><span class="">  125: 
+</span><span class="">  126: sub new
+</span><span class="">  127: {
+</span><span class="">  128: 	my ($class, %args) = @_;
+</span><span class="">  129: 
+</span><span class="">  130: 	my $db = $args{&#39;_db&#39;}
+</span><span class="">  131: 		or croak(&#39;Database::Abstraction::Query: _db is required&#39;);
+</span><span class="">  132: 
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  133: 	croak(&#39;Database::Abstraction::Query: _db must be a Database::Abstraction object&#39;)
+</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  134: 		unless blessed($db) &amp;&amp; $db-&gt;isa(&#39;Database::Abstraction&#39;);
+</span><span class="">  135: 
+</span><span class="">  136: 	return bless {
+</span><span class="">  137: 		_db       =&gt; $db,
+</span><span class="">  138: 		_select   =&gt; &#39;*&#39;,
+</span><span class="">  139: 		_where    =&gt; {},
+</span><span class="">  140: 		_joins    =&gt; [],
+</span><span class="">  141: 		_order_by =&gt; undef,
+</span><span class="">  142: 		_limit    =&gt; undef,
+</span><span class="">  143: 		_offset   =&gt; undef,
+</span><span class="">  144: 		_group_by =&gt; [],
+</span><span class="">  145: 		_measures =&gt; [],
+</span><span class="">  146: 		_having   =&gt; {},
+</span><span class="">  147: 	}, $class;
+</span><span class="">  148: }
 </span><span class="">  149: 
-</span><span class="">  150:     $q-&gt;select(&#39;name, score&#39;);
-</span><span class="">  151:     $q-&gt;select(&#39;COUNT(*) AS n, status&#39;);
-</span><span class="">  152: 
-</span><span class="">  153: Set the column expression for the C&lt;SELECT&gt; clause.  Default is C&lt;*&gt; (all
-</span><span class="">  154: columns).  Returns C&lt;$self&gt;.
-</span><span class="">  155: 
-</span><span class="">  156: =cut
+</span><span class="">  150: =head2 select
+</span><span class="">  151: 
+</span><span class="">  152:     $q-&gt;select(&#39;name, score&#39;);
+</span><span class="">  153:     $q-&gt;select(&#39;COUNT(*) AS n, status&#39;);
+</span><span class="">  154: 
+</span><span class="">  155: Set the column expression for the C&lt;SELECT&gt; clause.  Default is C&lt;*&gt; (all
+</span><span class="">  156: columns).  Returns C&lt;$self&gt;.
 </span><span class="">  157: 
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  158: sub select
-</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  159: {
-</span><span class="">  160: 	my ($self, $cols) = @_;
-</span><span class="">  161: 	$self-&gt;{&#39;_select&#39;} = defined($cols) ? $cols : &#39;*&#39;;
-</span><span class="">  162: 	return $self;
-</span><span class="">  163: }
-</span><span class="">  164: 
-</span><span class="">  165: =head2 where
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  158: =cut
+</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  159: 
+</span><span class="">  160: sub select
+</span><span class="">  161: {
+</span><span class="">  162: 	my ($self, $cols) = @_;
+</span><span class="">  163: 	$self-&gt;{&#39;_select&#39;} = defined($cols) ? $cols : &#39;*&#39;;
+</span><span class="">  164: 	return $self;
+</span><span class="">  165: }
 </span><span class="">  166: 
-</span><span class="">  167:     $q-&gt;where(status =&gt; &#39;active&#39;);
-</span><span class="">  168:     $q-&gt;where(score  =&gt; { &#39;&gt;&#39;  =&gt; 8     });
-</span><span class="">  169:     $q-&gt;where(name   =&gt; { -in  =&gt; [...] });
-</span><span class="">  170:     $q-&gt;where(-or    =&gt; [ {...}, {...}     ]);
-</span><span class="">  171: 
-</span><span class="">  172: Add one or more criteria to the query.  Multiple calls are merged with
-</span><span class="">  173: AND semantics.  Accepts a flat list of key/value pairs or a single hashref.
-</span><span class="">  174: 
-</span><span class="">  175: Supports the full criteria syntax of L&lt;Database::Abstraction/QUERY CRITERIA&gt;:
-</span><span class="">  176: plain scalars, wildcard strings, C&lt;undef&gt; (IS NULL), comparison operator
-</span><span class="">  177: hashrefs (C&lt;&lt; { &#39;&gt;&#39; =&gt; n } &gt;&gt;), C&lt;-in&gt;, C&lt;-not_in&gt;, C&lt;-between&gt;,
-</span><span class="">  178: C&lt;-like&gt;, C&lt;-not_like&gt;, C&lt;-or&gt;, and C&lt;-and&gt;.
-</span><span class="">  179: 
-</span><span class="">  180: Returns C&lt;$self&gt;.
+</span><span class="">  167: =head2 where
+</span><span class="">  168: 
+</span><span class="">  169:     $q-&gt;where(status =&gt; &#39;active&#39;);
+</span><span class="">  170:     $q-&gt;where(score  =&gt; { &#39;&gt;&#39;  =&gt; 8     });
+</span><span class="">  171:     $q-&gt;where(name   =&gt; { -in  =&gt; [...] });
+</span><span class="">  172:     $q-&gt;where(-or    =&gt; [ {...}, {...}     ]);
+</span><span class="">  173: 
+</span><span class="">  174: Add one or more criteria to the query.  Multiple calls are merged with
+</span><span class="">  175: AND semantics.  Accepts a flat list of key/value pairs or a single hashref.
+</span><span class="">  176: 
+</span><span class="">  177: Supports the full criteria syntax of L&lt;Database::Abstraction/QUERY CRITERIA&gt;:
+</span><span class="">  178: plain scalars, wildcard strings, C&lt;undef&gt; (IS NULL), comparison operator
+</span><span class="">  179: hashrefs (C&lt;&lt; { &#39;&gt;&#39; =&gt; n } &gt;&gt;), C&lt;-in&gt;, C&lt;-not_in&gt;, C&lt;-between&gt;,
+</span><span class="">  180: C&lt;-like&gt;, C&lt;-not_like&gt;, C&lt;-or&gt;, and C&lt;-and&gt;.
 </span><span class="">  181: 
-</span><span class="">  182: =cut
+</span><span class="">  182: Returns C&lt;$self&gt;.
 </span><span class="">  183: 
-</span><span class="">  184: sub where
-</span><span class="">  185: {
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">186 → 188 → 191</span></span>  186: 	my $self = shift;
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  187: 	my %criteria = ref($_[0]) eq &#39;HASH&#39; ? %{$_[0]} : @_;
-</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  188: 	for my $k (keys %criteria) {
-</span><span class="">  189: 		$self-&gt;{&#39;_where&#39;}{$k} = $criteria{$k};
-</span><span class="">  190: 	}
-</span><span class="">  191: 	return $self;
-</span><span class="">  192: }
-</span><span class="">  193: 
-</span><span class="">  194: =head2 join
+</span><span class="">  184: =cut
+</span><span class="">  185: 
+</span><span class="">  186: sub where
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  187: {
+</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">188 → 190 → 193</span></span>  188: 	my $self = shift;
+</span><span class="">  189: 	my %criteria = ref($_[0]) eq &#39;HASH&#39; ? %{$_[0]} : @_;
+</span><span class="">  190: 	for my $k (keys %criteria) {
+</span><span class="">  191: 		$self-&gt;{&#39;_where&#39;}{$k} = $criteria{$k};
+</span><span class="">  192: 	}
+</span><span class="">  193: 	return $self;
+</span><span class="">  194: }
 </span><span class="">  195: 
-</span><span class="">  196:     $q-&gt;join({ table =&gt; &#39;dept&#39;, on =&gt; &#39;e.dept_id = dept.id&#39;, type =&gt; &#39;LEFT&#39; });
+</span><span class="">  196: =head2 join
 </span><span class="">  197: 
-</span><span class="">  198:     # Multiple joins at once
-</span><span class="">  199:     $q-&gt;join([
-</span><span class="">  200:         { table =&gt; &#39;dept&#39;,    on =&gt; &#39;e.dept_id    = dept.id&#39;    },
-</span><span class="">  201:         { table =&gt; &#39;country&#39;, on =&gt; &#39;e.country_id = country.id&#39; },
-</span><span class="">  202:     ]);
-</span><span class="">  203: 
-</span><span class="">  204: Append one or more JOIN specs.  Each spec is a hashref with:
+</span><span class="">  198:     $q-&gt;join({ table =&gt; &#39;dept&#39;, on =&gt; &#39;e.dept_id = dept.id&#39;, type =&gt; &#39;LEFT&#39; });
+</span><span class="">  199: 
+</span><span class="">  200:     # Multiple joins at once
+</span><span class="">  201:     $q-&gt;join([
+</span><span class="">  202:         { table =&gt; &#39;dept&#39;,    on =&gt; &#39;e.dept_id    = dept.id&#39;    },
+</span><span class="">  203:         { table =&gt; &#39;country&#39;, on =&gt; &#39;e.country_id = country.id&#39; },
+</span><span class="">  204:     ]);
 </span><span class="">  205: 
-</span><span class="">  206: =over 4
+</span><span class="">  206: Append one or more JOIN specs.  Each spec is a hashref with:
 </span><span class="">  207: 
-</span><span class="">  208: =item * C&lt;table&gt; - the table to join (required)
+</span><span class="">  208: =over 4
 </span><span class="">  209: 
-</span><span class="">  210: =item * C&lt;on&gt; - the join condition, verbatim SQL (required)
+</span><span class="">  210: =item * C&lt;table&gt; - the table to join (required)
 </span><span class="">  211: 
-</span><span class="">  212: =item * C&lt;type&gt; - join type: C&lt;INNER&gt; (default), C&lt;LEFT&gt;, C&lt;RIGHT&gt;, C&lt;FULL&gt;, C&lt;CROSS&gt;
+</span><span class="">  212: =item * C&lt;on&gt; - the join condition, verbatim SQL (required)
 </span><span class="">  213: 
-</span><span class="">  214: =back
+</span><span class="">  214: =item * C&lt;type&gt; - join type: C&lt;INNER&gt; (default), C&lt;LEFT&gt;, C&lt;RIGHT&gt;, C&lt;FULL&gt;, C&lt;CROSS&gt;
 </span><span class="">  215: 
-</span><span class="">  216: Multiple calls accumulate joins.  Returns C&lt;$self&gt;.
+</span><span class="">  216: =back
 </span><span class="">  217: 
-</span><span class="">  218: =cut
+</span><span class="">  218: Multiple calls accumulate joins.  Returns C&lt;$self&gt;.
 </span><span class="">  219: 
-</span><span class="">  220: sub join	## no critic(ProhibitBuiltinHomonyms)
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  221: {
-</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  222: 	my ($self, $spec) = @_;
-</span><span class="">  223: 	my @specs = ref($spec) eq &#39;ARRAY&#39; ? @{$spec} : ($spec);
-</span><span class="">  224: 	push @{$self-&gt;{&#39;_joins&#39;}}, @specs;
-</span><span class="">  225: 	return $self;
-</span><span class="">  226: }
-</span><span class="">  227: 
-</span><span class="">  228: =head2 order_by
+</span><span class="">  220: =cut
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  221: 
+</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  222: sub join	## no critic(ProhibitBuiltinHomonyms)
+</span><span class="">  223: {
+</span><span class="">  224: 	my ($self, $spec) = @_;
+</span><span class="">  225: 	my @specs = ref($spec) eq &#39;ARRAY&#39; ? @{$spec} : ($spec);
+</span><span class="">  226: 	push @{$self-&gt;{&#39;_joins&#39;}}, @specs;
+</span><span class="">  227: 	return $self;
+</span><span class="">  228: }
 </span><span class="">  229: 
-</span><span class="">  230:     $q-&gt;order_by(&#39;name DESC&#39;);
-</span><span class="">  231:     $q-&gt;order_by(&#39;score DESC, name ASC&#39;);
-</span><span class="">  232: 
-</span><span class="">  233: Set the C&lt;ORDER BY&gt; expression.  Replaces any previously set ordering.
-</span><span class="">  234: Returns C&lt;$self&gt;.
-</span><span class="">  235: 
-</span><span class="">  236: =cut
+</span><span class="">  230: =head2 order_by
+</span><span class="">  231: 
+</span><span class="">  232:     $q-&gt;order_by(&#39;name DESC&#39;);
+</span><span class="">  233:     $q-&gt;order_by(&#39;score DESC, name ASC&#39;);
+</span><span class="">  234: 
+</span><span class="">  235: Set the C&lt;ORDER BY&gt; expression.  Replaces any previously set ordering.
+</span><span class="">  236: Returns C&lt;$self&gt;.
 </span><span class="">  237: 
-</span><span class="">  238: sub order_by
-</span><span class="">  239: {
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">240 → 245 → 251</span></span>  240: 	my ($self, $col) = @_;
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  241: 	# Guard the three primary SQL injection vectors before the value is
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="">  242: 	# interpolated verbatim into ORDER BY $col (see _build_sql).  The check
-</span><span class="">  243: 	# is deliberately permissive so it does not break legitimate multi-column
-</span><span class="">  244: 	# expressions (&quot;score DESC, name ASC&quot;) or SQL functions (&quot;ABS(score) DESC&quot;).
-</span><span class="">  245: 	if(defined $col) {
-</span><span class="">  246: 		# Block the three primary SQL injection vectors that can appear inside
-</span><span class="">  247: 		# an ORDER BY expression.  Use m{} to avoid escaping &#39;/&#39; and &#39;\*&#39;.
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  248: 		croak(&quot;order_by: unsafe ORDER BY expression &#39;$col&#39;&quot;)
-</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  249: 			if $col =~ m{; | -- | /\*}x;
-</span><span class="">  250: 	}
-</span><span class="">  251: 	$self-&gt;{&#39;_order_by&#39;} = $col;
-</span><span class="">  252: 	return $self;
-</span><span class="">  253: }
-</span><span class="">  254: 
-</span><span class="">  255: =head2 limit
+</span><span class="">  238: =cut
+</span><span class="">  239: 
+</span><span class="">  240: sub order_by
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  241: {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">242 → 247 → 253</span></span>  242: 	my ($self, $col) = @_;
+</span><span class="">  243: 	# Guard the three primary SQL injection vectors before the value is
+</span><span class="">  244: 	# interpolated verbatim into ORDER BY $col (see _build_sql).  The check
+</span><span class="">  245: 	# is deliberately permissive so it does not break legitimate multi-column
+</span><span class="">  246: 	# expressions (&quot;score DESC, name ASC&quot;) or SQL functions (&quot;ABS(score) DESC&quot;).
+</span><span class="">  247: 	if(defined $col) {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  248: 		# Block the three primary SQL injection vectors that can appear inside
+</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  249: 		# an ORDER BY expression.  Use m{} to avoid escaping &#39;/&#39; and &#39;\*&#39;.
+</span><span class="">  250: 		croak(&quot;order_by: unsafe ORDER BY expression &#39;$col&#39;&quot;)
+</span><span class="">  251: 			if $col =~ m{; | -- | /\*}x;
+</span><span class="">  252: 	}
+</span><span class="">  253: 	$self-&gt;{&#39;_order_by&#39;} = $col;
+</span><span class="">  254: 	return $self;
+</span><span class="">  255: }
 </span><span class="">  256: 
-</span><span class="">  257:     $q-&gt;limit(20);
+</span><span class="">  257: =head2 limit
 </span><span class="">  258: 
-</span><span class="">  259: Set the maximum number of rows to return.  Returns C&lt;$self&gt;.
+</span><span class="">  259:     $q-&gt;limit(20);
 </span><span class="">  260: 
-</span><span class="">  261: =cut
+</span><span class="">  261: Set the maximum number of rows to return.  Returns C&lt;$self&gt;.
 </span><span class="">  262: 
-</span><span class="">  263: sub limit
-</span><span class="">  264: {
-</span><span class="">  265: 	my ($self, $n) = @_;
-</span><span class="">  266: 	# Validate at the setter: LIMIT must be a non-negative integer.
-</span><span class="">  267: 	# Direct interpolation into SQL (line: LIMIT $n) makes any non-integer a
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  268: 	# potential injection vector (e.g. &quot;10; DROP TABLE users&quot;).
-</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  269: 	croak(&quot;limit: value must be a non-negative integer&quot;)
-</span><span class="">  270: 		if !defined($n) || $n !~ /\A\d+\z/;
-</span><span class="">  271: 	$self-&gt;{&#39;_limit&#39;} = int($n);
-</span><span class="">  272: 	return $self;
-</span><span class="">  273: }
-</span><span class="">  274: 
-</span><span class="">  275: =head2 offset
+</span><span class="">  263: =cut
+</span><span class="">  264: 
+</span><span class="">  265: sub limit
+</span><span class="">  266: {
+</span><span class="">  267: 	my ($self, $n) = @_;
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  268: 	# Validate at the setter: LIMIT must be a non-negative integer.
+</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  269: 	# Direct interpolation into SQL (line: LIMIT $n) makes any non-integer a
+</span><span class="">  270: 	# potential injection vector (e.g. &quot;10; DROP TABLE users&quot;).
+</span><span class="">  271: 	croak(&quot;limit: value must be a non-negative integer&quot;)
+</span><span class="">  272: 		if !defined($n) || $n !~ /\A\d+\z/;
+</span><span class="">  273: 	$self-&gt;{&#39;_limit&#39;} = int($n);
+</span><span class="">  274: 	return $self;
+</span><span class="">  275: }
 </span><span class="">  276: 
-</span><span class="">  277:     $q-&gt;offset(40);
+</span><span class="">  277: =head2 offset
 </span><span class="">  278: 
-</span><span class="">  279: Skip the first N rows (for pagination with L&lt;/limit&gt;).  Returns C&lt;$self&gt;.
+</span><span class="">  279:     $q-&gt;offset(40);
 </span><span class="">  280: 
-</span><span class="">  281: =cut
+</span><span class="">  281: Skip the first N rows (for pagination with L&lt;/limit&gt;).  Returns C&lt;$self&gt;.
 </span><span class="">  282: 
-</span><span class="">  283: sub offset
-</span><span class="">  284: {
-</span><span class="">  285: 	my ($self, $n) = @_;
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  286: 	# Same guard as limit(): OFFSET is interpolated directly into SQL.
-</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  287: 	croak(&quot;offset: value must be a non-negative integer&quot;)
-</span><span class="">  288: 		if !defined($n) || $n !~ /\A\d+\z/;
-</span><span class="">  289: 	$self-&gt;{&#39;_offset&#39;} = int($n);
-</span><span class="">  290: 	return $self;
-</span><span class="">  291: }
-</span><span class="">  292: 
-</span><span class="">  293: =head2 group_by
+</span><span class="">  283: =cut
+</span><span class="">  284: 
+</span><span class="">  285: sub offset
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  286: {
+</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  287: 	my ($self, $n) = @_;
+</span><span class="">  288: 	# Same guard as limit(): OFFSET is interpolated directly into SQL.
+</span><span class="">  289: 	croak(&quot;offset: value must be a non-negative integer&quot;)
+</span><span class="">  290: 		if !defined($n) || $n !~ /\A\d+\z/;
+</span><span class="">  291: 	$self-&gt;{&#39;_offset&#39;} = int($n);
+</span><span class="">  292: 	return $self;
+</span><span class="">  293: }
 </span><span class="">  294: 
-</span><span class="">  295:     $q-&gt;group_by(&#39;region&#39;, &#39;month&#39;);
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  296:     $q-&gt;group_by(\@cols);
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="">  297:     $q-&gt;group_by([]);    # clear (grand total)
-</span><span class="">  298: 
-</span><span class="">  299: Set the C&lt;GROUP BY&gt; columns for an aggregate query.  Replaces any previously
-</span><span class="">  300: set list.  Has no effect unless at least one C&lt;measure()&gt; call follows.
-</span><span class="">  301: Returns C&lt;$self&gt;.
-</span><span class="">  302: 
-</span><span class="">  303: =cut
+</span><span class="">  295: =head2 group_by
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  296: 
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="">  297:     $q-&gt;group_by(&#39;region&#39;, &#39;month&#39;);
+</span><span class="">  298:     $q-&gt;group_by(\@cols);
+</span><span class="">  299:     $q-&gt;group_by([]);    # clear (grand total)
+</span><span class="">  300: 
+</span><span class="">  301: Set the C&lt;GROUP BY&gt; columns for an aggregate query.  Replaces any previously
+</span><span class="">  302: set list.  Has no effect unless at least one C&lt;measure()&gt; call follows.
+</span><span class="">  303: Returns C&lt;$self&gt;.
 </span><span class="">  304: 
-</span><span class="">  305: sub group_by
-</span><span class="">  306: {
-</span><span class="">  307: 	my $self = shift;
-</span><span class="">  308: 	my @cols = (@_ == 1 &amp;&amp; ref($_[0]) eq &#39;ARRAY&#39;) ? @{$_[0]} : @_;
-</span><span class="">  309: 	$self-&gt;{&#39;_group_by&#39;} = \@cols;
-</span><span class="">  310: 	return $self;
-</span><span class="">  311: }
+</span><span class="">  305: =head3 API SPECIFICATION
+</span><span class="">  306: 
+</span><span class="">  307: =head4 Arguments
+</span><span class="">  308: 
+</span><span class="">  309:     @cols   # one or more column name strings (replaces any previous group_by)
+</span><span class="">  310: 
+</span><span class="">  311: =head4 Returns
 </span><span class="">  312: 
-</span><span class="">  313: =head2 measure
+</span><span class="">  313:     $self   (the same Query object, for chaining)
 </span><span class="">  314: 
-</span><span class="">  315:     $q-&gt;measure(&#39;amount&#39;, &#39;sum&#39;, &#39;revenue&#39;);
-</span><span class="">  316:     $q-&gt;measure(undef, &#39;count&#39;, &#39;orders&#39;);       # COUNT(*)
-</span><span class="">  317:     $q-&gt;measure({ col =&gt; &#39;c&#39;, fn =&gt; &#39;avg&#39;, as =&gt; &#39;mean&#39; });
-</span><span class="">  318: 
-</span><span class="">  319: Append a measure to the aggregate query.  May be called multiple times;
-</span><span class="">  320: measures accumulate.  Accepts either three positional arguments
-</span><span class="">  321: (C&lt;col&gt;, C&lt;fn&gt;, C&lt;as&gt;) or a single hashref with those keys.
-</span><span class="">  322: 
-</span><span class="">  323: C&lt;fn&gt; must be one of C&lt;sum&gt;, C&lt;avg&gt;, C&lt;min&gt;, C&lt;max&gt;, C&lt;count&gt;,
-</span><span class="">  324: C&lt;count_distinct&gt;.  C&lt;col&gt; is optional only for C&lt;count&gt; (COUNT(*)).
-</span><span class="">  325: 
-</span><span class="">  326: Returns C&lt;$self&gt;.
-</span><span class="">  327: 
-</span><span class="">  328: =cut
-</span><span class="">  329: 
-</span><span class="">  330: sub measure
-</span><span class="">  331: {
-</span><span class="">  332: 	my ($self, $col_or_spec, $fn, $as) = @_;
-</span><span class="">  333: 	my $spec = ref($col_or_spec) eq &#39;HASH&#39;
-</span><span class="">  334: 		? $col_or_spec
-</span><span class="">  335: 		: { col =&gt; $col_or_spec, fn =&gt; $fn, as =&gt; $as };
-</span><span class="">  336: 	push @{$self-&gt;{&#39;_measures&#39;}}, $spec;
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  337: 	return $self;
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="">  338: }
+</span><span class="">  315: =cut
+</span><span class="">  316: 
+</span><span class="">  317: sub group_by
+</span><span class="">  318: {
+</span><span class="">  319: 	my $self = shift;
+</span><span class="">  320: 	my @cols = (@_ == 1 &amp;&amp; ref($_[0]) eq &#39;ARRAY&#39;) ? @{$_[0]} : @_;
+</span><span class="">  321: 	$self-&gt;{&#39;_group_by&#39;} = \@cols;
+</span><span class="">  322: 	return $self;
+</span><span class="">  323: }
+</span><span class="">  324: 
+</span><span class="">  325: =head2 measure
+</span><span class="">  326: 
+</span><span class="">  327:     $q-&gt;measure(&#39;amount&#39;, &#39;sum&#39;, &#39;revenue&#39;);
+</span><span class="">  328:     $q-&gt;measure(undef, &#39;count&#39;, &#39;orders&#39;);       # COUNT(*)
+</span><span class="">  329:     $q-&gt;measure({ col =&gt; &#39;c&#39;, fn =&gt; &#39;avg&#39;, as =&gt; &#39;mean&#39; });
+</span><span class="">  330: 
+</span><span class="">  331: Append a measure to the aggregate query.  May be called multiple times;
+</span><span class="">  332: measures accumulate.  Accepts either three positional arguments
+</span><span class="">  333: (C&lt;col&gt;, C&lt;fn&gt;, C&lt;as&gt;) or a single hashref with those keys.
+</span><span class="">  334: 
+</span><span class="">  335: C&lt;fn&gt; must be one of C&lt;sum&gt;, C&lt;avg&gt;, C&lt;min&gt;, C&lt;max&gt;, C&lt;count&gt;,
+</span><span class="">  336: C&lt;count_distinct&gt;.  C&lt;col&gt; is optional only for C&lt;count&gt; (COUNT(*)).
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  337: 
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="">  338: Returns C&lt;$self&gt;.
 </span><span class="">  339: 
-</span><span class="">  340: =head2 having
+</span><span class="">  340: =head3 API SPECIFICATION
 </span><span class="">  341: 
-</span><span class="">  342:     $q-&gt;having(revenue =&gt; { &#39;&gt;&#39; =&gt; 1000 });
-</span><span class="">  343:     $q-&gt;having(\%criteria);
-</span><span class="">  344: 
-</span><span class="">  345: Add post-aggregation filter criteria.  Multiple calls are merged with AND
-</span><span class="">  346: semantics, exactly like C&lt;where()&gt;.  Keys must be C&lt;by&gt; column names or
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  347: measure aliases (validated by C&lt;aggregate()&gt;).
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="">  348: 
-</span><span class="">  349: Returns C&lt;$self&gt;.
-</span><span class="">  350: 
-</span><span class="">  351: =cut
-</span><span class="">  352: 
-</span><span class="">  353: sub having
-</span><span class="">  354: {
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">355 → 357 → 360</span></span>  355: 	my $self = shift;
-</span><span class="">  356: 	my %criteria = ref($_[0]) eq &#39;HASH&#39; ? %{$_[0]} : @_;
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  357: 	for my $k (keys %criteria) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="">  358: 		$self-&gt;{&#39;_having&#39;}{$k} = $criteria{$k};
-</span><span class="">  359: 	}
-</span><span class="">  360: 	return $self;
-</span><span class="">  361: }
-</span><span class="">  362: 
-</span><span class="">  363: # Apply Perl-side sort, offset, and limit to an arrayref of rows in place.
-</span><span class="">  364: # Used by the BerkeleyDB execution paths in all() and first().
-</span><span class="">  365: # order_by must be a single &quot;column [ASC|DESC]&quot; string (multi-column not supported).
-</span><span class="">  366: sub _apply_perl_sort_limit
-</span><span class="">  367: {
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">368 → 370 → 392</span></span>  368: 	my ($rows, $order_by, $offset, $limit) = @_;
+</span><span class="">  342: =head4 Arguments
+</span><span class="">  343: 
+</span><span class="">  344:     $col  # Str | undef -- column to aggregate; omit/undef for COUNT(*)
+</span><span class="">  345:     $fn   # Str         -- one of: sum avg min max count count_distinct
+</span><span class="">  346:     $as   # Str         -- result key alias (required; valid SQL identifier)
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  347: 
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="">  348: =head4 Returns
+</span><span class="">  349: 
+</span><span class="">  350:     $self   (the same Query object, for chaining)
+</span><span class="">  351: 
+</span><span class="">  352: Calls to C&lt;measure()&gt; accumulate: each call appends one measure to
+</span><span class="">  353: the list.  To start over, create a new query builder with
+</span><span class="">  354: C&lt;&lt; $db-&gt;query() &gt;&gt;.
+</span><span class="">  355: 
+</span><span class="">  356: =cut
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  357: 
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="">  358: sub measure
+</span><span class="">  359: {
+</span><span class="">  360: 	my ($self, $col_or_spec, $fn, $as) = @_;
+</span><span class="">  361: 	my $spec = ref($col_or_spec) eq &#39;HASH&#39;
+</span><span class="">  362: 		? $col_or_spec
+</span><span class="">  363: 		: { col =&gt; $col_or_spec, fn =&gt; $fn, as =&gt; $as };
+</span><span class="">  364: 	push @{$self-&gt;{&#39;_measures&#39;}}, $spec;
+</span><span class="">  365: 	return $self;
+</span><span class="">  366: }
+</span><span class="">  367: 
+</span><span class="">  368: =head2 having
 </span><span class="">  369: 
-</span><span class="">  370: 	if(defined $order_by) {
-</span><span class="">  371: 		# Use \z (true end-of-string) not $ (matches before a trailing newline).
-</span><span class="">  372: 		# (ASC|DESC) is already a non-regex check after capture; $dir is either
-</span><span class="">  373: 		# &#39;ASC&#39;, &#39;DESC&#39;, or undef &acirc;&#128;&#148; hoist the direction decision out of the sort
-</span><span class="">  374: 		# comparator so it is not evaluated O(N log N) times for an N-row result.
-</span><span class="">  375: 		my ($col, $dir) = ($order_by =~ /
-</span><span class="">  376: 			\A
-</span><span class="">  377: 			(\S+)           # column expression (non-whitespace)
-</span><span class="">  378: 			(?:
-</span><span class="">  379: 				\s+         # whitespace separator
-</span><span class="">  380: 				(ASC|DESC)  # sort direction keyword
-</span><span class="">  381: 			)?
-</span><span class="">  382: 			\z
-</span><span class="">  383: 		/xi);
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  384: 		$dir //= &#39;ASC&#39;;
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="">  385: 		my $desc = ($dir eq &#39;DESC&#39;);	# evaluated once, not on every comparison
-</span><span class="">  386: 		@{$rows} = sort {
-</span><span class="">  387: 			$desc
-</span><span class="">  388: 				? (($b-&gt;{$col} // &#39;&#39;) cmp ($a-&gt;{$col} // &#39;&#39;))
-</span><span class="">  389: 				: (($a-&gt;{$col} // &#39;&#39;) cmp ($b-&gt;{$col} // &#39;&#39;))
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  390: 		} @{$rows};
-</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  391: 	}
-</span><span class="">  392: 	splice(@{$rows}, 0, $offset) if $offset;
-</span><span class="">  393: 	splice(@{$rows}, $limit)     if defined $limit;
-</span><span class="">  394: }
+</span><span class="">  370:     $q-&gt;having(revenue =&gt; { &#39;&gt;&#39; =&gt; 1000 });
+</span><span class="">  371:     $q-&gt;having(\%criteria);
+</span><span class="">  372: 
+</span><span class="">  373: Add post-aggregation filter criteria.  Multiple calls are merged with AND
+</span><span class="">  374: semantics, exactly like C&lt;where()&gt;.  Keys must be C&lt;by&gt; column names or
+</span><span class="">  375: measure aliases (validated by C&lt;aggregate()&gt;).
+</span><span class="">  376: 
+</span><span class="">  377: Returns C&lt;$self&gt;.
+</span><span class="">  378: 
+</span><span class="">  379: =head3 API SPECIFICATION
+</span><span class="">  380: 
+</span><span class="">  381: =head4 Arguments
+</span><span class="">  382: 
+</span><span class="">  383:     %criteria   # key-value pairs where each key is a by-column name or
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  384:                 # a measure alias, and each value is a scalar or an
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="">  385:                 # operator hashref (same syntax as selectall_arrayref)
+</span><span class="">  386: 
+</span><span class="">  387: =head4 Returns
+</span><span class="">  388: 
+</span><span class="">  389:     $self   (the same Query object, for chaining)
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  390: 
+</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  391: Multiple calls to C&lt;having()&gt; are merged with AND semantics, exactly
+</span><span class="">  392: like multiple calls to C&lt;where()&gt;.
+</span><span class="">  393: 
+</span><span class="">  394: =cut
 </span><span class="">  395: 
-</span><span class="">  396: # Internal: assemble SQL + bind args.  $count_only replaces SELECT cols with COUNT(*).
-</span><span class="">  397: sub _build_sql
-</span><span class="">  398: {
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">399 → 411 → 415</span></span>  399: 	my ($self, $count_only) = @_;
-</span><span class="">  400: 
-</span><span class="">  401: 	my $db = $self-&gt;{&#39;_db&#39;};
-</span><span class="">  402: 
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  403: 	# _open_table populates $db-&gt;{&#39;_table_name&#39;} as a side-effect, so call it
-</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  404: 	# first and then read the cache directly &acirc;&#128;&#148; avoids a second ref()+regex.
-</span><span class="">  405: 	$db-&gt;_open_table({});
-</span><span class="">  406: 	my $table = $db-&gt;{&#39;_table_name&#39;};
-</span><span class="">  407: 
-</span><span class="">  408: 	my $select = $count_only ? &#39;COUNT(*)&#39; : $self-&gt;{&#39;_select&#39;};
-</span><span class="">  409: 	my $query  = &quot;SELECT $select FROM $table&quot;;
-</span><span class="">  410: 
-</span><span class="">  411: 	if(@{$self-&gt;{&#39;_joins&#39;}}) {
-</span><span class="">  412: 		$query .= &#39; &#39; . $db-&gt;_build_joins($self-&gt;{&#39;_joins&#39;});
-</span><span class="">  413: 	}
-</span><span class="">  414: 
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">415 → 421 → 431</span></span>  415: 	my $qwhere = $db-&gt;{&#39;base_criteria&#39;}
-</span><span class="">  416: 		? { %{$db-&gt;{&#39;base_criteria&#39;}}, %{$self-&gt;{&#39;_where&#39;}} }
-</span><span class="">  417: 		: $self-&gt;{&#39;_where&#39;};
-</span><span class="">  418: 	my ($where, $wargs) = $db-&gt;_build_where($qwhere);
-</span><span class="">  419: 	my @args = @{$wargs};
-</span><span class="">  420: 
-</span><span class="">  421: 	if(@{$self-&gt;{&#39;_joins&#39;}}) {
-</span><span class="">  422: 		$query .= &quot; WHERE $where&quot; if $where;
-</span><span class="">  423: 	} elsif(($db-&gt;{&#39;type&#39;} eq &#39;CSV&#39;) &amp;&amp; !$db-&gt;{&#39;no_entry&#39;}) {
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  424: 		my $id = $db-&gt;{&#39;id&#39;};
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="">  425: 		$query .= &quot; WHERE $id IS NOT NULL AND $id NOT LIKE &#39;#%&#39;&quot;;
-</span><span class="">  426: 		$query .= &quot; AND ($where)&quot; if $where;
-</span><span class="">  427: 	} else {
-</span><span class="">  428: 		$query .= &quot; WHERE $where&quot; if $where;
-</span><span class="">  429: 	}
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  430: 
-</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">431 → 431 → 437</span></span>  431: 	unless($count_only) {
-</span><span class="">  432: 		$query .= &quot; ORDER BY $self-&gt;{&#39;_order_by&#39;}&quot; if defined $self-&gt;{&#39;_order_by&#39;};
-</span><span class="">  433: 		$query .= &quot; LIMIT $self-&gt;{&#39;_limit&#39;}&quot;       if defined $self-&gt;{&#39;_limit&#39;};
-</span><span class="">  434: 		$query .= &quot; OFFSET $self-&gt;{&#39;_offset&#39;}&quot;     if defined $self-&gt;{&#39;_offset&#39;};
-</span><span class="">  435: 	}
-</span><span class="">  436: 
-</span><span class="">  437: 	return ($query, \@args, $table);
-</span><span class="">  438: }
-</span><span class="">  439: 
-</span><span class="">  440: =head2 all
-</span><span class="">  441: 
-</span><span class="">  442:     my $rows = $q-&gt;all();
+</span><span class="">  396: sub having
+</span><span class="">  397: {
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">398 → 400 → 403</span></span>  398: 	my $self = shift;
+</span><span class="">  399: 	my %criteria = ref($_[0]) eq &#39;HASH&#39; ? %{$_[0]} : @_;
+</span><span class="">  400: 	for my $k (keys %criteria) {
+</span><span class="">  401: 		$self-&gt;{&#39;_having&#39;}{$k} = $criteria{$k};
+</span><span class="">  402: 	}
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  403: 	return $self;
+</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  404: }
+</span><span class="">  405: 
+</span><span class="">  406: # Apply Perl-side sort, offset, and limit to an arrayref of rows in place.
+</span><span class="">  407: # Used by the BerkeleyDB execution paths in all() and first().
+</span><span class="">  408: # order_by must be a single &quot;column [ASC|DESC]&quot; string (multi-column not supported).
+</span><span class="">  409: sub _apply_perl_sort_limit
+</span><span class="">  410: {
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">411 → 413 → 435</span></span>  411: 	my ($rows, $order_by, $offset, $limit) = @_;
+</span><span class="">  412: 
+</span><span class="">  413: 	if(defined $order_by) {
+</span><span class="">  414: 		# Use \z (true end-of-string) not $ (matches before a trailing newline).
+</span><span class="">  415: 		# (ASC|DESC) is already a non-regex check after capture; $dir is either
+</span><span class="">  416: 		# &#39;ASC&#39;, &#39;DESC&#39;, or undef &acirc;&#128;&#148; hoist the direction decision out of the sort
+</span><span class="">  417: 		# comparator so it is not evaluated O(N log N) times for an N-row result.
+</span><span class="">  418: 		my ($col, $dir) = ($order_by =~ /
+</span><span class="">  419: 			\A
+</span><span class="">  420: 			(\S+)           # column expression (non-whitespace)
+</span><span class="">  421: 			(?:
+</span><span class="">  422: 				\s+         # whitespace separator
+</span><span class="">  423: 				(ASC|DESC)  # sort direction keyword
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  424: 			)?
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="">  425: 			\z
+</span><span class="">  426: 		/xi);
+</span><span class="">  427: 		$dir //= &#39;ASC&#39;;
+</span><span class="">  428: 		my $desc = ($dir eq &#39;DESC&#39;);	# evaluated once, not on every comparison
+</span><span class="">  429: 		@{$rows} = sort {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  430: 			$desc
+</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  431: 				? (($b-&gt;{$col} // &#39;&#39;) cmp ($a-&gt;{$col} // &#39;&#39;))
+</span><span class="">  432: 				: (($a-&gt;{$col} // &#39;&#39;) cmp ($b-&gt;{$col} // &#39;&#39;))
+</span><span class="">  433: 		} @{$rows};
+</span><span class="">  434: 	}
+</span><span class="">  435: 	splice(@{$rows}, 0, $offset) if $offset;
+</span><span class="">  436: 	splice(@{$rows}, $limit)     if defined $limit;
+</span><span class="">  437: }
+</span><span class="">  438: 
+</span><span class="">  439: # Internal: assemble SQL + bind args.  $count_only replaces SELECT cols with COUNT(*).
+</span><span class="">  440: sub _build_sql
+</span><span class="">  441: {
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">442 → 454 → 458</span></span>  442: 	my ($self, $count_only) = @_;
 </span><span class="">  443: 
-</span><span class="">  444: B&lt;Terminal method.&gt;  Executes the assembled query and returns an array
-</span><span class="">  445: reference of hash references, one per matching row.  Returns an empty
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  446: array reference when there are no matches (never C&lt;undef&gt;).
-</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  447: 
-</span><span class="">  448: =cut
-</span><span class="">  449: 
-</span><span class="">  450: sub all
-</span><span class="">  451: {
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">452 → 459 → 481</span></span>  452: 	my $self = shift;
-</span><span class="">  453: 	my $db   = $self-&gt;{&#39;_db&#39;};
-</span><span class="">  454: 
-</span><span class="">  455: 	# Ensure _open() fires before checking the backend type.
-</span><span class="">  456: 	$db-&gt;_open_table({});
+</span><span class="">  444: 	my $db = $self-&gt;{&#39;_db&#39;};
+</span><span class="">  445: 
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  446: 	# _open_table populates $db-&gt;{&#39;_table_name&#39;} as a side-effect, so call it
+</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  447: 	# first and then read the cache directly &acirc;&#128;&#148; avoids a second ref()+regex.
+</span><span class="">  448: 	$db-&gt;_open_table({});
+</span><span class="">  449: 	my $table = $db-&gt;{&#39;_table_name&#39;};
+</span><span class="">  450: 
+</span><span class="">  451: 	my $select = $count_only ? &#39;COUNT(*)&#39; : $self-&gt;{&#39;_select&#39;};
+</span><span class="">  452: 	my $query  = &quot;SELECT $select FROM $table&quot;;
+</span><span class="">  453: 
+</span><span class="">  454: 	if(@{$self-&gt;{&#39;_joins&#39;}}) {
+</span><span class="">  455: 		$query .= &#39; &#39; . $db-&gt;_build_joins($self-&gt;{&#39;_joins&#39;});
+</span><span class="">  456: 	}
 </span><span class="">  457: 
-</span><span class="">  458: 	# Aggregate path: delegate to $db-&gt;aggregate when measures have been set.
-</span><span class="">  459: 	if(@{$self-&gt;{&#39;_measures&#39;}}) {
-</span><span class="">  460: 		my %ap = (%{$self-&gt;{&#39;_where&#39;}}, measures =&gt; $self-&gt;{&#39;_measures&#39;});
-</span><span class="">  461: 		$ap{&#39;by&#39;}     = $self-&gt;{&#39;_group_by&#39;} if @{$self-&gt;{&#39;_group_by&#39;}};
-</span><span class="">  462: 		$ap{&#39;having&#39;} = $self-&gt;{&#39;_having&#39;}   if %{$self-&gt;{&#39;_having&#39;}};
-</span><span class="">  463: 		if(@{$self-&gt;{&#39;_joins&#39;}}) {
-</span><span class="">  464: 			$ap{&#39;join&#39;} = $self-&gt;{&#39;_joins&#39;};
-</span><span class="">  465: 		}
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  466: 		if(defined $self-&gt;{&#39;_order_by&#39;}) {
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="">  467: 			# Parse &quot;col [ASC|DESC]&quot; from order_by into sort_by format.
-</span><span class="">  468: 			# Multi-column order_by expressions are not supported for aggregates;
-</span><span class="">  469: 			# only the first token is used.
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  470: 			my ($col, $dir) = ($self-&gt;{&#39;_order_by&#39;} =~ /\A(\S+)(?:\s+(ASC|DESC))?\z/i);
-</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  471: 			$ap{&#39;sort_by&#39;} = defined($col)
-</span><span class="">  472: 				? (defined($dir) ? [$col, uc($dir)] : $col)
-</span><span class="">  473: 				: undef;
-</span><span class="">  474: 			delete $ap{&#39;sort_by&#39;} unless defined $ap{&#39;sort_by&#39;};
-</span><span class="">  475: 		}
-</span><span class="">  476: 		$ap{&#39;limit&#39;}  = $self-&gt;{&#39;_limit&#39;}  if defined $self-&gt;{&#39;_limit&#39;};
-</span><span class="">  477: 		$ap{&#39;offset&#39;} = $self-&gt;{&#39;_offset&#39;} if defined $self-&gt;{&#39;_offset&#39;};
-</span><span class="">  478: 		return $db-&gt;aggregate(%ap);
-</span><span class="">  479: 	}
-</span><span class="">  480: 
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic."><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">481 → 481 → 490</span></span>  481: 	if($db-&gt;{&#39;berkeley&#39;} || ($db-&gt;{&#39;type&#39;} // &#39;&#39;) =~ /\A(?:Deep|XLSX)\z/) {
-</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  482: 		my $backend = $db-&gt;{&#39;berkeley&#39;} ? &#39;BerkeleyDB&#39; : ($db-&gt;{&#39;type&#39;} // &#39;&#39;);
-</span><span class="">  483: 		croak(ref($db), &quot;: query-&gt;all() with JOINs is not supported on $backend&quot;)
-</span><span class="">  484: 			if @{$self-&gt;{&#39;_joins&#39;}};
-</span><span class="">  485: 		my $rows = $db-&gt;selectall_arrayref({%{$self-&gt;{&#39;_where&#39;}}});
-</span><span class="">  486: 		_apply_perl_sort_limit($rows, $self-&gt;{&#39;_order_by&#39;}, $self-&gt;{&#39;_offset&#39;}, $self-&gt;{&#39;_limit&#39;});
-</span><span class="">  487: 		return $rows;
-</span><span class="">  488: 	}
-</span><span class="">  489: 
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">490 → 497 → 500</span></span>  490: 	my ($query, $args, $table) = $self-&gt;_build_sql(0);
-</span><span class="">  491: 	$db-&gt;_debug(&quot;Query-&gt;all: $query&quot;);
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">458 → 464 → 474</span></span>  458: 	my $qwhere = $db-&gt;{&#39;base_criteria&#39;}
+</span><span class="">  459: 		? { %{$db-&gt;{&#39;base_criteria&#39;}}, %{$self-&gt;{&#39;_where&#39;}} }
+</span><span class="">  460: 		: $self-&gt;{&#39;_where&#39;};
+</span><span class="">  461: 	my ($where, $wargs) = $db-&gt;_build_where($qwhere);
+</span><span class="">  462: 	my @args = @{$wargs};
+</span><span class="">  463: 
+</span><span class="">  464: 	if(@{$self-&gt;{&#39;_joins&#39;}}) {
+</span><span class="">  465: 		$query .= &quot; WHERE $where&quot; if $where;
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  466: 	} elsif(($db-&gt;{&#39;type&#39;} eq &#39;CSV&#39;) &amp;&amp; !$db-&gt;{&#39;no_entry&#39;}) {
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="">  467: 		my $id = $db-&gt;{&#39;id&#39;};
+</span><span class="">  468: 		$query .= &quot; WHERE $id IS NOT NULL AND $id NOT LIKE &#39;#%&#39;&quot;;
+</span><span class="">  469: 		$query .= &quot; AND ($where)&quot; if $where;
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  470: 	} else {
+</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  471: 		$query .= &quot; WHERE $where&quot; if $where;
+</span><span class="">  472: 	}
+</span><span class="">  473: 
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">474 → 474 → 480</span></span>  474: 	unless($count_only) {
+</span><span class="">  475: 		$query .= &quot; ORDER BY $self-&gt;{&#39;_order_by&#39;}&quot; if defined $self-&gt;{&#39;_order_by&#39;};
+</span><span class="">  476: 		$query .= &quot; LIMIT $self-&gt;{&#39;_limit&#39;}&quot;       if defined $self-&gt;{&#39;_limit&#39;};
+</span><span class="">  477: 		$query .= &quot; OFFSET $self-&gt;{&#39;_offset&#39;}&quot;     if defined $self-&gt;{&#39;_offset&#39;};
+</span><span class="">  478: 	}
+</span><span class="">  479: 
+</span><span class="">  480: 	return ($query, \@args, $table);
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  481: }
+</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  482: 
+</span><span class="">  483: =head2 all
+</span><span class="">  484: 
+</span><span class="">  485:     my $rows = $q-&gt;all();
+</span><span class="">  486: 
+</span><span class="">  487: B&lt;Terminal method.&gt;  Executes the assembled query and returns an array
+</span><span class="">  488: reference of hash references, one per matching row.  Returns an empty
+</span><span class="">  489: array reference when there are no matches (never C&lt;undef&gt;).
+</span><span class="">  490: 
+</span><span class="">  491: =head3 API SPECIFICATION
 </span><span class="">  492: 
-</span><span class="">  493: 	my $sth = $db-&gt;{$table}-&gt;prepare_cached($query);
-</span><span class="">  494: 	$sth-&gt;execute(@{$args}) or croak(&quot;$query: @{$args}&quot;);
-</span><span class="">  495: 
-</span><span class="">  496: 	my @rows;
-</span><span class="">  497: 	while(my $row = $sth-&gt;fetchrow_hashref()) {
-</span><span class="">  498: 		push @rows, $row;
-</span><span class="">  499: 	}
-</span><span class="">  500: 	return \@rows;
-</span><span class="">  501: }
-</span><span class="">  502: 
-</span><span class="">  503: =head2 first
-</span><span class="">  504: 
-</span><span class="">  505:     my $row = $q-&gt;first();    # \%hashref or undef
-</span><span class="">  506: 
-</span><span class="">  507: B&lt;Terminal method.&gt;  Executes the query with C&lt;LIMIT 1&gt; and returns the
-</span><span class="">  508: first matching row as a hash reference, or C&lt;undef&gt; when there is no match.
-</span><span class="">  509: Any C&lt;limit()&gt; or C&lt;offset()&gt; you have set is temporarily overridden for
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  510: efficiency (only the LIMIT is overridden; offset is still applied).
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="">  511: 
-</span><span class="">  512: =cut
-</span><span class="">  513: 
-</span><span class="">  514: sub first
-</span><span class="">  515: {
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">516 → 521 → 527</span></span>  516: 	my $self = shift;
-</span><span class="">  517: 	my $db = $self-&gt;{&#39;_db&#39;};
+</span><span class="">  493: =head4 Arguments
+</span><span class="">  494: 
+</span><span class="">  495: None.  All query parameters are set via the builder methods before
+</span><span class="">  496: calling C&lt;all()&gt;.
+</span><span class="">  497: 
+</span><span class="">  498: =head4 Returns
+</span><span class="">  499: 
+</span><span class="">  500:     ArrayRef[HashRef]
+</span><span class="">  501: 
+</span><span class="">  502: An arrayref of row hashrefs.  Returns C&lt;[]&gt; (empty arrayref) when
+</span><span class="">  503: no rows match -- never C&lt;undef&gt;.  Each hashref is read-only unless
+</span><span class="">  504: the database was constructed with C&lt;&lt; no_fixate =&gt; 1 &gt;&gt;.
+</span><span class="">  505: 
+</span><span class="">  506: When C&lt;measure()&gt; has been called, delegates to C&lt;&lt; $db-&gt;aggregate() &gt;&gt;
+</span><span class="">  507: and returns grouped rows (see L&lt;Database::Abstraction/aggregate&gt;).
+</span><span class="">  508: 
+</span><span class="">  509: =cut
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  510: 
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="">  511: sub all
+</span><span class="">  512: {
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">513 → 520 → 542</span></span>  513: 	my $self = shift;
+</span><span class="">  514: 	my $db   = $self-&gt;{&#39;_db&#39;};
+</span><span class="">  515: 
+</span><span class="">  516: 	# Ensure _open() fires before checking the backend type.
+</span><span class="">  517: 	$db-&gt;_open_table({});
 </span><span class="">  518: 
-</span><span class="">  519: 	$db-&gt;_open_table({});
-</span><span class="">  520: 
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  521: 	if(@{$self-&gt;{&#39;_measures&#39;}}) {
-</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  522: 		local $self-&gt;{&#39;_limit&#39;} = 1;
-</span><span class="">  523: 		my $rows = $self-&gt;all();
-</span><span class="">  524: 		return ref($rows) eq &#39;ARRAY&#39; ? $rows-&gt;[0] : undef;
-</span><span class="">  525: 	}
-</span><span class="">  526: 
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">527 → 527 → 539</span></span>  527: 	if($db-&gt;{&#39;berkeley&#39;} || ($db-&gt;{&#39;type&#39;} // &#39;&#39;) =~ /\A(?:Deep|XLSX)\z/) {
-</span><span class="">  528: 		my $backend = $db-&gt;{&#39;berkeley&#39;} ? &#39;BerkeleyDB&#39; : ($db-&gt;{&#39;type&#39;} // &#39;&#39;);
-</span><span class="">  529: 		croak(ref($db), &quot;: query-&gt;first() with JOINs is not supported on $backend&quot;)
-</span><span class="">  530: 			if @{$self-&gt;{&#39;_joins&#39;}};
-</span><span class="">  531: 		my $rows = $db-&gt;selectall_arrayref({%{$self-&gt;{&#39;_where&#39;}}});
-</span><span class="">  532: 		_apply_perl_sort_limit($rows, $self-&gt;{&#39;_order_by&#39;}, $self-&gt;{&#39;_offset&#39;}, undef);
-</span><span class="">  533: 		return $rows-&gt;[0];
-</span><span class="">  534: 	}
-</span><span class="">  535: 
-</span><span class="">  536: 	# local on a hash element (supported since Perl 5.8.1) is exception-safe:
-</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  537: 	# even if _build_sql() croaks, _limit is automatically restored on unwind.
-</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="">  538: 	# The previous save/restore pair left _limit permanently at 1 on exception.
-</span><span class="">  539: 	local $self-&gt;{&#39;_limit&#39;} = 1;
-</span><span class="">  540: 	my ($query, $args, $table) = $self-&gt;_build_sql(0);
+</span><span class="">  519: 	# Aggregate path: delegate to $db-&gt;aggregate when measures have been set.
+</span><span class="">  520: 	if(@{$self-&gt;{&#39;_measures&#39;}}) {
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  521: 		my %ap = (%{$self-&gt;{&#39;_where&#39;}}, measures =&gt; $self-&gt;{&#39;_measures&#39;});
+</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  522: 		$ap{&#39;by&#39;}     = $self-&gt;{&#39;_group_by&#39;} if @{$self-&gt;{&#39;_group_by&#39;}};
+</span><span class="">  523: 		$ap{&#39;having&#39;} = $self-&gt;{&#39;_having&#39;}   if %{$self-&gt;{&#39;_having&#39;}};
+</span><span class="">  524: 		if(@{$self-&gt;{&#39;_joins&#39;}}) {
+</span><span class="">  525: 			$ap{&#39;join&#39;} = $self-&gt;{&#39;_joins&#39;};
+</span><span class="">  526: 		}
+</span><span class="">  527: 		if(defined $self-&gt;{&#39;_order_by&#39;}) {
+</span><span class="">  528: 			# Parse &quot;col [ASC|DESC]&quot; from order_by into sort_by format.
+</span><span class="">  529: 			# Multi-column order_by expressions are not supported for aggregates;
+</span><span class="">  530: 			# only the first token is used.
+</span><span class="">  531: 			my ($col, $dir) = ($self-&gt;{&#39;_order_by&#39;} =~ /\A(\S+)(?:\s+(ASC|DESC))?\z/i);
+</span><span class="">  532: 			$ap{&#39;sort_by&#39;} = defined($col)
+</span><span class="">  533: 				? (defined($dir) ? [$col, uc($dir)] : $col)
+</span><span class="">  534: 				: undef;
+</span><span class="">  535: 			delete $ap{&#39;sort_by&#39;} unless defined $ap{&#39;sort_by&#39;};
+</span><span class="">  536: 		}
+</span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  537: 		$ap{&#39;limit&#39;}  = $self-&gt;{&#39;_limit&#39;}  if defined $self-&gt;{&#39;_limit&#39;};
+</span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class="">  538: 		$ap{&#39;offset&#39;} = $self-&gt;{&#39;_offset&#39;} if defined $self-&gt;{&#39;_offset&#39;};
+</span><span class="">  539: 		return $db-&gt;aggregate(%ap);
+</span><span class="">  540: 	}
 </span><span class="killed tooltip" data-tooltip="Mutations here were killed. Tests are effectively covering this logic.">  541: 
-</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class="">  542: 	$db-&gt;_debug(&quot;Query-&gt;first: $query&quot;);
-</span><span class="">  543: 
-</span><span class="">  544: 	my $sth = $db-&gt;{$table}-&gt;prepare_cached($query);
-</span><span class="">  545: 	$sth-&gt;execute(@{$args}) or croak(&quot;$query: @{$args}&quot;);
-</span><span class="">  546: 
-</span><span class="">  547: 	my $row = $sth-&gt;fetchrow_hashref();
-</span><span class="">  548: 	$sth-&gt;finish();
-</span><span class="">  549: 	return $row;
-</span><span class="">  550: }
-</span><span class="">  551: 
-</span><span class="">  552: =head2 count
+</span><p> <b> Mutants (Total: 2, Killed: 2, Survived: 0)</b><p><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">542 → 542 → 551</span></span>  542: 	if($db-&gt;{&#39;berkeley&#39;} || ($db-&gt;{&#39;type&#39;} // &#39;&#39;) =~ /\A(?:Deep|XLSX)\z/) {
+</span><span class="">  543: 		my $backend = $db-&gt;{&#39;berkeley&#39;} ? &#39;BerkeleyDB&#39; : ($db-&gt;{&#39;type&#39;} // &#39;&#39;);
+</span><span class="">  544: 		croak(ref($db), &quot;: query-&gt;all() with JOINs is not supported on $backend&quot;)
+</span><span class="">  545: 			if @{$self-&gt;{&#39;_joins&#39;}};
+</span><span class="">  546: 		my $rows = $db-&gt;selectall_arrayref({%{$self-&gt;{&#39;_where&#39;}}});
+</span><span class="">  547: 		_apply_perl_sort_limit($rows, $self-&gt;{&#39;_order_by&#39;}, $self-&gt;{&#39;_offset&#39;}, $self-&gt;{&#39;_limit&#39;});
+</span><span class="">  548: 		return $rows;
+</span><span class="">  549: 	}
+</span><span class="">  550: 
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">551 → 558 → 561</span></span>  551: 	my ($query, $args, $table) = $self-&gt;_build_sql(0);
+</span><span class="">  552: 	$db-&gt;_debug(&quot;Query-&gt;all: $query&quot;);
 </span><span class="">  553: 
-</span><span class="">  554:     my $n = $q-&gt;count();
-</span><span class="">  555: 
-</span><span class="">  556: B&lt;Terminal method.&gt;  Executes C&lt;SELECT COUNT(*)&gt; with the current C&lt;WHERE&gt;
-</span><span class="">  557: and C&lt;JOIN&gt; clauses and returns the integer count.  C&lt;ORDER BY&gt;, C&lt;LIMIT&gt;,
-</span><span class="">  558: and C&lt;OFFSET&gt; are ignored for the count query.
-</span><span class="">  559: 
-</span><span class="">  560: =cut
-</span><span class="">  561: 
-</span><span class="">  562: sub count
-</span><span class="">  563: {
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">564 → 572 → 579</span></span>  564: 	my $self = shift;
-</span><span class="">  565: 	my $db   = $self-&gt;{&#39;_db&#39;};
-</span><span class="">  566: 
-</span><span class="">  567: 	$db-&gt;_open_table({});
-</span><span class="">  568: 
-</span><span class="">  569: 	croak(&#39;Database::Abstraction::Query: count() is not available once measure() has been called&#39;)
-</span><span class="">  570: 		if @{$self-&gt;{&#39;_measures&#39;}};
-</span><span class="">  571: 
-</span><span class="">  572: 	if($db-&gt;{&#39;berkeley&#39;} || ($db-&gt;{&#39;type&#39;} // &#39;&#39;) =~ /\A(?:Deep|XLSX)\z/) {
-</span><span class="">  573: 		my $backend = $db-&gt;{&#39;berkeley&#39;} ? &#39;BerkeleyDB&#39; : ($db-&gt;{&#39;type&#39;} // &#39;&#39;);
-</span><span class="">  574: 		croak(ref($db), &quot;: query-&gt;count() with JOINs is not supported on $backend&quot;)
-</span><span class="">  575: 			if @{$self-&gt;{&#39;_joins&#39;}};
-</span><span class="">  576: 		return $db-&gt;count({%{$self-&gt;{&#39;_where&#39;}}});
-</span><span class="">  577: 	}
+</span><span class="">  554: 	my $sth = $db-&gt;{$table}-&gt;prepare_cached($query);
+</span><span class="">  555: 	$sth-&gt;execute(@{$args}) or croak(&quot;$query: @{$args}&quot;);
+</span><span class="">  556: 
+</span><span class="">  557: 	my @rows;
+</span><span class="">  558: 	while(my $row = $sth-&gt;fetchrow_hashref()) {
+</span><span class="">  559: 		push @rows, $row;
+</span><span class="">  560: 	}
+</span><span class="">  561: 	return \@rows;
+</span><span class="">  562: }
+</span><span class="">  563: 
+</span><span class="">  564: =head2 first
+</span><span class="">  565: 
+</span><span class="">  566:     my $row = $q-&gt;first();    # \%hashref or undef
+</span><span class="">  567: 
+</span><span class="">  568: B&lt;Terminal method.&gt;  Executes the query with C&lt;LIMIT 1&gt; and returns the
+</span><span class="">  569: first matching row as a hash reference, or C&lt;undef&gt; when there is no match.
+</span><span class="">  570: Any C&lt;limit()&gt; or C&lt;offset()&gt; you have set is temporarily overridden for
+</span><span class="">  571: efficiency (only the LIMIT is overridden; offset is still applied).
+</span><span class="">  572: 
+</span><span class="">  573: =head3 API SPECIFICATION
+</span><span class="">  574: 
+</span><span class="">  575: =head4 Arguments
+</span><span class="">  576: 
+</span><span class="">  577: None.
 </span><span class="">  578: 
-</span><span class="">  579: 	my ($query, $args, $table) = $self-&gt;_build_sql(1);
-</span><span class="">  580: 	$db-&gt;_debug(&quot;Query-&gt;count: $query&quot;);
-</span><span class="">  581: 
-</span><span class="">  582: 	my $sth = $db-&gt;{$table}-&gt;prepare_cached($query);
-</span><span class="">  583: 	$sth-&gt;execute(@{$args}) or croak(&quot;$query: @{$args}&quot;);
-</span><span class="">  584: 
-</span><span class="">  585: 	my $row = $sth-&gt;fetchrow_arrayref();
-</span><span class="">  586: 	$sth-&gt;finish();
-</span><span class="">  587: 	return $row ? $row-&gt;[0] : 0;
-</span><span class="">  588: }
+</span><span class="">  579: =head4 Returns
+</span><span class="">  580: 
+</span><span class="">  581:     HashRef | undef
+</span><span class="">  582: 
+</span><span class="">  583: The first matching row hashref, or C&lt;undef&gt; when no row matches.
+</span><span class="">  584: Internally applies C&lt;LIMIT 1&gt; for SQL backends; for in-memory
+</span><span class="">  585: backends it returns the first element of the sorted result.
+</span><span class="">  586: 
+</span><span class="">  587: When C&lt;measure()&gt; has been called, returns the first aggregate group
+</span><span class="">  588: row (the same as C&lt;&lt; -&gt;all()-&gt;[0] &gt;&gt;).
 </span><span class="">  589: 
-</span><span class="">  590: =head2 each
+</span><span class="">  590: =cut
 </span><span class="">  591: 
-</span><span class="">  592:     $q-&gt;each(\&amp;callback);
-</span><span class="">  593:     $q-&gt;each(sub { my $row = shift; print $row-&gt;{&#39;name&#39;}, &quot;\n&quot; });
-</span><span class="">  594: 
-</span><span class="">  595: B&lt;Terminal method.&gt;  Iterates over matching rows one at a time, calling
-</span><span class="">  596: C&lt;\&amp;callback&gt; once per row with the row hashref as the sole argument.
-</span><span class="">  597: Uses constant memory on the SQL path (see L&lt;Database::Abstraction/each_row&gt;).
+</span><span class="">  592: sub first
+</span><span class="">  593: {
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">594 → 599 → 605</span></span>  594: 	my $self = shift;
+</span><span class="">  595: 	my $db = $self-&gt;{&#39;_db&#39;};
+</span><span class="">  596: 
+</span><span class="">  597: 	$db-&gt;_open_table({});
 </span><span class="">  598: 
-</span><span class="">  599: Applies any C&lt;where()&gt;, C&lt;join()&gt;, C&lt;order_by()&gt;, C&lt;limit()&gt;, and C&lt;offset()&gt;
-</span><span class="">  600: set on the builder.
-</span><span class="">  601: 
-</span><span class="">  602: Returns the number of rows passed to C&lt;\&amp;callback&gt;.
-</span><span class="">  603: 
-</span><span class="">  604: =cut
-</span><span class="">  605: 
-</span><span class="">  606: sub each
-</span><span class="">  607: {
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">608 → 617 → 627</span></span>  608: 	my ($self, $callback) = @_;
-</span><span class="">  609: 	my $db = $self-&gt;{&#39;_db&#39;};
-</span><span class="">  610: 
-</span><span class="">  611: 	croak(&#39;Database::Abstraction::Query::each: callback must be a code reference&#39;)
-</span><span class="">  612: 		unless ref($callback) eq &#39;CODE&#39;;
+</span><span class="">  599: 	if(@{$self-&gt;{&#39;_measures&#39;}}) {
+</span><span class="">  600: 		local $self-&gt;{&#39;_limit&#39;} = 1;
+</span><span class="">  601: 		my $rows = $self-&gt;all();
+</span><span class="">  602: 		return ref($rows) eq &#39;ARRAY&#39; ? $rows-&gt;[0] : undef;
+</span><span class="">  603: 	}
+</span><span class="">  604: 
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">605 → 605 → 617</span></span>  605: 	if($db-&gt;{&#39;berkeley&#39;} || ($db-&gt;{&#39;type&#39;} // &#39;&#39;) =~ /\A(?:Deep|XLSX)\z/) {
+</span><span class="">  606: 		my $backend = $db-&gt;{&#39;berkeley&#39;} ? &#39;BerkeleyDB&#39; : ($db-&gt;{&#39;type&#39;} // &#39;&#39;);
+</span><span class="">  607: 		croak(ref($db), &quot;: query-&gt;first() with JOINs is not supported on $backend&quot;)
+</span><span class="">  608: 			if @{$self-&gt;{&#39;_joins&#39;}};
+</span><span class="">  609: 		my $rows = $db-&gt;selectall_arrayref({%{$self-&gt;{&#39;_where&#39;}}});
+</span><span class="">  610: 		_apply_perl_sort_limit($rows, $self-&gt;{&#39;_order_by&#39;}, $self-&gt;{&#39;_offset&#39;}, undef);
+</span><span class="">  611: 		return $rows-&gt;[0];
+</span><span class="">  612: 	}
 </span><span class="">  613: 
-</span><span class="">  614: 	$db-&gt;_open_table({});
-</span><span class="">  615: 
-</span><span class="">  616: 	# Aggregate path: collect all rows then iterate.  Not constant-memory.
-</span><span class="">  617: 	if(@{$self-&gt;{&#39;_measures&#39;}}) {
-</span><span class="">  618: 		my $rows = $self-&gt;all();
-</span><span class="">  619: 		my $n = 0;
-</span><span class="">  620: 		for my $row (@{$rows}) {
-</span><span class="">  621: 			$callback-&gt;($row);
-</span><span class="">  622: 			$n++;
-</span><span class="">  623: 		}
-</span><span class="">  624: 		return $n;
-</span><span class="">  625: 	}
-</span><span class="">  626: 
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">627 → 627 → 641</span></span>  627: 	if($db-&gt;{&#39;berkeley&#39;} || ($db-&gt;{&#39;type&#39;} // &#39;&#39;) =~ /\A(?:Deep|XLSX)\z/) {
-</span><span class="">  628: 		my $backend = $db-&gt;{&#39;berkeley&#39;} ? &#39;BerkeleyDB&#39; : ($db-&gt;{&#39;type&#39;} // &#39;&#39;);
-</span><span class="">  629: 		croak(ref($db), &quot;: query-&gt;each() with JOINs is not supported on $backend&quot;)
-</span><span class="">  630: 			if @{$self-&gt;{&#39;_joins&#39;}};
-</span><span class="">  631: 		my $rows = $db-&gt;selectall_arrayref({%{$self-&gt;{&#39;_where&#39;}}});
-</span><span class="">  632: 		_apply_perl_sort_limit($rows, $self-&gt;{&#39;_order_by&#39;}, $self-&gt;{&#39;_offset&#39;}, $self-&gt;{&#39;_limit&#39;});
-</span><span class="">  633: 		my $n = 0;
-</span><span class="">  634: 		for my $row (@{$rows}) {
-</span><span class="">  635: 			$callback-&gt;($row);
-</span><span class="">  636: 			$n++;
-</span><span class="">  637: 		}
-</span><span class="">  638: 		return $n;
-</span><span class="">  639: 	}
-</span><span class="">  640: 
-</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">641 → 654 → 658</span></span>  641: 	my ($query, $args, $table) = $self-&gt;_build_sql(0);
-</span><span class="">  642: 	$db-&gt;_debug(&quot;Query-&gt;each: $query&quot;);
+</span><span class="">  614: 	# local on a hash element (supported since Perl 5.8.1) is exception-safe:
+</span><span class="">  615: 	# even if _build_sql() croaks, _limit is automatically restored on unwind.
+</span><span class="">  616: 	# The previous save/restore pair left _limit permanently at 1 on exception.
+</span><span class="">  617: 	local $self-&gt;{&#39;_limit&#39;} = 1;
+</span><span class="">  618: 	my ($query, $args, $table) = $self-&gt;_build_sql(0);
+</span><span class="">  619: 
+</span><span class="">  620: 	$db-&gt;_debug(&quot;Query-&gt;first: $query&quot;);
+</span><span class="">  621: 
+</span><span class="">  622: 	my $sth = $db-&gt;{$table}-&gt;prepare_cached($query);
+</span><span class="">  623: 	$sth-&gt;execute(@{$args}) or croak(&quot;$query: @{$args}&quot;);
+</span><span class="">  624: 
+</span><span class="">  625: 	my $row = $sth-&gt;fetchrow_hashref();
+</span><span class="">  626: 	$sth-&gt;finish();
+</span><span class="">  627: 	return $row;
+</span><span class="">  628: }
+</span><span class="">  629: 
+</span><span class="">  630: =head2 count
+</span><span class="">  631: 
+</span><span class="">  632:     my $n = $q-&gt;count();
+</span><span class="">  633: 
+</span><span class="">  634: B&lt;Terminal method.&gt;  Executes C&lt;SELECT COUNT(*)&gt; with the current C&lt;WHERE&gt;
+</span><span class="">  635: and C&lt;JOIN&gt; clauses and returns the integer count.  C&lt;ORDER BY&gt;, C&lt;LIMIT&gt;,
+</span><span class="">  636: and C&lt;OFFSET&gt; are ignored for the count query.
+</span><span class="">  637: 
+</span><span class="">  638: =head3 API SPECIFICATION
+</span><span class="">  639: 
+</span><span class="">  640: =head4 Arguments
+</span><span class="">  641: 
+</span><span class="">  642: None.
 </span><span class="">  643: 
-</span><span class="">  644: 	my $sth = $db-&gt;{$table}-&gt;prepare_cached($query);
-</span><span class="">  645: 	$sth-&gt;execute(@{$args}) or croak(&quot;$query: @{$args}&quot;);
-</span><span class="">  646: 
-</span><span class="">  647: 	my $n = 0;
-</span><span class="">  648: 	eval {
-</span><span class="">  649: 		while(my $row = $sth-&gt;fetchrow_hashref()) {
-</span><span class="">  650: 			$callback-&gt;($row);
-</span><span class="">  651: 			$n++;
-</span><span class="">  652: 		}
-</span><span class="">  653: 	};
-</span><span class="">  654: 	if(my $err = $@) {
-</span><span class="">  655: 		$sth-&gt;finish();
-</span><span class="">  656: 		die $err;
-</span><span class="">  657: 	}
-</span><span class="">  658: 	return $n;
-</span><span class="">  659: }
-</span><span class="">  660: 
-</span><span class="">  661: =head1 SEE ALSO
+</span><span class="">  644: =head4 Returns
+</span><span class="">  645: 
+</span><span class="">  646:     Int (&gt;= 0)
+</span><span class="">  647: 
+</span><span class="">  648: The number of matching rows.  Returns C&lt;0&gt; when nothing matches --
+</span><span class="">  649: never C&lt;undef&gt;.
+</span><span class="">  650: 
+</span><span class="">  651: B&lt;Restriction:&gt; croaks with
+</span><span class="">  652: C&lt;&quot;count() is not available once measure() has been called&quot;&gt;
+</span><span class="">  653: if any C&lt;measure()&gt; call has been made on this query builder.  Use
+</span><span class="">  654: C&lt;all()&gt; and examine C&lt;scalar @{$rows}&gt; instead.
+</span><span class="">  655: 
+</span><span class="">  656: =cut
+</span><span class="">  657: 
+</span><span class="">  658: sub count
+</span><span class="">  659: {
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">660 → 668 → 675</span></span>  660: 	my $self = shift;
+</span><span class="">  661: 	my $db   = $self-&gt;{&#39;_db&#39;};
 </span><span class="">  662: 
-</span><span class="">  663: L&lt;Database::Abstraction&gt; - the parent module and its L&lt;Database::Abstraction/QUERY CRITERIA&gt; section.
+</span><span class="">  663: 	$db-&gt;_open_table({});
 </span><span class="">  664: 
-</span><span class="">  665: =head1 AUTHOR
-</span><span class="">  666: 
-</span><span class="">  667: Nigel Horne, C&lt;&lt; &lt;njh at nigelhorne.com&gt; &gt;&gt;
-</span><span class="">  668: 
-</span><span class="">  669: =head1 SUPPORT
-</span><span class="">  670: 
-</span><span class="">  671: Please report bugs at
-</span><span class="">  672: L&lt;http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Database-Abstraction&gt;.
-</span><span class="">  673: 
-</span><span class="">  674: =head1 LICENSE AND COPYRIGHT
-</span><span class="">  675: 
-</span><span class="">  676: Copyright 2026 Nigel Horne.
+</span><span class="">  665: 	croak(&#39;Database::Abstraction::Query: count() is not available once measure() has been called&#39;)
+</span><span class="">  666: 		if @{$self-&gt;{&#39;_measures&#39;}};
+</span><span class="">  667: 
+</span><span class="">  668: 	if($db-&gt;{&#39;berkeley&#39;} || ($db-&gt;{&#39;type&#39;} // &#39;&#39;) =~ /\A(?:Deep|XLSX)\z/) {
+</span><span class="">  669: 		my $backend = $db-&gt;{&#39;berkeley&#39;} ? &#39;BerkeleyDB&#39; : ($db-&gt;{&#39;type&#39;} // &#39;&#39;);
+</span><span class="">  670: 		croak(ref($db), &quot;: query-&gt;count() with JOINs is not supported on $backend&quot;)
+</span><span class="">  671: 			if @{$self-&gt;{&#39;_joins&#39;}};
+</span><span class="">  672: 		return $db-&gt;count({%{$self-&gt;{&#39;_where&#39;}}});
+</span><span class="">  673: 	}
+</span><span class="">  674: 
+</span><span class="">  675: 	my ($query, $args, $table) = $self-&gt;_build_sql(1);
+</span><span class="">  676: 	$db-&gt;_debug(&quot;Query-&gt;count: $query&quot;);
 </span><span class="">  677: 
-</span><span class="">  678: Usage is subject to the GPL2 licence terms.
-</span><span class="">  679: If you use it,
-</span><span class="">  680: please let me know.
-</span><span class="">  681: 
-</span><span class="">  682: =cut
-</span><span class="">  683: 
-</span><span class="">  684: 1;
+</span><span class="">  678: 	my $sth = $db-&gt;{$table}-&gt;prepare_cached($query);
+</span><span class="">  679: 	$sth-&gt;execute(@{$args}) or croak(&quot;$query: @{$args}&quot;);
+</span><span class="">  680: 
+</span><span class="">  681: 	my $row = $sth-&gt;fetchrow_arrayref();
+</span><span class="">  682: 	$sth-&gt;finish();
+</span><span class="">  683: 	return $row ? $row-&gt;[0] : 0;
+</span><span class="">  684: }
+</span><span class="">  685: 
+</span><span class="">  686: =head2 each
+</span><span class="">  687: 
+</span><span class="">  688:     $q-&gt;each(\&amp;callback);
+</span><span class="">  689:     $q-&gt;each(sub { my $row = shift; print $row-&gt;{&#39;name&#39;}, &quot;\n&quot; });
+</span><span class="">  690: 
+</span><span class="">  691: B&lt;Terminal method.&gt;  Iterates over matching rows one at a time, calling
+</span><span class="">  692: C&lt;\&amp;callback&gt; once per row with the row hashref as the sole argument.
+</span><span class="">  693: Uses constant memory on the SQL path (see L&lt;Database::Abstraction/each_row&gt;).
+</span><span class="">  694: 
+</span><span class="">  695: Applies any C&lt;where()&gt;, C&lt;join()&gt;, C&lt;order_by()&gt;, C&lt;limit()&gt;, and C&lt;offset()&gt;
+</span><span class="">  696: set on the builder.
+</span><span class="">  697: 
+</span><span class="">  698: Returns the number of rows passed to C&lt;\&amp;callback&gt;.
+</span><span class="">  699: 
+</span><span class="">  700: =head3 API SPECIFICATION
+</span><span class="">  701: 
+</span><span class="">  702: =head4 Arguments
+</span><span class="">  703: 
+</span><span class="">  704:     CodeRef   # required: callback invoked with one row hashref per call
+</span><span class="">  705: 
+</span><span class="">  706: =head4 Returns
+</span><span class="">  707: 
+</span><span class="">  708:     Int (&gt;= 0)
+</span><span class="">  709: 
+</span><span class="">  710: The number of rows visited.  Any exception thrown inside the callback
+</span><span class="">  711: is re-thrown after the DBI statement handle is properly closed.
+</span><span class="">  712: 
+</span><span class="">  713: When C&lt;measure()&gt; has been called, each group row is passed to the
+</span><span class="">  714: callback in the same order as C&lt;all()&gt; would return them.
+</span><span class="">  715: 
+</span><span class="">  716: =cut
+</span><span class="">  717: 
+</span><span class="">  718: sub each
+</span><span class="">  719: {
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">720 → 729 → 740</span></span>  720: 	my ($self, $callback) = @_;
+</span><span class="">  721: 	my $db = $self-&gt;{&#39;_db&#39;};
+</span><span class="">  722: 
+</span><span class="">  723: 	croak(&#39;Database::Abstraction::Query::each: callback must be a code reference&#39;)
+</span><span class="">  724: 		unless ref($callback) eq &#39;CODE&#39;;
+</span><span class="">  725: 
+</span><span class="">  726: 	$db-&gt;_open_table({});
+</span><span class="">  727: 
+</span><span class="">  728: 	# Aggregate path: collect all rows then iterate.  Not constant-memory.
+</span><span class="">  729: 	if(@{$self-&gt;{&#39;_measures&#39;}}) {
+</span><span class="">  730: 		my $rows = $self-&gt;all();
+</span><span class="">  731: 		my $n = 0;
+</span><span class="">  732: 		for my $row (@{$rows}) {
+</span><span class="">  733: 			local $_;
+</span><span class="">  734: 			$callback-&gt;($row);
+</span><span class="">  735: 			$n++;
+</span><span class="">  736: 		}
+</span><span class="">  737: 		return $n;
+</span><span class="">  738: 	}
+</span><span class="">  739: 
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">740 → 740 → 755</span></span>  740: 	if($db-&gt;{&#39;berkeley&#39;} || ($db-&gt;{&#39;type&#39;} // &#39;&#39;) =~ /\A(?:Deep|XLSX)\z/) {
+</span><span class="">  741: 		my $backend = $db-&gt;{&#39;berkeley&#39;} ? &#39;BerkeleyDB&#39; : ($db-&gt;{&#39;type&#39;} // &#39;&#39;);
+</span><span class="">  742: 		croak(ref($db), &quot;: query-&gt;each() with JOINs is not supported on $backend&quot;)
+</span><span class="">  743: 			if @{$self-&gt;{&#39;_joins&#39;}};
+</span><span class="">  744: 		my $rows = $db-&gt;selectall_arrayref({%{$self-&gt;{&#39;_where&#39;}}});
+</span><span class="">  745: 		_apply_perl_sort_limit($rows, $self-&gt;{&#39;_order_by&#39;}, $self-&gt;{&#39;_offset&#39;}, $self-&gt;{&#39;_limit&#39;});
+</span><span class="">  746: 		my $n = 0;
+</span><span class="">  747: 		for my $row (@{$rows}) {
+</span><span class="">  748: 			local $_;
+</span><span class="">  749: 			$callback-&gt;($row);
+</span><span class="">  750: 			$n++;
+</span><span class="">  751: 		}
+</span><span class="">  752: 		return $n;
+</span><span class="">  753: 	}
+</span><span class="">  754: 
+</span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">755 → 769 → 773</span></span>  755: 	my ($query, $args, $table) = $self-&gt;_build_sql(0);
+</span><span class="">  756: 	$db-&gt;_debug(&quot;Query-&gt;each: $query&quot;);
+</span><span class="">  757: 
+</span><span class="">  758: 	my $sth = $db-&gt;{$table}-&gt;prepare_cached($query);
+</span><span class="">  759: 	$sth-&gt;execute(@{$args}) or croak(&quot;$query: @{$args}&quot;);
+</span><span class="">  760: 
+</span><span class="">  761: 	my $n = 0;
+</span><span class="">  762: 	eval {
+</span><span class="">  763: 		while(my $row = $sth-&gt;fetchrow_hashref()) {
+</span><span class="">  764: 			local $_;
+</span><span class="">  765: 			$callback-&gt;($row);
+</span><span class="">  766: 			$n++;
+</span><span class="">  767: 		}
+</span><span class="">  768: 	};
+</span><span class="">  769: 	if(my $err = $@) {
+</span><span class="">  770: 		$sth-&gt;finish();
+</span><span class="">  771: 		die $err;
+</span><span class="">  772: 	}
+</span><span class="">  773: 	return $n;
+</span><span class="">  774: }
+</span><span class="">  775: 
+</span><span class="">  776: =head1 SEE ALSO
+</span><span class="">  777: 
+</span><span class="">  778: L&lt;Database::Abstraction&gt; - the parent module and its L&lt;Database::Abstraction/QUERY CRITERIA&gt; section.
+</span><span class="">  779: 
+</span><span class="">  780: =head1 AUTHOR
+</span><span class="">  781: 
+</span><span class="">  782: Nigel Horne, C&lt;&lt; &lt;njh at nigelhorne.com&gt; &gt;&gt;
+</span><span class="">  783: 
+</span><span class="">  784: =head1 SUPPORT
+</span><span class="">  785: 
+</span><span class="">  786: Please report bugs at
+</span><span class="">  787: L&lt;http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Database-Abstraction&gt;.
+</span><span class="">  788: 
+</span><span class="">  789: =head1 COMMON PITFALLS
+</span><span class="">  790: 
+</span><span class="">  791: =over 4
+</span><span class="">  792: 
+</span><span class="">  793: =item B&lt;C&lt;where()&gt; is AND, not OR&gt;
+</span><span class="">  794: 
+</span><span class="">  795: Each call to C&lt;where()&gt; ANDs with all previous C&lt;where()&gt; calls.
+</span><span class="">  796: Use C&lt;&lt; -or =&gt; [...] &gt;&gt; inside a single C&lt;where()&gt; call for OR logic.
+</span><span class="">  797: 
+</span><span class="">  798: =item B&lt;C&lt;measure()&gt; calls accumulate&gt;
+</span><span class="">  799: 
+</span><span class="">  800: Every C&lt;measure()&gt; call appends a new measure to the query.  To
+</span><span class="">  801: build a fresh aggregate query call C&lt;&lt; $db-&gt;query() &gt;&gt; again rather
+</span><span class="">  802: than re-using the same builder object.
+</span><span class="">  803: 
+</span><span class="">  804: =item B&lt;C&lt;group_by()&gt; replaces, not appends&gt;
+</span><span class="">  805: 
+</span><span class="">  806: Calling C&lt;group_by()&gt; a second time replaces the previous group-by
+</span><span class="">  807: columns entirely.  It does not accumulate like C&lt;measure()&gt; or
+</span><span class="">  808: C&lt;where()&gt;.
+</span><span class="">  809: 
+</span><span class="">  810: =item B&lt;C&lt;count()&gt; is unavailable after C&lt;measure()&gt;&gt;
+</span><span class="">  811: 
+</span><span class="">  812: Once you have called C&lt;measure()&gt; on a query builder, calling
+</span><span class="">  813: C&lt;count()&gt; will croak.  Use C&lt;all()&gt; and check C&lt;scalar @{$rows}&gt;.
+</span><span class="">  814: 
+</span><span class="">  815: =item B&lt;Sort column for aggregate queries must use C&lt;order_by()&gt;&gt;
+</span><span class="">  816: 
+</span><span class="">  817: To sort aggregate results, call C&lt;&lt; -&gt;order_by(&#39;col&#39;) &gt;&gt; on the
+</span><span class="">  818: builder before C&lt;&lt; -&gt;all() &gt;&gt;.  Passing C&lt;sort_by&gt; directly to
+</span><span class="">  819: C&lt;all()&gt; has no effect because the terminal method ignores extra
+</span><span class="">  820: arguments.
+</span><span class="">  821: 
+</span><span class="">  822: =back
+</span><span class="">  823: 
+</span><span class="">  824: =head1 FORMAL SPECIFICATION
+</span><span class="">  825: 
+</span><span class="">  826: =head2 Query builder state
+</span><span class="">  827: 
+</span><span class="">  828:     QueryState == [
+</span><span class="">  829:         _db       : Database::Abstraction,
+</span><span class="">  830:         _select   : Str,
+</span><span class="">  831:         _where    : CRITERIA,
+</span><span class="">  832:         _joins    : seq JOIN_SPEC,
+</span><span class="">  833:         _order_by : Str | undef,
+</span><span class="">  834:         _limit    : Int | undef,
+</span><span class="">  835:         _offset   : Int | undef,
+</span><span class="">  836:         _group_by : seq COLNAME,
+</span><span class="">  837:         _measures : seq MEASURE_SPEC,
+</span><span class="">  838:         _having   : CRITERIA
+</span><span class="">  839:     ]
+</span><span class="">  840: 
+</span><span class="">  841:     Initial state Q0 == [
+</span><span class="">  842:         _select?   = &#39;*&#39;,
+</span><span class="">  843:         _where?    = {},
+</span><span class="">  844:         _joins?    = [],
+</span><span class="">  845:         _order_by? = undef,
+</span><span class="">  846:         _limit?    = undef,
+</span><span class="">  847:         _offset?   = undef,
+</span><span class="">  848:         _group_by? = [],
+</span><span class="">  849:         _measures? = [],
+</span><span class="">  850:         _having?   = {}
+</span><span class="">  851:     ]
+</span><span class="">  852: 
+</span><span class="">  853: =head2 Builder method invariants
+</span><span class="">  854: 
+</span><span class="">  855:     where(C) ____________________________________________
+</span><span class="">  856:     DeltaQueryState
+</span><span class="">  857:     C? : CRITERIA
+</span><span class="">  858:     &acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;
+</span><span class="">  859:     post: _where&#39; = _where UNION C   (AND semantics)
+</span><span class="">  860: 
+</span><span class="">  861:     measure(col, fn, as) ________________________________
+</span><span class="">  862:     DeltaQueryState
+</span><span class="">  863:     &acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;
+</span><span class="">  864:     post: _measures&#39; = _measures CONCAT [{col,fn,as}]
+</span><span class="">  865: 
+</span><span class="">  866:     group_by(cols) ______________________________________
+</span><span class="">  867:     DeltaQueryState
+</span><span class="">  868:     &acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;
+</span><span class="">  869:     post: _group_by&#39; = cols  (replaces previous value)
+</span><span class="">  870: 
+</span><span class="">  871: =head2 all() dispatch
+</span><span class="">  872: 
+</span><span class="">  873:     all _________________________________________________
+</span><span class="">  874:     XiQueryState  (read-only)
+</span><span class="">  875:     &acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;&acirc;&#148;&#128;
+</span><span class="">  876:     result == (_measures != empty
+</span><span class="">  877:                IMPLIES _db.aggregate(_group_by, _measures, _where,
+</span><span class="">  878:                                      _having, _order_by, _limit, _offset)
+</span><span class="">  879:                ELSE    _db.selectall_arrayref(_where, _joins,
+</span><span class="">  880:                                               _order_by, _limit, _offset))
+</span><span class="">  881:     post: result : seq ROW
+</span><span class="">  882: 
+</span><span class="">  883: =head1 LICENSE AND COPYRIGHT
+</span><span class="">  884: 
+</span><span class="">  885: Copyright 2026 Nigel Horne.
+</span><span class="">  886: 
+</span><span class="">  887: Usage is subject to the GPL2 licence terms.
+</span><span class="">  888: If you use it,
+</span><span class="">  889: please let me know.
+</span><span class="">  890: 
+</span><span class="">  891: =cut
+</span><span class="">  892: 
+</span><span class="">  893: 1;
 </span></pre>
 
 <script>

@@ -20,36 +20,36 @@ https://pjcj.net
 <h1>Branch Coverage</h1>
 <table>
 <tr><td class="h" align="right">File:</td><td align="left">blib/lib/Database/Abstraction.pm</td></tr>
-<tr><td class="h" align="right">Coverage:</td><td align="left" class="c1">77.1%</td></tr>
+<tr><td class="h" align="right">Coverage:</td><td align="left" class="c1">77.5%</td></tr>
 </table>
 <div><br/></div>
 <table>
 <tr><th>line</th><th>%</th><th colspan="2">coverage</th><th>branch</th></tr>
-<tr><td class="h"><a id="L486">486</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $params = Params::Get::get_params(undef, @_))</td></tr>
-<tr><td class="h"><a id="L487">487</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$params{&quot;expires_in&quot;} and not $$params{&quot;cache_duration&quot;})</td></tr>
-<tr><td class="h"><a id="L515">515</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (scalar @_ == 0 and ref $pkg eq &#39;HASH&#39;) { }</td></tr>
+<tr><td class="h"><a id="L514">514</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $params = Params::Get::get_params(undef, @_))</td></tr>
+<tr><td class="h"><a id="L515">515</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$params{&quot;expires_in&quot;} and not $$params{&quot;cache_duration&quot;})</td></tr>
+<tr><td class="h"><a id="L543">543</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (scalar @_ == 0 and ref $pkg eq &#39;HASH&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif (scalar(@_) % 2 == 0) { }</td></tr>
 <tr><td class="h"></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">elsif (scalar @_ == 1 and ref $_[0] eq &#39;HASH&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">elsif (scalar @_ &gt; 0) { }</td></tr>
-<tr><td class="h"><a id="L764">764</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (scalar @_ == 1 and not ref $_[0]) { }</td></tr>
+<tr><td class="h"><a id="L792">792</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (scalar @_ == 1 and not ref $_[0]) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif (my $params = Params::Get::get_params(undef, @_)) { }</td></tr>
-<tr><td class="h"><a id="L770">770</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (not defined $class) { }</td></tr>
+<tr><td class="h"><a id="L798">798</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (not defined $class) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($class eq __PACKAGE__) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif (&amp;Scalar::Util::blessed($class)) { }</td></tr>
-<tr><td class="h"><a id="L771">771</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if (scalar keys %args &gt; 0)</td></tr>
-<tr><td class="h"><a id="L785">785</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $args{&quot;id&quot;})</td></tr>
-<tr><td class="h"><a id="L787">787</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $args{&quot;id&quot;} =~ /$SAFE_IDENTIFIER/</td></tr>
-<tr><td class="h"><a id="L789">789</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $args{&quot;table&quot;})</td></tr>
-<tr><td class="h"><a id="L791">791</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">unless $args{&quot;table&quot;} =~ /$SAFE_QUALIFIED/</td></tr>
-<tr><td class="h"><a id="L801">801</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $args{&quot;logger&quot;} and not &amp;Scalar::Util::blessed($args{&quot;logger&quot;}))</td></tr>
-<tr><td class="h"><a id="L805">805</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ($args{&quot;dsn&quot;} or $defaults{&quot;dsn&quot;} or $args{&quot;url&quot;} or $defaults{&quot;url&quot;} or $args{&quot;database&quot;} or $defaults{&quot;database&quot;})</td></tr>
-<tr><td class="h"><a id="L806">806</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $args{&quot;directory&quot;} or $defaults{&quot;directory&quot;}</td></tr>
-<tr><td class="h"><a id="L811">811</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ($given_host and not $class-&gt;_is_local_host($given_host))</td></tr>
-<tr><td class="h"><a id="L812">812</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless -d ($args{&#39;directory&#39;} || $defaults{&#39;directory&#39;})</td></tr>
-<tr><td class="h"><a id="L818">818</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $$src{&quot;id&quot;})</td></tr>
-<tr><td class="h"><a id="L820">820</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $$src{&quot;id&quot;} =~ /$SAFE_IDENTIFIER/</td></tr>
-<tr><td class="h"><a id="L822">822</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $$src{&quot;host&quot;})</td></tr>
-<tr><td class="h"><a id="L824">824</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $$src{&quot;host&quot;} =~ /\A
+<tr><td class="h"><a id="L799">799</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if (scalar keys %args &gt; 0)</td></tr>
+<tr><td class="h"><a id="L813">813</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $args{&quot;id&quot;})</td></tr>
+<tr><td class="h"><a id="L815">815</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $args{&quot;id&quot;} =~ /$SAFE_IDENTIFIER/</td></tr>
+<tr><td class="h"><a id="L817">817</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $args{&quot;table&quot;})</td></tr>
+<tr><td class="h"><a id="L819">819</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">unless $args{&quot;table&quot;} =~ /$SAFE_QUALIFIED/</td></tr>
+<tr><td class="h"><a id="L829">829</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $args{&quot;logger&quot;} and not &amp;Scalar::Util::blessed($args{&quot;logger&quot;}))</td></tr>
+<tr><td class="h"><a id="L833">833</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ($args{&quot;dsn&quot;} or $defaults{&quot;dsn&quot;} or $args{&quot;url&quot;} or $defaults{&quot;url&quot;} or $args{&quot;database&quot;} or $defaults{&quot;database&quot;})</td></tr>
+<tr><td class="h"><a id="L834">834</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $args{&quot;directory&quot;} or $defaults{&quot;directory&quot;}</td></tr>
+<tr><td class="h"><a id="L839">839</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ($given_host and not $class-&gt;_is_local_host($given_host))</td></tr>
+<tr><td class="h"><a id="L840">840</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless -d ($args{&#39;directory&#39;} || $defaults{&#39;directory&#39;})</td></tr>
+<tr><td class="h"><a id="L846">846</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $$src{&quot;id&quot;})</td></tr>
+<tr><td class="h"><a id="L848">848</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $$src{&quot;id&quot;} =~ /$SAFE_IDENTIFIER/</td></tr>
+<tr><td class="h"><a id="L850">850</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $$src{&quot;host&quot;})</td></tr>
+<tr><td class="h"><a id="L852">852</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $$src{&quot;host&quot;} =~ /\A
 &#12;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(?:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# optional &quot;user\@&quot; prefix
 &#12;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[a-zA-Z0-9]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# username: first char must be alnum
 &#12;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[a-zA-Z0-9._-]*&nbsp;&nbsp;&nbsp;# username: rest may include dots and hyphens
@@ -58,564 +58,564 @@ https://pjcj.net
 &#12;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[a-zA-Z0-9:]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# first char of host or IP; colon allows IPv6
 &#12;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[a-zA-Z0-9._:-]*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# rest: hostname, dotted IPv4, or IPv6 hex groups
 &#12;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\z/x</td></tr>
-<tr><td class="h"><a id="L834">834</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $$src{&quot;url&quot;})</td></tr>
-<tr><td class="h"><a id="L836">836</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $$src{&quot;url&quot;} =~ m[\Ahttps?://]i</td></tr>
-<tr><td class="h"><a id="L838">838</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $$src{&quot;database&quot;})</td></tr>
-<tr><td class="h"><a id="L840">840</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $$src{&quot;database&quot;} =~ m[\Aredis://]i</td></tr>
-<tr><td class="h"><a id="L842">842</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $$src{&quot;table&quot;})</td></tr>
-<tr><td class="h"><a id="L844">844</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $$src{&quot;table&quot;} =~ /$SAFE_QUALIFIED/</td></tr>
-<tr><td class="h"><a id="L846">846</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $$src{&quot;base_criteria&quot;})</td></tr>
-<tr><td class="h"><a id="L848">848</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ref $bc eq &quot;HASH&quot;</td></tr>
-<tr><td class="h"><a id="L851">851</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $k =~ /\A-/</td></tr>
-<tr><td class="h"><a id="L852">852</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $k =~ /$SAFE_QUALIFIED/</td></tr>
-<tr><td class="h"><a id="L882">882</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $logger = $$params{&quot;logger&quot;})</td></tr>
-<tr><td class="h"><a id="L883">883</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (&amp;Scalar::Util::blessed($logger)) { }</td></tr>
-<tr><td class="h"><a id="L909">909</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">unless defined $db_num and $db_num =~ /\A\d+\z/</td></tr>
-<tr><td class="h"><a id="L914">914</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">unless $$self{&quot;_redis&quot;}</td></tr>
-<tr><td class="h"><a id="L1684">1684</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&quot;berkeley&quot;})</td></tr>
-<tr><td class="h"><a id="L1689">1689</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $bl and not $bl =~ /\A\d+\z/)</td></tr>
-<tr><td class="h"><a id="L1693">1693</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $bo and not $bo =~ /\A\d+\z/)</td></tr>
-<tr><td class="h"><a id="L1699">1699</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $bsc)</td></tr>
-<tr><td class="h"><a id="L1700">1700</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if ($bsd eq &#39;DESC&#39;) { }</td></tr>
-<tr><td class="h"><a id="L1706">1706</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $bl or defined $bo)</td></tr>
-<tr><td class="h"><a id="L1707">1707</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if $bo</td></tr>
-<tr><td class="h"><a id="L1708">1708</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if defined $bl</td></tr>
-<tr><td class="h"><a id="L1713">1713</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&#39;no_entry&#39;}) { }</td></tr>
+<tr><td class="h"><a id="L862">862</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $$src{&quot;url&quot;})</td></tr>
+<tr><td class="h"><a id="L864">864</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $$src{&quot;url&quot;} =~ m[\Ahttps?://]i</td></tr>
+<tr><td class="h"><a id="L866">866</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $$src{&quot;database&quot;})</td></tr>
+<tr><td class="h"><a id="L868">868</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $$src{&quot;database&quot;} =~ m[\Aredis://]i</td></tr>
+<tr><td class="h"><a id="L870">870</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $$src{&quot;table&quot;})</td></tr>
+<tr><td class="h"><a id="L872">872</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $$src{&quot;table&quot;} =~ /$SAFE_QUALIFIED/</td></tr>
+<tr><td class="h"><a id="L874">874</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $$src{&quot;base_criteria&quot;})</td></tr>
+<tr><td class="h"><a id="L876">876</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ref $bc eq &quot;HASH&quot;</td></tr>
+<tr><td class="h"><a id="L879">879</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $k =~ /\A-/</td></tr>
+<tr><td class="h"><a id="L880">880</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $k =~ /$SAFE_QUALIFIED/</td></tr>
+<tr><td class="h"><a id="L910">910</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $logger = $$params{&quot;logger&quot;})</td></tr>
+<tr><td class="h"><a id="L911">911</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (&amp;Scalar::Util::blessed($logger)) { }</td></tr>
+<tr><td class="h"><a id="L937">937</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">unless defined $db_num and $db_num =~ /\A\d+\z/</td></tr>
+<tr><td class="h"><a id="L942">942</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">unless $$self{&quot;_redis&quot;}</td></tr>
+<tr><td class="h"><a id="L1731">1731</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&quot;berkeley&quot;})</td></tr>
+<tr><td class="h"><a id="L1736">1736</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $bl and not $bl =~ /\A\d+\z/)</td></tr>
+<tr><td class="h"><a id="L1740">1740</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $bo and not $bo =~ /\A\d+\z/)</td></tr>
+<tr><td class="h"><a id="L1746">1746</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $bsc)</td></tr>
+<tr><td class="h"><a id="L1747">1747</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if ($bsd eq &#39;DESC&#39;) { }</td></tr>
+<tr><td class="h"><a id="L1753">1753</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $bl or defined $bo)</td></tr>
+<tr><td class="h"><a id="L1754">1754</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if $bo</td></tr>
+<tr><td class="h"><a id="L1755">1755</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if defined $bl</td></tr>
+<tr><td class="h"><a id="L1760">1760</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&#39;no_entry&#39;}) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif (scalar @_) { }</td></tr>
-<tr><td class="h"><a id="L1724">1724</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $join_spec = delete $params-&gt;{&#39;join&#39;})</td></tr>
-<tr><td class="h"><a id="L1730">1730</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $limit)</td></tr>
-<tr><td class="h"><a id="L1731">1731</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (not $limit =~ /\A\d+\z/) { }</td></tr>
-<tr><td class="h"><a id="L1738">1738</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $offset)</td></tr>
-<tr><td class="h"><a id="L1739">1739</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (not $offset =~ /\A\d+\z/) { }</td></tr>
-<tr><td class="h"><a id="L1750">1750</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (not $join_clause and $$self{&quot;data&quot;} and not $self-&gt;_has_complex_criteria($params))</td></tr>
-<tr><td class="h"><a id="L1751">1751</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (scalar keys %{$params;} == 0) { }</td></tr>
+<tr><td class="h"><a id="L1771">1771</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $join_spec = delete $params-&gt;{&#39;join&#39;})</td></tr>
+<tr><td class="h"><a id="L1777">1777</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $limit)</td></tr>
+<tr><td class="h"><a id="L1778">1778</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (not $limit =~ /\A\d+\z/) { }</td></tr>
+<tr><td class="h"><a id="L1785">1785</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $offset)</td></tr>
+<tr><td class="h"><a id="L1786">1786</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (not $offset =~ /\A\d+\z/) { }</td></tr>
+<tr><td class="h"><a id="L1797">1797</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (not $join_clause and $$self{&quot;data&quot;} and not $self-&gt;_has_complex_criteria($params))</td></tr>
+<tr><td class="h"><a id="L1798">1798</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (scalar keys %{$params;} == 0) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif (scalar keys %{$params;} == 1 and defined $$params{&#39;entry&#39;} and not $$self{&#39;no_entry&#39;}) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif (ref $$self{&#39;data&#39;} eq &#39;HASH&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif (ref $$self{&#39;data&#39;} eq &#39;ARRAY&#39; and not $$self{$table}) { }</td></tr>
-<tr><td class="h"><a id="L1754">1754</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (ref $$self{&#39;data&#39;} eq &#39;HASH&#39;) { }</td></tr>
-<tr><td class="h"><a id="L1756">1756</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if (scalar keys %{$$self{&quot;data&quot;};} &lt;= 10)</td></tr>
-<tr><td class="h"><a id="L1763">1763</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $sort_col)</td></tr>
-<tr><td class="h"><a id="L1764">1764</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($sort_dir eq &#39;DESC&#39;) { }</td></tr>
-<tr><td class="h"><a id="L1770">1770</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $offset or defined $limit)</td></tr>
-<tr><td class="h"><a id="L1771">1771</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $offset</td></tr>
-<tr><td class="h"><a id="L1772">1772</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if defined $limit</td></tr>
-<tr><td class="h"><a id="L1779">1779</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless exists $$self{&quot;data&quot;}{$$params{&quot;entry&quot;}}</td></tr>
-<tr><td class="h"><a id="L1781">1781</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $sort_col)</td></tr>
-<tr><td class="h"><a id="L1782">1782</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if ($sort_dir eq &#39;DESC&#39;) { }</td></tr>
-<tr><td class="h"><a id="L1788">1788</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $offset or defined $limit)</td></tr>
-<tr><td class="h"><a id="L1789">1789</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if $offset</td></tr>
-<tr><td class="h"><a id="L1790">1790</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if defined $limit</td></tr>
-<tr><td class="h"><a id="L1802">1802</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">exists $row-&gt;{$_} ? :</td></tr>
-<tr><td class="h"><a id="L1804">1804</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $sort_col)</td></tr>
-<tr><td class="h"><a id="L1805">1805</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if ($sort_dir eq &#39;DESC&#39;) { }</td></tr>
-<tr><td class="h"><a id="L1811">1811</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $offset or defined $limit)</td></tr>
-<tr><td class="h"><a id="L1812">1812</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if $offset</td></tr>
-<tr><td class="h"><a id="L1813">1813</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if defined $limit</td></tr>
-<tr><td class="h"><a id="L1823">1823</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">exists $row-&gt;{$_} ? :</td></tr>
-<tr><td class="h"><a id="L1825">1825</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $sort_col)</td></tr>
-<tr><td class="h"><a id="L1826">1826</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if ($sort_dir eq &#39;DESC&#39;) { }</td></tr>
-<tr><td class="h"><a id="L1832">1832</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $offset or defined $limit)</td></tr>
-<tr><td class="h"><a id="L1833">1833</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if $offset</td></tr>
-<tr><td class="h"><a id="L1834">1834</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if defined $limit</td></tr>
-<tr><td class="h"><a id="L1844">1844</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $join_clause</td></tr>
-<tr><td class="h"><a id="L1845">1845</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($join_clause) { }</td></tr>
+<tr><td class="h"><a id="L1801">1801</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (ref $$self{&#39;data&#39;} eq &#39;HASH&#39;) { }</td></tr>
+<tr><td class="h"><a id="L1803">1803</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if (scalar keys %{$$self{&quot;data&quot;};} &lt;= 10)</td></tr>
+<tr><td class="h"><a id="L1810">1810</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $sort_col)</td></tr>
+<tr><td class="h"><a id="L1811">1811</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($sort_dir eq &#39;DESC&#39;) { }</td></tr>
+<tr><td class="h"><a id="L1817">1817</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $offset or defined $limit)</td></tr>
+<tr><td class="h"><a id="L1818">1818</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $offset</td></tr>
+<tr><td class="h"><a id="L1819">1819</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if defined $limit</td></tr>
+<tr><td class="h"><a id="L1826">1826</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless exists $$self{&quot;data&quot;}{$$params{&quot;entry&quot;}}</td></tr>
+<tr><td class="h"><a id="L1828">1828</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $sort_col)</td></tr>
+<tr><td class="h"><a id="L1829">1829</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if ($sort_dir eq &#39;DESC&#39;) { }</td></tr>
+<tr><td class="h"><a id="L1835">1835</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $offset or defined $limit)</td></tr>
+<tr><td class="h"><a id="L1836">1836</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if $offset</td></tr>
+<tr><td class="h"><a id="L1837">1837</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if defined $limit</td></tr>
+<tr><td class="h"><a id="L1849">1849</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">exists $row-&gt;{$_} ? :</td></tr>
+<tr><td class="h"><a id="L1851">1851</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $sort_col)</td></tr>
+<tr><td class="h"><a id="L1852">1852</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if ($sort_dir eq &#39;DESC&#39;) { }</td></tr>
+<tr><td class="h"><a id="L1858">1858</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $offset or defined $limit)</td></tr>
+<tr><td class="h"><a id="L1859">1859</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if $offset</td></tr>
+<tr><td class="h"><a id="L1860">1860</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if defined $limit</td></tr>
+<tr><td class="h"><a id="L1870">1870</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">exists $row-&gt;{$_} ? :</td></tr>
+<tr><td class="h"><a id="L1872">1872</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $sort_col)</td></tr>
+<tr><td class="h"><a id="L1873">1873</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if ($sort_dir eq &#39;DESC&#39;) { }</td></tr>
+<tr><td class="h"><a id="L1879">1879</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $offset or defined $limit)</td></tr>
+<tr><td class="h"><a id="L1880">1880</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if $offset</td></tr>
+<tr><td class="h"><a id="L1881">1881</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if defined $limit</td></tr>
+<tr><td class="h"><a id="L1891">1891</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $join_clause</td></tr>
+<tr><td class="h"><a id="L1892">1892</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($join_clause) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($$self{&#39;type&#39;} eq &#39;CSV&#39; and not $$self{&#39;no_entry&#39;}) { }</td></tr>
-<tr><td class="h"><a id="L1846">1846</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $where</td></tr>
-<tr><td class="h"><a id="L1850">1850</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $where</td></tr>
-<tr><td class="h"><a id="L1852">1852</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $where</td></tr>
-<tr><td class="h"><a id="L1854">1854</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $sort_col) { }</td></tr>
+<tr><td class="h"><a id="L1893">1893</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $where</td></tr>
+<tr><td class="h"><a id="L1897">1897</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $where</td></tr>
+<tr><td class="h"><a id="L1899">1899</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $where</td></tr>
+<tr><td class="h"><a id="L1901">1901</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $sort_col) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif (not $$self{&#39;no_entry&#39;}) { }</td></tr>
-<tr><td class="h"><a id="L1859">1859</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $limit) { }</td></tr>
+<tr><td class="h"><a id="L1906">1906</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $limit) { }</td></tr>
 <tr><td class="h"></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">elsif (defined $offset) { }</td></tr>
-<tr><td class="h"><a id="L1867">1867</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if $dbh and ($$dbh{&quot;Driver&quot;}{&quot;Name&quot;} // &quot;&quot;) eq &quot;SQLite&quot; or ($$self{&quot;_dialect&quot;} // &quot;&quot;) eq &quot;sqlite&quot;</td></tr>
-<tr><td class="h"><a id="L1869">1869</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $offset)</td></tr>
-<tr><td class="h"><a id="L1874">1874</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $query_args[0]) { }</td></tr>
-<tr><td class="h"><a id="L1882">1882</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($c = $$self{&#39;cache&#39;}) { }</td></tr>
-<tr><td class="h"><a id="L1884">1884</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $query_args[0])</td></tr>
-<tr><td class="h"><a id="L1888">1888</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $rc = $c-&gt;get($key))</td></tr>
-<tr><td class="h"><a id="L1902">1902</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if (my $sth = $$self{$table}-&gt;prepare_cached($query))</td></tr>
-<tr><td class="h"><a id="L1903">1903</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $sth-&gt;execute(@query_args)</td></tr>
-<tr><td class="h"><a id="L1909">1909</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $c</td></tr>
-<tr><td class="h"><a id="L1911">1911</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($rc and not $$self{&quot;no_fixate&quot;})</td></tr>
-<tr><td class="h"><a id="L1967">1967</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ref $callback eq &quot;CODE&quot;</td></tr>
-<tr><td class="h"><a id="L1974">1974</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($$self{&quot;berkeley&quot;})</td></tr>
-<tr><td class="h"><a id="L1979">1979</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if (defined $bl and not $bl =~ /\A\d+\z/)</td></tr>
-<tr><td class="h"><a id="L1983">1983</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if (defined $bo and not $bo =~ /\A\d+\z/)</td></tr>
-<tr><td class="h"><a id="L1989">1989</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if (defined $bsc)</td></tr>
-<tr><td class="h"><a id="L1990">1990</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if ($bsd eq &#39;DESC&#39;) { }</td></tr>
-<tr><td class="h"><a id="L1996">1996</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if (defined $bl or defined $bo)</td></tr>
-<tr><td class="h"><a id="L1997">1997</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if $bo</td></tr>
-<tr><td class="h"><a id="L1998">1998</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if defined $bl</td></tr>
-<tr><td class="h"><a id="L2008">2008</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&#39;no_entry&#39;}) { }</td></tr>
+<tr><td class="h"><a id="L1914">1914</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if $dbh and ($$dbh{&quot;Driver&quot;}{&quot;Name&quot;} // &quot;&quot;) eq &quot;SQLite&quot; or ($$self{&quot;_dialect&quot;} // &quot;&quot;) eq &quot;sqlite&quot;</td></tr>
+<tr><td class="h"><a id="L1916">1916</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $offset)</td></tr>
+<tr><td class="h"><a id="L1921">1921</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $query_args[0]) { }</td></tr>
+<tr><td class="h"><a id="L1929">1929</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($c = $$self{&#39;cache&#39;}) { }</td></tr>
+<tr><td class="h"><a id="L1931">1931</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $query_args[0])</td></tr>
+<tr><td class="h"><a id="L1935">1935</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $rc = $c-&gt;get($key))</td></tr>
+<tr><td class="h"><a id="L1949">1949</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if (my $sth = $$self{$table}-&gt;prepare_cached($query))</td></tr>
+<tr><td class="h"><a id="L1950">1950</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $sth-&gt;execute(@query_args)</td></tr>
+<tr><td class="h"><a id="L1956">1956</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $c</td></tr>
+<tr><td class="h"><a id="L1958">1958</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($rc and not $$self{&quot;no_fixate&quot;})</td></tr>
+<tr><td class="h"><a id="L2033">2033</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ref $callback eq &quot;CODE&quot;</td></tr>
+<tr><td class="h"><a id="L2040">2040</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($$self{&quot;berkeley&quot;})</td></tr>
+<tr><td class="h"><a id="L2045">2045</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if (defined $bl and not $bl =~ /\A\d+\z/)</td></tr>
+<tr><td class="h"><a id="L2049">2049</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if (defined $bo and not $bo =~ /\A\d+\z/)</td></tr>
+<tr><td class="h"><a id="L2055">2055</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if (defined $bsc)</td></tr>
+<tr><td class="h"><a id="L2056">2056</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if ($bsd eq &#39;DESC&#39;) { }</td></tr>
+<tr><td class="h"><a id="L2062">2062</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if (defined $bl or defined $bo)</td></tr>
+<tr><td class="h"><a id="L2063">2063</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if $bo</td></tr>
+<tr><td class="h"><a id="L2064">2064</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if defined $bl</td></tr>
+<tr><td class="h"><a id="L2075">2075</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&#39;no_entry&#39;}) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif (scalar @_) { }</td></tr>
-<tr><td class="h"><a id="L2019">2019</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (my $join_spec = delete $params-&gt;{&#39;join&#39;})</td></tr>
-<tr><td class="h"><a id="L2025">2025</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $limit)</td></tr>
-<tr><td class="h"><a id="L2026">2026</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (not $limit =~ /\A\d+\z/) { }</td></tr>
-<tr><td class="h"><a id="L2033">2033</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $offset)</td></tr>
-<tr><td class="h"><a id="L2034">2034</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (not $offset =~ /\A\d+\z/) { }</td></tr>
-<tr><td class="h"><a id="L2045">2045</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (not $join_clause and $$self{&quot;data&quot;} and not $self-&gt;_has_complex_criteria($params))</td></tr>
-<tr><td class="h"><a id="L2047">2047</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (scalar keys %{$params;} == 0) { }</td></tr>
+<tr><td class="h"><a id="L2086">2086</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (my $join_spec = delete $params-&gt;{&#39;join&#39;})</td></tr>
+<tr><td class="h"><a id="L2092">2092</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $limit)</td></tr>
+<tr><td class="h"><a id="L2093">2093</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (not $limit =~ /\A\d+\z/) { }</td></tr>
+<tr><td class="h"><a id="L2100">2100</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $offset)</td></tr>
+<tr><td class="h"><a id="L2101">2101</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (not $offset =~ /\A\d+\z/) { }</td></tr>
+<tr><td class="h"><a id="L2112">2112</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (not $join_clause and $$self{&quot;data&quot;} and not $self-&gt;_has_complex_criteria($params))</td></tr>
+<tr><td class="h"><a id="L2114">2114</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (scalar keys %{$params;} == 0) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif (scalar keys %{$params;} == 1 and defined $$params{&#39;entry&#39;} and not $$self{&#39;no_entry&#39;}) { }</td></tr>
 <tr><td class="h"></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">elsif (ref $$self{&#39;data&#39;} eq &#39;HASH&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">elsif (ref $$self{&#39;data&#39;} eq &#39;ARRAY&#39; and not $$self{$table}) { }</td></tr>
-<tr><td class="h"><a id="L2048">2048</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">ref $$self{&#39;data&#39;} eq &#39;HASH&#39; ? :</td></tr>
-<tr><td class="h"><a id="L2050">2050</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless exists $$self{&quot;data&quot;}{$$params{&quot;entry&quot;}}</td></tr>
-<tr><td class="h"><a id="L2057">2057</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">exists $row-&gt;{$_} ? :</td></tr>
-<tr><td class="h"><a id="L2064">2064</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">exists $row-&gt;{$_} ? :</td></tr>
-<tr><td class="h"><a id="L2067">2067</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if (@rc)</td></tr>
-<tr><td class="h"><a id="L2068">2068</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $sort_col)</td></tr>
-<tr><td class="h"><a id="L2069">2069</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($sort_dir eq &#39;DESC&#39;) { }</td></tr>
-<tr><td class="h"><a id="L2075">2075</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $offset or defined $limit)</td></tr>
-<tr><td class="h"><a id="L2076">2076</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $offset</td></tr>
-<tr><td class="h"><a id="L2077">2077</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if defined $limit</td></tr>
-<tr><td class="h"><a id="L2092">2092</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if $join_clause</td></tr>
-<tr><td class="h"><a id="L2093">2093</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($join_clause) { }</td></tr>
+<tr><td class="h"><a id="L2115">2115</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">ref $$self{&#39;data&#39;} eq &#39;HASH&#39; ? :</td></tr>
+<tr><td class="h"><a id="L2117">2117</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless exists $$self{&quot;data&quot;}{$$params{&quot;entry&quot;}}</td></tr>
+<tr><td class="h"><a id="L2124">2124</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">exists $row-&gt;{$_} ? :</td></tr>
+<tr><td class="h"><a id="L2131">2131</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">exists $row-&gt;{$_} ? :</td></tr>
+<tr><td class="h"><a id="L2134">2134</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if (@rc)</td></tr>
+<tr><td class="h"><a id="L2135">2135</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $sort_col)</td></tr>
+<tr><td class="h"><a id="L2136">2136</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($sort_dir eq &#39;DESC&#39;) { }</td></tr>
+<tr><td class="h"><a id="L2142">2142</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $offset or defined $limit)</td></tr>
+<tr><td class="h"><a id="L2143">2143</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $offset</td></tr>
+<tr><td class="h"><a id="L2144">2144</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if defined $limit</td></tr>
+<tr><td class="h"><a id="L2160">2160</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if $join_clause</td></tr>
+<tr><td class="h"><a id="L2161">2161</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($join_clause) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($$self{&#39;type&#39;} eq &#39;CSV&#39; and not $$self{&#39;no_entry&#39;}) { }</td></tr>
-<tr><td class="h"><a id="L2094">2094</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if $where</td></tr>
-<tr><td class="h"><a id="L2098">2098</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if $where</td></tr>
-<tr><td class="h"><a id="L2100">2100</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $where</td></tr>
-<tr><td class="h"><a id="L2102">2102</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $sort_col) { }</td></tr>
+<tr><td class="h"><a id="L2162">2162</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if $where</td></tr>
+<tr><td class="h"><a id="L2166">2166</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if $where</td></tr>
+<tr><td class="h"><a id="L2168">2168</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $where</td></tr>
+<tr><td class="h"><a id="L2170">2170</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $sort_col) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif (not $$self{&#39;no_entry&#39;}) { }</td></tr>
-<tr><td class="h"><a id="L2107">2107</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $limit) { }</td></tr>
+<tr><td class="h"><a id="L2175">2175</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $limit) { }</td></tr>
 <tr><td class="h"></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">elsif (defined $offset) { }</td></tr>
-<tr><td class="h"><a id="L2114">2114</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if $dbh and ($$dbh{&quot;Driver&quot;}{&quot;Name&quot;} // &quot;&quot;) eq &quot;SQLite&quot; or ($$self{&quot;_dialect&quot;} // &quot;&quot;) eq &quot;sqlite&quot;</td></tr>
-<tr><td class="h"><a id="L2116">2116</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $offset)</td></tr>
-<tr><td class="h"><a id="L2121">2121</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $query_args[0]) { }</td></tr>
-<tr><td class="h"><a id="L2128">2128</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless my $sth = $$self{$table}-&gt;prepare_cached($query)</td></tr>
-<tr><td class="h"><a id="L2129">2129</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $sth-&gt;execute(@query_args)</td></tr>
-<tr><td class="h"><a id="L2138">2138</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $err = $@)</td></tr>
-<tr><td class="h"><a id="L2168">2168</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&quot;berkeley&quot;})</td></tr>
-<tr><td class="h"><a id="L2173">2173</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $bl and not $bl =~ /\A\d+\z/)</td></tr>
-<tr><td class="h"><a id="L2177">2177</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $bo and not $bo =~ /\A\d+\z/)</td></tr>
-<tr><td class="h"><a id="L2183">2183</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $bsc)</td></tr>
-<tr><td class="h"><a id="L2184">2184</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if ($bsd eq &#39;DESC&#39;) { }</td></tr>
-<tr><td class="h"><a id="L2190">2190</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $bl or defined $bo)</td></tr>
-<tr><td class="h"><a id="L2191">2191</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if $bo</td></tr>
-<tr><td class="h"><a id="L2192">2192</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if defined $bl</td></tr>
-<tr><td class="h"><a id="L2194">2194</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">wantarray ? :</td></tr>
-<tr><td class="h"><a id="L2202">2202</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $join_spec = delete $params-&gt;{&#39;join&#39;})</td></tr>
-<tr><td class="h"><a id="L2208">2208</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $limit)</td></tr>
-<tr><td class="h"><a id="L2209">2209</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if (not $limit =~ /\A\d+\z/) { }</td></tr>
-<tr><td class="h"><a id="L2216">2216</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $offset)</td></tr>
-<tr><td class="h"><a id="L2217">2217</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if (not $offset =~ /\A\d+\z/) { }</td></tr>
-<tr><td class="h"><a id="L2228">2228</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (not $join_clause and $$self{&quot;data&quot;} and not $self-&gt;_has_complex_criteria($params))</td></tr>
-<tr><td class="h"><a id="L2229">2229</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (scalar keys %{$params;} == 0) { }</td></tr>
+<tr><td class="h"><a id="L2182">2182</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if $dbh and ($$dbh{&quot;Driver&quot;}{&quot;Name&quot;} // &quot;&quot;) eq &quot;SQLite&quot; or ($$self{&quot;_dialect&quot;} // &quot;&quot;) eq &quot;sqlite&quot;</td></tr>
+<tr><td class="h"><a id="L2184">2184</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $offset)</td></tr>
+<tr><td class="h"><a id="L2189">2189</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $query_args[0]) { }</td></tr>
+<tr><td class="h"><a id="L2196">2196</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless my $sth = $$self{$table}-&gt;prepare_cached($query)</td></tr>
+<tr><td class="h"><a id="L2197">2197</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $sth-&gt;execute(@query_args)</td></tr>
+<tr><td class="h"><a id="L2207">2207</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $err = $@)</td></tr>
+<tr><td class="h"><a id="L2237">2237</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&quot;berkeley&quot;})</td></tr>
+<tr><td class="h"><a id="L2242">2242</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $bl and not $bl =~ /\A\d+\z/)</td></tr>
+<tr><td class="h"><a id="L2246">2246</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $bo and not $bo =~ /\A\d+\z/)</td></tr>
+<tr><td class="h"><a id="L2252">2252</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $bsc)</td></tr>
+<tr><td class="h"><a id="L2253">2253</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if ($bsd eq &#39;DESC&#39;) { }</td></tr>
+<tr><td class="h"><a id="L2259">2259</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $bl or defined $bo)</td></tr>
+<tr><td class="h"><a id="L2260">2260</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if $bo</td></tr>
+<tr><td class="h"><a id="L2261">2261</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if defined $bl</td></tr>
+<tr><td class="h"><a id="L2263">2263</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">wantarray ? :</td></tr>
+<tr><td class="h"><a id="L2271">2271</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $join_spec = delete $params-&gt;{&#39;join&#39;})</td></tr>
+<tr><td class="h"><a id="L2277">2277</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $limit)</td></tr>
+<tr><td class="h"><a id="L2278">2278</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if (not $limit =~ /\A\d+\z/) { }</td></tr>
+<tr><td class="h"><a id="L2285">2285</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $offset)</td></tr>
+<tr><td class="h"><a id="L2286">2286</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if (not $offset =~ /\A\d+\z/) { }</td></tr>
+<tr><td class="h"><a id="L2297">2297</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (not $join_clause and $$self{&quot;data&quot;} and not $self-&gt;_has_complex_criteria($params))</td></tr>
+<tr><td class="h"><a id="L2298">2298</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (scalar keys %{$params;} == 0) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif (scalar keys %{$params;} == 1 and defined $$params{&#39;entry&#39;} and not $$self{&#39;no_entry&#39;}) { }</td></tr>
 <tr><td class="h"></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">elsif (ref $$self{&#39;data&#39;} eq &#39;HASH&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">elsif (ref $$self{&#39;data&#39;} eq &#39;ARRAY&#39; and not $$self{$table}) { }</td></tr>
-<tr><td class="h"><a id="L2233">2233</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">ref $$self{&#39;data&#39;} eq &#39;HASH&#39; ? :</td></tr>
-<tr><td class="h"><a id="L2234">2234</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $sort_col)</td></tr>
-<tr><td class="h"><a id="L2235">2235</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if ($sort_dir eq &#39;DESC&#39;) { }</td></tr>
-<tr><td class="h"><a id="L2241">2241</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $offset or defined $limit)</td></tr>
-<tr><td class="h"><a id="L2242">2242</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if $offset</td></tr>
-<tr><td class="h"><a id="L2243">2243</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if defined $limit</td></tr>
-<tr><td class="h"><a id="L2249">2249</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless exists $$self{&quot;data&quot;}{$$params{&quot;entry&quot;}}</td></tr>
-<tr><td class="h"><a id="L2250">2250</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $offset or defined $limit)</td></tr>
-<tr><td class="h"><a id="L2253">2253</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if $offset</td></tr>
-<tr><td class="h"><a id="L2254">2254</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if defined $limit</td></tr>
-<tr><td class="h"><a id="L2255">2255</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">wantarray ? :</td></tr>
-<tr><td class="h"><a id="L2268">2268</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">exists $row-&gt;{$_} ? :</td></tr>
-<tr><td class="h"><a id="L2270">2270</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $sort_col)</td></tr>
-<tr><td class="h"><a id="L2271">2271</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if ($sort_dir eq &#39;DESC&#39;) { }</td></tr>
-<tr><td class="h"><a id="L2277">2277</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $offset or defined $limit)</td></tr>
-<tr><td class="h"><a id="L2278">2278</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if $offset</td></tr>
-<tr><td class="h"><a id="L2279">2279</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if defined $limit</td></tr>
-<tr><td class="h"><a id="L2289">2289</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">exists $row-&gt;{$_} ? :</td></tr>
-<tr><td class="h"><a id="L2291">2291</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if (defined $sort_col)</td></tr>
-<tr><td class="h"><a id="L2292">2292</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if ($sort_dir eq &#39;DESC&#39;) { }</td></tr>
-<tr><td class="h"><a id="L2298">2298</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if (defined $offset or defined $limit)</td></tr>
-<tr><td class="h"><a id="L2299">2299</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if $offset</td></tr>
-<tr><td class="h"><a id="L2300">2300</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if defined $limit</td></tr>
-<tr><td class="h"><a id="L2310">2310</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $join_clause</td></tr>
-<tr><td class="h"><a id="L2311">2311</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($join_clause) { }</td></tr>
+<tr><td class="h"><a id="L2302">2302</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">ref $$self{&#39;data&#39;} eq &#39;HASH&#39; ? :</td></tr>
+<tr><td class="h"><a id="L2303">2303</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $sort_col)</td></tr>
+<tr><td class="h"><a id="L2304">2304</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if ($sort_dir eq &#39;DESC&#39;) { }</td></tr>
+<tr><td class="h"><a id="L2310">2310</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $offset or defined $limit)</td></tr>
+<tr><td class="h"><a id="L2311">2311</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if $offset</td></tr>
+<tr><td class="h"><a id="L2312">2312</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if defined $limit</td></tr>
+<tr><td class="h"><a id="L2318">2318</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless exists $$self{&quot;data&quot;}{$$params{&quot;entry&quot;}}</td></tr>
+<tr><td class="h"><a id="L2319">2319</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $offset or defined $limit)</td></tr>
+<tr><td class="h"><a id="L2322">2322</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if $offset</td></tr>
+<tr><td class="h"><a id="L2323">2323</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if defined $limit</td></tr>
+<tr><td class="h"><a id="L2324">2324</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">wantarray ? :</td></tr>
+<tr><td class="h"><a id="L2337">2337</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">exists $row-&gt;{$_} ? :</td></tr>
+<tr><td class="h"><a id="L2339">2339</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $sort_col)</td></tr>
+<tr><td class="h"><a id="L2340">2340</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if ($sort_dir eq &#39;DESC&#39;) { }</td></tr>
+<tr><td class="h"><a id="L2346">2346</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $offset or defined $limit)</td></tr>
+<tr><td class="h"><a id="L2347">2347</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if $offset</td></tr>
+<tr><td class="h"><a id="L2348">2348</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if defined $limit</td></tr>
+<tr><td class="h"><a id="L2358">2358</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">exists $row-&gt;{$_} ? :</td></tr>
+<tr><td class="h"><a id="L2360">2360</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if (defined $sort_col)</td></tr>
+<tr><td class="h"><a id="L2361">2361</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if ($sort_dir eq &#39;DESC&#39;) { }</td></tr>
+<tr><td class="h"><a id="L2367">2367</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if (defined $offset or defined $limit)</td></tr>
+<tr><td class="h"><a id="L2368">2368</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if $offset</td></tr>
+<tr><td class="h"><a id="L2369">2369</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if defined $limit</td></tr>
+<tr><td class="h"><a id="L2379">2379</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $join_clause</td></tr>
+<tr><td class="h"><a id="L2380">2380</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($join_clause) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($$self{&#39;type&#39;} eq &#39;CSV&#39; and not $$self{&#39;no_entry&#39;}) { }</td></tr>
-<tr><td class="h"><a id="L2312">2312</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if $where</td></tr>
-<tr><td class="h"><a id="L2316">2316</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $where</td></tr>
-<tr><td class="h"><a id="L2318">2318</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $where</td></tr>
-<tr><td class="h"><a id="L2320">2320</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $sort_col) { }</td></tr>
+<tr><td class="h"><a id="L2381">2381</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if $where</td></tr>
+<tr><td class="h"><a id="L2385">2385</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $where</td></tr>
+<tr><td class="h"><a id="L2387">2387</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $where</td></tr>
+<tr><td class="h"><a id="L2389">2389</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $sort_col) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif (not $$self{&#39;no_entry&#39;}) { }</td></tr>
-<tr><td class="h"><a id="L2325">2325</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $limit) { }</td></tr>
+<tr><td class="h"><a id="L2394">2394</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $limit) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif (not wantarray) { }</td></tr>
 <tr><td class="h"></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">elsif (defined $offset) { }</td></tr>
-<tr><td class="h"><a id="L2328">2328</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if (defined $offset)</td></tr>
-<tr><td class="h"><a id="L2333">2333</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $offset) { }</td></tr>
-<tr><td class="h"><a id="L2344">2344</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if $dbh and ($$dbh{&quot;Driver&quot;}{&quot;Name&quot;} // &quot;&quot;) eq &quot;SQLite&quot; or ($$self{&quot;_dialect&quot;} // &quot;&quot;) eq &quot;sqlite&quot;</td></tr>
-<tr><td class="h"><a id="L2349">2349</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $query_args[0]) { }</td></tr>
-<tr><td class="h"><a id="L2357">2357</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($c = $$self{&#39;cache&#39;}) { }</td></tr>
-<tr><td class="h"><a id="L2359">2359</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (wantarray)</td></tr>
-<tr><td class="h"><a id="L2362">2362</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $query_args[0])</td></tr>
-<tr><td class="h"><a id="L2366">2366</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $rc = $c-&gt;get($key))</td></tr>
-<tr><td class="h"><a id="L2368">2368</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">wantarray ? :</td></tr>
-<tr><td class="h"><a id="L2380">2380</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if (my $sth = $$self{$table}-&gt;prepare_cached($query))</td></tr>
-<tr><td class="h"><a id="L2381">2381</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $sth-&gt;execute(@query_args)</td></tr>
-<tr><td class="h"><a id="L2385">2385</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless (wantarray)</td></tr>
-<tr><td class="h"><a id="L2388">2388</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $c</td></tr>
-<tr><td class="h"><a id="L2393">2393</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $c</td></tr>
-<tr><td class="h"><a id="L2395">2395</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if ($rc)</td></tr>
-<tr><td class="h"><a id="L2396">2396</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">unless ($$self{&quot;no_fixate&quot;})</td></tr>
-<tr><td class="h"><a id="L2438">2438</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&quot;berkeley&quot;})</td></tr>
-<tr><td class="h"><a id="L2448">2448</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&quot;data&quot;})</td></tr>
-<tr><td class="h"><a id="L2449">2449</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (scalar keys %{$params;} == 0) { }</td></tr>
+<tr><td class="h"><a id="L2397">2397</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if (defined $offset)</td></tr>
+<tr><td class="h"><a id="L2402">2402</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $offset) { }</td></tr>
+<tr><td class="h"><a id="L2413">2413</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if $dbh and ($$dbh{&quot;Driver&quot;}{&quot;Name&quot;} // &quot;&quot;) eq &quot;SQLite&quot; or ($$self{&quot;_dialect&quot;} // &quot;&quot;) eq &quot;sqlite&quot;</td></tr>
+<tr><td class="h"><a id="L2418">2418</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $query_args[0]) { }</td></tr>
+<tr><td class="h"><a id="L2426">2426</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($c = $$self{&#39;cache&#39;}) { }</td></tr>
+<tr><td class="h"><a id="L2428">2428</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (wantarray)</td></tr>
+<tr><td class="h"><a id="L2431">2431</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $query_args[0])</td></tr>
+<tr><td class="h"><a id="L2435">2435</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $rc = $c-&gt;get($key))</td></tr>
+<tr><td class="h"><a id="L2437">2437</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">wantarray ? :</td></tr>
+<tr><td class="h"><a id="L2449">2449</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if (my $sth = $$self{$table}-&gt;prepare_cached($query))</td></tr>
+<tr><td class="h"><a id="L2450">2450</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $sth-&gt;execute(@query_args)</td></tr>
+<tr><td class="h"><a id="L2454">2454</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless (wantarray)</td></tr>
+<tr><td class="h"><a id="L2457">2457</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $c</td></tr>
+<tr><td class="h"><a id="L2462">2462</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $c</td></tr>
+<tr><td class="h"><a id="L2464">2464</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if ($rc)</td></tr>
+<tr><td class="h"><a id="L2465">2465</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">unless ($$self{&quot;no_fixate&quot;})</td></tr>
+<tr><td class="h"><a id="L2522">2522</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&quot;berkeley&quot;})</td></tr>
+<tr><td class="h"><a id="L2532">2532</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&quot;data&quot;})</td></tr>
+<tr><td class="h"><a id="L2533">2533</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (scalar keys %{$params;} == 0) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif (scalar keys %{$params;} == 1 and defined $$params{&#39;entry&#39;} and not $$self{&#39;no_entry&#39;}) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif (not $self-&gt;_has_complex_criteria($params) || $$self{$table}) { }</td></tr>
-<tr><td class="h"><a id="L2451">2451</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (ref $$self{&quot;data&quot;} eq &quot;HASH&quot;)</td></tr>
-<tr><td class="h"><a id="L2457">2457</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">exists $$self{&#39;data&#39;}{$$params{&#39;entry&#39;}} &amp;&amp; $$self{&#39;data&#39;}{$$params{&#39;entry&#39;}} ? :</td></tr>
-<tr><td class="h"><a id="L2470">2470</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">exists $row-&gt;{$_} ? :</td></tr>
-<tr><td class="h"><a id="L2471">2471</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">ref $$self{&#39;data&#39;} eq &#39;HASH&#39; ? :</td></tr>
-<tr><td class="h"><a id="L2479">2479</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&#39;type&#39;} eq &#39;CSV&#39; and not $$self{&#39;no_entry&#39;}) { }</td></tr>
+<tr><td class="h"><a id="L2535">2535</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (ref $$self{&quot;data&quot;} eq &quot;HASH&quot;)</td></tr>
+<tr><td class="h"><a id="L2541">2541</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">exists $$self{&#39;data&#39;}{$$params{&#39;entry&#39;}} &amp;&amp; $$self{&#39;data&#39;}{$$params{&#39;entry&#39;}} ? :</td></tr>
+<tr><td class="h"><a id="L2554">2554</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">exists $row-&gt;{$_} ? :</td></tr>
+<tr><td class="h"><a id="L2555">2555</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">ref $$self{&#39;data&#39;} eq &#39;HASH&#39; ? :</td></tr>
+<tr><td class="h"><a id="L2563">2563</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&#39;type&#39;} eq &#39;CSV&#39; and not $$self{&#39;no_entry&#39;}) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($$self{&#39;no_entry&#39;}) { }</td></tr>
-<tr><td class="h"><a id="L2482">2482</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $where</td></tr>
-<tr><td class="h"><a id="L2485">2485</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $where</td></tr>
-<tr><td class="h"><a id="L2488">2488</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $where</td></tr>
-<tr><td class="h"><a id="L2491">2491</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $query_args[0]) { }</td></tr>
-<tr><td class="h"><a id="L2499">2499</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($c = $$self{&#39;cache&#39;}) { }</td></tr>
-<tr><td class="h"><a id="L2509">2509</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $query_args[0])</td></tr>
-<tr><td class="h"><a id="L2512">2512</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $rc = $c-&gt;get($key))</td></tr>
-<tr><td class="h"><a id="L2514">2514</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">ref $rc eq &#39;ARRAY&#39; ? :</td></tr>
-<tr><td class="h"><a id="L2521">2521</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if (my $sth = $$self{$table}-&gt;prepare_cached($query))</td></tr>
-<tr><td class="h"><a id="L2522">2522</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $sth-&gt;execute(@query_args)</td></tr>
-<tr><td class="h"><a id="L2566">2566</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (not $$self{&#39;no_entry&#39;}) { }</td></tr>
-<tr><td class="h"><a id="L2574">2574</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&quot;data&quot;} and not $$self{&quot;no_entry&quot;} and scalar keys %{$params;} == 1 and defined $$params{&quot;entry&quot;} and not $self-&gt;_has_complex_criteria($params))</td></tr>
-<tr><td class="h"><a id="L2577">2577</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless exists $$self{&quot;data&quot;}{$$params{&quot;entry&quot;}}</td></tr>
-<tr><td class="h"><a id="L2579">2579</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $bc = $$self{&quot;base_criteria&quot;})</td></tr>
-<tr><td class="h"><a id="L2580">2580</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">exists $row-&gt;{$_} ? :</td></tr>
+<tr><td class="h"><a id="L2566">2566</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $where</td></tr>
+<tr><td class="h"><a id="L2569">2569</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $where</td></tr>
+<tr><td class="h"><a id="L2572">2572</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $where</td></tr>
+<tr><td class="h"><a id="L2575">2575</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $query_args[0]) { }</td></tr>
+<tr><td class="h"><a id="L2583">2583</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($c = $$self{&#39;cache&#39;}) { }</td></tr>
+<tr><td class="h"><a id="L2593">2593</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $query_args[0])</td></tr>
+<tr><td class="h"><a id="L2596">2596</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $rc = $c-&gt;get($key))</td></tr>
+<tr><td class="h"><a id="L2598">2598</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">ref $rc eq &#39;ARRAY&#39; ? :</td></tr>
+<tr><td class="h"><a id="L2605">2605</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if (my $sth = $$self{$table}-&gt;prepare_cached($query))</td></tr>
+<tr><td class="h"><a id="L2606">2606</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $sth-&gt;execute(@query_args)</td></tr>
+<tr><td class="h"><a id="L2673">2673</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (not $$self{&#39;no_entry&#39;}) { }</td></tr>
+<tr><td class="h"><a id="L2681">2681</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&quot;data&quot;} and not $$self{&quot;no_entry&quot;} and scalar keys %{$params;} == 1 and defined $$params{&quot;entry&quot;} and not $self-&gt;_has_complex_criteria($params))</td></tr>
+<tr><td class="h"><a id="L2684">2684</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless exists $$self{&quot;data&quot;}{$$params{&quot;entry&quot;}}</td></tr>
+<tr><td class="h"><a id="L2686">2686</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $bc = $$self{&quot;base_criteria&quot;})</td></tr>
+<tr><td class="h"><a id="L2687">2687</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">exists $row-&gt;{$_} ? :</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless &amp;all(sub {
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$self-&gt;_match_criterion(exists $row-&gt;{$_} ? $$row{$_} : undef, $$bc{$_}, $_);
 }
 , keys %{$bc;})</td></tr>
-<tr><td class="h"><a id="L2585">2585</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&quot;berkeley&quot;})</td></tr>
-<tr><td class="h"><a id="L2586">2586</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (not $$self{&quot;no_entry&quot;} and scalar keys %{$params;} == 1 and defined $$params{&quot;entry&quot;})</td></tr>
-<tr><td class="h"><a id="L2590">2590</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if ($$self{&quot;no_entry&quot;} and scalar keys %{$params;} == 1 and defined $id and defined $$params{$id})</td></tr>
-<tr><td class="h"><a id="L2591">2591</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if (my $rc = $$self{&quot;berkeley&quot;}{$$params{$id}})</td></tr>
-<tr><td class="h"><a id="L2600">2600</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $raw_target)</td></tr>
-<tr><td class="h"><a id="L2602">2602</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">unless $raw_target =~ /$SAFE_QUALIFIED/</td></tr>
-<tr><td class="h"><a id="L2608">2608</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$join_spec ? :</td></tr>
-<tr><td class="h"><a id="L2613">2613</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $join_clause</td></tr>
-<tr><td class="h"><a id="L2614">2614</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($join_clause) { }</td></tr>
+<tr><td class="h"><a id="L2692">2692</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&quot;berkeley&quot;})</td></tr>
+<tr><td class="h"><a id="L2693">2693</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (not $$self{&quot;no_entry&quot;} and scalar keys %{$params;} == 1 and defined $$params{&quot;entry&quot;})</td></tr>
+<tr><td class="h"><a id="L2697">2697</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if ($$self{&quot;no_entry&quot;} and scalar keys %{$params;} == 1 and defined $id and defined $$params{$id})</td></tr>
+<tr><td class="h"><a id="L2698">2698</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if (my $rc = $$self{&quot;berkeley&quot;}{$$params{$id}})</td></tr>
+<tr><td class="h"><a id="L2707">2707</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (defined $raw_target)</td></tr>
+<tr><td class="h"><a id="L2709">2709</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">unless $raw_target =~ /$SAFE_QUALIFIED/</td></tr>
+<tr><td class="h"><a id="L2715">2715</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$join_spec ? :</td></tr>
+<tr><td class="h"><a id="L2720">2720</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $join_clause</td></tr>
+<tr><td class="h"><a id="L2721">2721</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($join_clause) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($$self{&#39;type&#39;} eq &#39;CSV&#39; and not $$self{&#39;no_entry&#39;}) { }</td></tr>
-<tr><td class="h"><a id="L2615">2615</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if $where</td></tr>
-<tr><td class="h"><a id="L2619">2619</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if $where</td></tr>
-<tr><td class="h"><a id="L2621">2621</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if $where</td></tr>
-<tr><td class="h"><a id="L2624">2624</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $query_args[0]) { }</td></tr>
-<tr><td class="h"><a id="L2636">2636</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($c)</td></tr>
-<tr><td class="h"><a id="L2638">2638</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if (defined $query_args[0]) { }</td></tr>
-<tr><td class="h"><a id="L2639">2639</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if wantarray</td></tr>
-<tr><td class="h"><a id="L2644">2644</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $rc = $c-&gt;get($key))</td></tr>
-<tr><td class="h"><a id="L2645">2645</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (wantarray) { }</td></tr>
-<tr><td class="h"><a id="L2646">2646</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if (ref $rc eq &quot;ARRAY&quot;)</td></tr>
-<tr><td class="h"><a id="L2656">2656</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless my $sth = $$self{$table}-&gt;prepare_cached($query)</td></tr>
-<tr><td class="h"><a id="L2657">2657</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $sth-&gt;execute(@query_args)</td></tr>
-<tr><td class="h"><a id="L2660">2660</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($c)</td></tr>
-<tr><td class="h"><a id="L2661">2661</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if ($rc) { }</td></tr>
-<tr><td class="h"><a id="L2699">2699</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&quot;berkeley&quot;})</td></tr>
-<tr><td class="h"><a id="L2707">2707</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless defined $$args{&quot;query&quot;}</td></tr>
-<tr><td class="h"><a id="L2716">2716</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $query =~ /\bFROM\b/i</td></tr>
-<tr><td class="h"><a id="L2725">2725</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (exists $args-&gt;{&#39;args&#39;}) { }</td></tr>
-<tr><td class="h"><a id="L2726">2726</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">ref $$args{&#39;args&#39;} eq &#39;ARRAY&#39; ? :</td></tr>
-<tr><td class="h"><a id="L2727">2727</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $sth-&gt;execute(@bind)</td></tr>
-<tr><td class="h"><a id="L2729">2729</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $sth-&gt;execute</td></tr>
-<tr><td class="h"><a id="L2735">2735</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless (wantarray)</td></tr>
-<tr><td class="h"><a id="L2767">2767</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (($$self{&quot;_dialect&quot;} // &quot;&quot;) eq &quot;sqlite&quot;)</td></tr>
-<tr><td class="h"><a id="L2769">2769</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if (defined $dsn and $dsn =~ /\Adbi:SQLite:(?:dbname=)?(.+)\z/i)</td></tr>
-<tr><td class="h"><a id="L2772">2772</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if @st</td></tr>
-<tr><td class="h"><a id="L2809">2809</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $$self{&quot;_columns&quot;}</td></tr>
-<tr><td class="h"><a id="L2815">2815</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&quot;berkeley&quot;})</td></tr>
-<tr><td class="h"><a id="L2819">2819</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $data = $$self{&#39;data&#39;}) { }</td></tr>
-<tr><td class="h"><a id="L2820">2820</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (ref $data eq &#39;HASH&#39;) { }</td></tr>
+<tr><td class="h"><a id="L2722">2722</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if $where</td></tr>
+<tr><td class="h"><a id="L2726">2726</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if $where</td></tr>
+<tr><td class="h"><a id="L2728">2728</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if $where</td></tr>
+<tr><td class="h"><a id="L2731">2731</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $query_args[0]) { }</td></tr>
+<tr><td class="h"><a id="L2743">2743</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($c)</td></tr>
+<tr><td class="h"><a id="L2745">2745</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if (defined $query_args[0]) { }</td></tr>
+<tr><td class="h"><a id="L2746">2746</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if wantarray</td></tr>
+<tr><td class="h"><a id="L2751">2751</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $rc = $c-&gt;get($key))</td></tr>
+<tr><td class="h"><a id="L2752">2752</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (wantarray) { }</td></tr>
+<tr><td class="h"><a id="L2753">2753</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if (ref $rc eq &quot;ARRAY&quot;)</td></tr>
+<tr><td class="h"><a id="L2763">2763</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless my $sth = $$self{$table}-&gt;prepare_cached($query)</td></tr>
+<tr><td class="h"><a id="L2764">2764</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $sth-&gt;execute(@query_args)</td></tr>
+<tr><td class="h"><a id="L2767">2767</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($c)</td></tr>
+<tr><td class="h"><a id="L2768">2768</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if ($rc) { }</td></tr>
+<tr><td class="h"><a id="L2806">2806</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&quot;berkeley&quot;})</td></tr>
+<tr><td class="h"><a id="L2814">2814</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless defined $$args{&quot;query&quot;}</td></tr>
+<tr><td class="h"><a id="L2823">2823</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $query =~ /\bFROM\b/i</td></tr>
+<tr><td class="h"><a id="L2832">2832</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (exists $args-&gt;{&#39;args&#39;}) { }</td></tr>
+<tr><td class="h"><a id="L2833">2833</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">ref $$args{&#39;args&#39;} eq &#39;ARRAY&#39; ? :</td></tr>
+<tr><td class="h"><a id="L2834">2834</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $sth-&gt;execute(@bind)</td></tr>
+<tr><td class="h"><a id="L2836">2836</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $sth-&gt;execute</td></tr>
+<tr><td class="h"><a id="L2842">2842</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless (wantarray)</td></tr>
+<tr><td class="h"><a id="L2874">2874</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (($$self{&quot;_dialect&quot;} // &quot;&quot;) eq &quot;sqlite&quot;)</td></tr>
+<tr><td class="h"><a id="L2876">2876</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if (defined $dsn and $dsn =~ /\Adbi:SQLite:(?:dbname=)?(.+)\z/i)</td></tr>
+<tr><td class="h"><a id="L2879">2879</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if @st</td></tr>
+<tr><td class="h"><a id="L2931">2931</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $$self{&quot;_columns&quot;}</td></tr>
+<tr><td class="h"><a id="L2937">2937</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&quot;berkeley&quot;})</td></tr>
+<tr><td class="h"><a id="L2941">2941</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $data = $$self{&#39;data&#39;}) { }</td></tr>
+<tr><td class="h"><a id="L2942">2942</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (ref $data eq &#39;HASH&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">elsif (ref $data eq &#39;ARRAY&#39; and @{$data;}) { }</td></tr>
-<tr><td class="h"><a id="L2822">2822</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if $first</td></tr>
-<tr><td class="h"><a id="L2891">2891</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $$self{&quot;_schema&quot;}</td></tr>
-<tr><td class="h"><a id="L2896">2896</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&quot;berkeley&quot;})</td></tr>
-<tr><td class="h"><a id="L2903">2903</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $data = $$self{&#39;data&#39;}) { }</td></tr>
-<tr><td class="h"><a id="L2906">2906</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (ref $data eq &#39;HASH&#39;) { }</td></tr>
+<tr><td class="h"><a id="L2944">2944</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if $first</td></tr>
+<tr><td class="h"><a id="L3035">3035</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $$self{&quot;_schema&quot;}</td></tr>
+<tr><td class="h"><a id="L3040">3040</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&quot;berkeley&quot;})</td></tr>
+<tr><td class="h"><a id="L3047">3047</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $data = $$self{&#39;data&#39;}) { }</td></tr>
+<tr><td class="h"><a id="L3050">3050</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (ref $data eq &#39;HASH&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">elsif (ref $data eq &#39;ARRAY&#39; and @{$data;}) { }</td></tr>
-<tr><td class="h"><a id="L2908">2908</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&quot;infer_types&quot;} and $first)</td></tr>
-<tr><td class="h"><a id="L2912">2912</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ++$n &gt;= 100</td></tr>
-<tr><td class="h"><a id="L2917">2917</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&quot;infer_types&quot;})</td></tr>
-<tr><td class="h"><a id="L2918">2918</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">$#{$data;} &lt; 99 ? :</td></tr>
-<tr><td class="h"><a id="L2922">2922</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if ($first)</td></tr>
-<tr><td class="h"><a id="L2926">2926</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">exists $_-&gt;{$col} ? :</td></tr>
+<tr><td class="h"><a id="L3052">3052</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&quot;infer_types&quot;} and $first)</td></tr>
+<tr><td class="h"><a id="L3056">3056</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ++$n &gt;= 100</td></tr>
+<tr><td class="h"><a id="L3061">3061</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&quot;infer_types&quot;})</td></tr>
+<tr><td class="h"><a id="L3062">3062</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">$#{$data;} &lt; 99 ? :</td></tr>
+<tr><td class="h"><a id="L3066">3066</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if ($first)</td></tr>
+<tr><td class="h"><a id="L3070">3070</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">exists $_-&gt;{$col} ? :</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">@sample ? :</td></tr>
-<tr><td class="h"><a id="L2928">2928</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$col eq $id ? :</td></tr>
+<tr><td class="h"><a id="L3072">3072</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$col eq $id ? :</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$col eq $id ? :</td></tr>
-<tr><td class="h"><a id="L2938">2938</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($driver eq &#39;SQLite&#39;) { }</td></tr>
-<tr><td class="h"><a id="L2952">2952</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($sth)</td></tr>
-<tr><td class="h"><a id="L3003">3003</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $dbh and ref $dbh and ($$dbh{&quot;Driver&quot;}{&quot;Name&quot;} // &quot;&quot;) eq &quot;SQLite&quot;</td></tr>
-<tr><td class="h"><a id="L3081">3081</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&#39;no_entry&#39;}) { }</td></tr>
+<tr><td class="h"><a id="L3082">3082</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($driver eq &#39;SQLite&#39;) { }</td></tr>
+<tr><td class="h"><a id="L3096">3096</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($sth)</td></tr>
+<tr><td class="h"><a id="L3147">3147</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $dbh and ref $dbh and ($$dbh{&quot;Driver&quot;}{&quot;Name&quot;} // &quot;&quot;) eq &quot;SQLite&quot;</td></tr>
+<tr><td class="h"><a id="L3256">3256</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&#39;no_entry&#39;}) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif (scalar @_) { }</td></tr>
-<tr><td class="h"><a id="L3094">3094</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($join_spec)</td></tr>
-<tr><td class="h"><a id="L3100">3100</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($join_clause and not $$self{$table})</td></tr>
-<tr><td class="h"><a id="L3101">3101</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">$$self{&#39;berkeley&#39;} ? :</td></tr>
-<tr><td class="h"><a id="L3107">3107</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{$table})</td></tr>
-<tr><td class="h"><a id="L3110">3110</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $$args[0]) { }</td></tr>
-<tr><td class="h"><a id="L3117">3117</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($c = $$self{&#39;cache&#39;}) { }</td></tr>
-<tr><td class="h"><a id="L3119">3119</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if defined $$args[0]</td></tr>
-<tr><td class="h"><a id="L3121">3121</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if (my $rc = $c-&gt;get($key))</td></tr>
-<tr><td class="h"><a id="L3131">3131</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless (my $sth = $$self{$table}-&gt;prepare_cached($sql))</td></tr>
-<tr><td class="h"><a id="L3135">3135</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $sth-&gt;execute(@{$args;})</td></tr>
-<tr><td class="h"><a id="L3148">3148</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (not defined $$row{$as} and $fn eq &#39;sum&#39; || $fn eq &#39;count&#39; || $fn eq &#39;count_distinct&#39;)</td></tr>
-<tr><td class="h"><a id="L3155">3155</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if $c</td></tr>
-<tr><td class="h"><a id="L3156">3156</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $no_fixate</td></tr>
-<tr><td class="h"><a id="L3166">3166</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (my $hav = $$spec{&quot;having&quot;})</td></tr>
-<tr><td class="h"><a id="L3171">3171</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (my $s = $$spec{&#39;sort&#39;}) { }</td></tr>
+<tr><td class="h"><a id="L3269">3269</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($join_spec)</td></tr>
+<tr><td class="h"><a id="L3275">3275</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($join_clause and not $$self{$table})</td></tr>
+<tr><td class="h"><a id="L3276">3276</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">$$self{&#39;berkeley&#39;} ? :</td></tr>
+<tr><td class="h"><a id="L3282">3282</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{$table})</td></tr>
+<tr><td class="h"><a id="L3285">3285</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $$args[0]) { }</td></tr>
+<tr><td class="h"><a id="L3292">3292</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($c = $$self{&#39;cache&#39;}) { }</td></tr>
+<tr><td class="h"><a id="L3294">3294</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if defined $$args[0]</td></tr>
+<tr><td class="h"><a id="L3296">3296</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if (my $rc = $c-&gt;get($key))</td></tr>
+<tr><td class="h"><a id="L3306">3306</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless (my $sth = $$self{$table}-&gt;prepare_cached($sql))</td></tr>
+<tr><td class="h"><a id="L3310">3310</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $sth-&gt;execute(@{$args;})</td></tr>
+<tr><td class="h"><a id="L3323">3323</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (not defined $$row{$as} and $fn eq &#39;sum&#39; || $fn eq &#39;count&#39; || $fn eq &#39;count_distinct&#39;)</td></tr>
+<tr><td class="h"><a id="L3330">3330</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if $c</td></tr>
+<tr><td class="h"><a id="L3331">3331</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $no_fixate</td></tr>
+<tr><td class="h"><a id="L3341">3341</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $hav = $$spec{&quot;having&quot;})</td></tr>
+<tr><td class="h"><a id="L3346">3346</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $s = $$spec{&#39;sort&#39;}) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif (@by_names) { }</td></tr>
-<tr><td class="h"><a id="L3177">3177</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">$is_measure ? :</td></tr>
+<tr><td class="h"><a id="L3352">3352</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">$is_measure ? :</td></tr>
 <tr><td class="h"></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">$is_measure ? :</td></tr>
-<tr><td class="h"></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">$desc ? :</td></tr>
-<tr><td class="h"><a id="L3186">3186</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if $cmp</td></tr>
-<tr><td class="h"><a id="L3192">3192</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if $$spec{&quot;offset&quot;}</td></tr>
-<tr><td class="h"><a id="L3193">3193</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if defined $$spec{&quot;limit&quot;}</td></tr>
-<tr><td class="h"><a id="L3195">3195</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $no_fixate</td></tr>
-<tr><td class="h"><a id="L3215">3215</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ref $by eq &quot;ARRAY&quot;</td></tr>
-<tr><td class="h"><a id="L3220">3220</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $col and $col =~ /$SAFE_QUALIFIED/</td></tr>
-<tr><td class="h"><a id="L3227">3227</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ref $meas eq &quot;ARRAY&quot; and scalar @{$meas;} &gt; 0</td></tr>
-<tr><td class="h"><a id="L3231">3231</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ref $m eq &quot;HASH&quot;</td></tr>
-<tr><td class="h"><a id="L3239">3239</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $VALID_AGG_FNS{$fn}</td></tr>
-<tr><td class="h"><a id="L3241">3241</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($fn ne &quot;count&quot;)</td></tr>
-<tr><td class="h"><a id="L3242">3242</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $col and length $col</td></tr>
-<tr><td class="h"><a id="L3245">3245</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $col and length $col)</td></tr>
-<tr><td class="h"><a id="L3246">3246</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $col =~ /$SAFE_QUALIFIED/</td></tr>
-<tr><td class="h"><a id="L3250">3250</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $as and length $as</td></tr>
-<tr><td class="h"><a id="L3252">3252</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $as =~ /$SAFE_IDENTIFIER/</td></tr>
-<tr><td class="h"><a id="L3255">3255</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $alias_set{$as}</td></tr>
-<tr><td class="h"><a id="L3257">3257</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $by_name_set{$as}</td></tr>
-<tr><td class="h"><a id="L3262">3262</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($fn eq &#39;count&#39; and not defined $col &amp;&amp; length $col) { }</td></tr>
+<tr><td class="h"></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">$desc ? :</td></tr>
+<tr><td class="h"><a id="L3361">3361</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if $cmp</td></tr>
+<tr><td class="h"><a id="L3367">3367</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if $$spec{&quot;offset&quot;}</td></tr>
+<tr><td class="h"><a id="L3368">3368</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if defined $$spec{&quot;limit&quot;}</td></tr>
+<tr><td class="h"><a id="L3370">3370</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $no_fixate</td></tr>
+<tr><td class="h"><a id="L3390">3390</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ref $by eq &quot;ARRAY&quot;</td></tr>
+<tr><td class="h"><a id="L3395">3395</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $col and $col =~ /$SAFE_QUALIFIED/</td></tr>
+<tr><td class="h"><a id="L3402">3402</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ref $meas eq &quot;ARRAY&quot; and scalar @{$meas;} &gt; 0</td></tr>
+<tr><td class="h"><a id="L3406">3406</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ref $m eq &quot;HASH&quot;</td></tr>
+<tr><td class="h"><a id="L3414">3414</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $VALID_AGG_FNS{$fn}</td></tr>
+<tr><td class="h"><a id="L3416">3416</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($fn ne &quot;count&quot;)</td></tr>
+<tr><td class="h"><a id="L3417">3417</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $col and length $col</td></tr>
+<tr><td class="h"><a id="L3420">3420</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $col and length $col)</td></tr>
+<tr><td class="h"><a id="L3421">3421</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $col =~ /$SAFE_QUALIFIED/</td></tr>
+<tr><td class="h"><a id="L3425">3425</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $as and length $as</td></tr>
+<tr><td class="h"><a id="L3427">3427</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $as =~ /$SAFE_IDENTIFIER/</td></tr>
+<tr><td class="h"><a id="L3430">3430</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $alias_set{$as}</td></tr>
+<tr><td class="h"><a id="L3432">3432</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $by_name_set{$as}</td></tr>
+<tr><td class="h"><a id="L3437">3437</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($fn eq &#39;count&#39; and not defined $col &amp;&amp; length $col) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($fn eq &#39;count_distinct&#39;) { }</td></tr>
-<tr><td class="h"><a id="L3273">3273</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $having)</td></tr>
-<tr><td class="h"><a id="L3274">3274</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ref $having eq &quot;HASH&quot;</td></tr>
-<tr><td class="h"><a id="L3277">3277</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $k eq &quot;-or&quot; or $k eq &quot;-and&quot;</td></tr>
-<tr><td class="h"><a id="L3279">3279</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $by_name_set{$k} or $alias_set{$k}</td></tr>
-<tr><td class="h"><a id="L3284">3284</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $sort_by)</td></tr>
-<tr><td class="h"><a id="L3285">3285</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">ref $sort_by eq &#39;ARRAY&#39; ? :</td></tr>
-<tr><td class="h"><a id="L3288">3288</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">defined $sort_dir ? :</td></tr>
-<tr><td class="h"><a id="L3290">3290</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $sort_col and $by_name_set{$sort_col} || $alias_set{$sort_col}</td></tr>
-<tr><td class="h"><a id="L3291">3291</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $sort_dir eq &quot;ASC&quot; or $sort_dir eq &quot;DESC&quot;</td></tr>
-<tr><td class="h"><a id="L3295">3295</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $limit)</td></tr>
-<tr><td class="h"><a id="L3296">3296</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (not $limit =~ /\A\d+\z/) { }</td></tr>
-<tr><td class="h"><a id="L3303">3303</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $offset)</td></tr>
-<tr><td class="h"><a id="L3304">3304</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (not $offset =~ /\A\d+\z/) { }</td></tr>
-<tr><td class="h"><a id="L3313">3313</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">defined $sort_col ? :</td></tr>
-<tr><td class="h"><a id="L3339">3339</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $join_clause</td></tr>
-<tr><td class="h"><a id="L3345">3345</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($join_clause) { }</td></tr>
+<tr><td class="h"><a id="L3448">3448</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $having)</td></tr>
+<tr><td class="h"><a id="L3449">3449</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ref $having eq &quot;HASH&quot;</td></tr>
+<tr><td class="h"><a id="L3452">3452</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $k eq &quot;-or&quot; or $k eq &quot;-and&quot;</td></tr>
+<tr><td class="h"><a id="L3454">3454</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $by_name_set{$k} or $alias_set{$k}</td></tr>
+<tr><td class="h"><a id="L3459">3459</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $sort_by)</td></tr>
+<tr><td class="h"><a id="L3460">3460</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">ref $sort_by eq &#39;ARRAY&#39; ? :</td></tr>
+<tr><td class="h"><a id="L3463">3463</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">defined $sort_dir ? :</td></tr>
+<tr><td class="h"><a id="L3465">3465</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $sort_col and $by_name_set{$sort_col} || $alias_set{$sort_col}</td></tr>
+<tr><td class="h"><a id="L3466">3466</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $sort_dir eq &quot;ASC&quot; or $sort_dir eq &quot;DESC&quot;</td></tr>
+<tr><td class="h"><a id="L3470">3470</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $limit)</td></tr>
+<tr><td class="h"><a id="L3471">3471</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (not $limit =~ /\A\d+\z/) { }</td></tr>
+<tr><td class="h"><a id="L3478">3478</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $offset)</td></tr>
+<tr><td class="h"><a id="L3479">3479</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (not $offset =~ /\A\d+\z/) { }</td></tr>
+<tr><td class="h"><a id="L3488">3488</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">defined $sort_col ? :</td></tr>
+<tr><td class="h"><a id="L3514">3514</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $join_clause</td></tr>
+<tr><td class="h"><a id="L3520">3520</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($join_clause) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif (($$self{&#39;type&#39;} // &#39;&#39;) eq &#39;CSV&#39; and not $$self{&#39;no_entry&#39;}) { }</td></tr>
-<tr><td class="h"><a id="L3346">3346</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if $where</td></tr>
-<tr><td class="h"><a id="L3350">3350</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if $where</td></tr>
-<tr><td class="h"><a id="L3352">3352</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $where</td></tr>
-<tr><td class="h"><a id="L3356">3356</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if @by_names</td></tr>
-<tr><td class="h"><a id="L3360">3360</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $hav = $$spec{&quot;having&quot;})</td></tr>
-<tr><td class="h"><a id="L3363">3363</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if ($hfrag)</td></tr>
-<tr><td class="h"><a id="L3370">3370</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $s = $$spec{&#39;sort&#39;}) { }</td></tr>
+<tr><td class="h"><a id="L3521">3521</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if $where</td></tr>
+<tr><td class="h"><a id="L3525">3525</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if $where</td></tr>
+<tr><td class="h"><a id="L3527">3527</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $where</td></tr>
+<tr><td class="h"><a id="L3531">3531</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if @by_names</td></tr>
+<tr><td class="h"><a id="L3535">3535</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $hav = $$spec{&quot;having&quot;})</td></tr>
+<tr><td class="h"><a id="L3538">3538</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if ($hfrag)</td></tr>
+<tr><td class="h"><a id="L3545">3545</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $s = $$spec{&#39;sort&#39;}) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif (@by_names) { }</td></tr>
-<tr><td class="h"><a id="L3377">3377</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $$spec{&#39;limit&#39;}) { }</td></tr>
+<tr><td class="h"><a id="L3552">3552</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $$spec{&#39;limit&#39;}) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif (defined $$spec{&#39;offset&#39;}) { }</td></tr>
-<tr><td class="h"><a id="L3384">3384</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if $dbh and ($$dbh{&quot;Driver&quot;}{&quot;Name&quot;} // &quot;&quot;) eq &quot;SQLite&quot; or ($$self{&quot;_dialect&quot;} // &quot;&quot;) eq &quot;sqlite&quot;</td></tr>
-<tr><td class="h"><a id="L3386">3386</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $$spec{&quot;offset&quot;})</td></tr>
-<tr><td class="h"><a id="L3421">3421</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">defined $agg_expr ? :</td></tr>
-<tr><td class="h"><a id="L3423">3423</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (ref $val eq &#39;HASH&#39;) { }</td></tr>
+<tr><td class="h"><a id="L3559">3559</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if $dbh and ($$dbh{&quot;Driver&quot;}{&quot;Name&quot;} // &quot;&quot;) eq &quot;SQLite&quot; or ($$self{&quot;_dialect&quot;} // &quot;&quot;) eq &quot;sqlite&quot;</td></tr>
+<tr><td class="h"><a id="L3561">3561</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $$spec{&quot;offset&quot;})</td></tr>
+<tr><td class="h"><a id="L3596">3596</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">defined $agg_expr ? :</td></tr>
+<tr><td class="h"><a id="L3598">3598</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (ref $val eq &#39;HASH&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif (ref $val) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif (not defined $val) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($val =~ /[%_]/) { }</td></tr>
-<tr><td class="h"><a id="L3426">3426</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($op eq &#39;-in&#39; or $op eq &#39;-not_in&#39;) { }</td></tr>
+<tr><td class="h"><a id="L3601">3601</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($op eq &#39;-in&#39; or $op eq &#39;-not_in&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($op eq &#39;-between&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($op eq &#39;-like&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($op eq &#39;-not_like&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($op eq &#39;!=&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($op =~ /\A[&lt;&gt;]=?\z/) { }</td></tr>
-<tr><td class="h"><a id="L3427">3427</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$op eq &#39;-in&#39; ? :</td></tr>
-<tr><td class="h"><a id="L3441">3441</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (not defined $operand) { }</td></tr>
-<tr><td class="h"><a id="L3479">3479</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($k eq &#39;-or&#39;) { }</td></tr>
+<tr><td class="h"><a id="L3602">3602</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$op eq &#39;-in&#39; ? :</td></tr>
+<tr><td class="h"><a id="L3616">3616</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (not defined $operand) { }</td></tr>
+<tr><td class="h"><a id="L3654">3654</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($k eq &#39;-or&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($k eq &#39;-and&#39;) { }</td></tr>
-<tr><td class="h"><a id="L3482">3482</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($self-&gt;_match_criteria($row, $sub))</td></tr>
-<tr><td class="h"><a id="L3487">3487</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $found</td></tr>
-<tr><td class="h"><a id="L3490">3490</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $self-&gt;_match_criteria($row, $sub)</td></tr>
-<tr><td class="h"><a id="L3493">3493</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">exists $row-&gt;{$k} ? :</td></tr>
-<tr><td class="h"><a id="L3494">3494</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $self-&gt;_match_criterion($row_val, $$criteria{$k}, $k)</td></tr>
-<tr><td class="h"><a id="L3516">3516</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">$col &amp;&amp; $$self{&#39;_schema&#39;} ? :</td></tr>
-<tr><td class="h"><a id="L3518">3518</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">$t eq &#39;INTEGER&#39; || $t eq &#39;REAL&#39; ? :</td></tr>
-<tr><td class="h"><a id="L3528">3528</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">exists $$row{$$_{&#39;name&#39;}} ? :</td></tr>
-<tr><td class="h"><a id="L3532">3532</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless (exists $groups{$key})</td></tr>
-<tr><td class="h"><a id="L3537">3537</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">exists $$row{$$b{&#39;name&#39;}} ? :</td></tr>
-<tr><td class="h"><a id="L3543">3543</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($fn eq &#39;sum&#39;) { }</td></tr>
+<tr><td class="h"><a id="L3657">3657</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($self-&gt;_match_criteria($row, $sub))</td></tr>
+<tr><td class="h"><a id="L3662">3662</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $found</td></tr>
+<tr><td class="h"><a id="L3665">3665</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $self-&gt;_match_criteria($row, $sub)</td></tr>
+<tr><td class="h"><a id="L3668">3668</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">exists $row-&gt;{$k} ? :</td></tr>
+<tr><td class="h"><a id="L3669">3669</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $self-&gt;_match_criterion($row_val, $$criteria{$k}, $k)</td></tr>
+<tr><td class="h"><a id="L3691">3691</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">$col &amp;&amp; $$self{&#39;_schema&#39;} ? :</td></tr>
+<tr><td class="h"><a id="L3693">3693</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">$t eq &#39;INTEGER&#39; || $t eq &#39;REAL&#39; ? :</td></tr>
+<tr><td class="h"><a id="L3703">3703</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">exists $$row{$$_{&#39;name&#39;}} ? :</td></tr>
+<tr><td class="h"><a id="L3707">3707</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless (exists $groups{$key})</td></tr>
+<tr><td class="h"><a id="L3712">3712</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">exists $$row{$$b{&#39;name&#39;}} ? :</td></tr>
+<tr><td class="h"><a id="L3718">3718</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($fn eq &#39;sum&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($fn eq &#39;avg&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($fn eq &#39;min&#39; or $fn eq &#39;max&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($fn eq &#39;count&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">elsif ($fn eq &#39;count_distinct&#39;) { }</td></tr>
-<tr><td class="h"><a id="L3566">3566</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">defined $col &amp;&amp; exists $row-&gt;{$col} ? :</td></tr>
-<tr><td class="h"><a id="L3568">3568</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($fn eq &#39;sum&#39;) { }</td></tr>
+<tr><td class="h"><a id="L3741">3741</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">defined $col &amp;&amp; exists $row-&gt;{$col} ? :</td></tr>
+<tr><td class="h"><a id="L3743">3743</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($fn eq &#39;sum&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($fn eq &#39;avg&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($fn eq &#39;min&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($fn eq &#39;max&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($fn eq &#39;count&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">elsif ($fn eq &#39;count_distinct&#39;) { }</td></tr>
-<tr><td class="h"><a id="L3569">3569</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $val and length $val and &amp;Scalar::Util::looks_like_number($val)) { }</td></tr>
+<tr><td class="h"><a id="L3744">3744</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $val and length $val and &amp;Scalar::Util::looks_like_number($val)) { }</td></tr>
 <tr><td class="h"></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">elsif (defined $val and length $val) { }</td></tr>
-<tr><td class="h"><a id="L3576">3576</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $val and length $val and &amp;Scalar::Util::looks_like_number($val)) { }</td></tr>
+<tr><td class="h"><a id="L3751">3751</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $val and length $val and &amp;Scalar::Util::looks_like_number($val)) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif (defined $val and length $val) { }</td></tr>
-<tr><td class="h"><a id="L3584">3584</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $val)</td></tr>
-<tr><td class="h"><a id="L3585">3585</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">$numeric ? :</td></tr>
+<tr><td class="h"><a id="L3759">3759</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $val)</td></tr>
+<tr><td class="h"><a id="L3760">3760</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">$numeric ? :</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (not defined $$acc{&#39;val&#39;}) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($numeric ? $val &lt; $$acc{&#39;val&#39;} : $val lt $$acc{&#39;val&#39;}) { }</td></tr>
-<tr><td class="h"><a id="L3592">3592</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if (defined $val)</td></tr>
-<tr><td class="h"><a id="L3593">3593</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">$numeric ? :</td></tr>
+<tr><td class="h"><a id="L3767">3767</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if (defined $val)</td></tr>
+<tr><td class="h"><a id="L3768">3768</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">$numeric ? :</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (not defined $$acc{&#39;val&#39;}) { }</td></tr>
 <tr><td class="h"></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">elsif ($numeric ? $val &gt; $$acc{&#39;val&#39;} : $val gt $$acc{&#39;val&#39;}) { }</td></tr>
-<tr><td class="h"><a id="L3600">3600</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $col) { }</td></tr>
-<tr><td class="h"><a id="L3601">3601</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if defined $val</td></tr>
-<tr><td class="h"><a id="L3606">3606</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if defined $val</td></tr>
-<tr><td class="h"><a id="L3627">3627</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($fn eq &#39;sum&#39;) { }</td></tr>
+<tr><td class="h"><a id="L3775">3775</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $col) { }</td></tr>
+<tr><td class="h"><a id="L3776">3776</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if defined $val</td></tr>
+<tr><td class="h"><a id="L3781">3781</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if defined $val</td></tr>
+<tr><td class="h"><a id="L3802">3802</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($fn eq &#39;sum&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($fn eq &#39;avg&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($fn eq &#39;min&#39; or $fn eq &#39;max&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($fn eq &#39;count&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">elsif ($fn eq &#39;count_distinct&#39;) { }</td></tr>
-<tr><td class="h"><a id="L3628">3628</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$acc{&quot;bad&quot;} and not $warned{$as}++)</td></tr>
-<tr><td class="h"><a id="L3633">3633</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$acc{&quot;bad&quot;} and not $warned{$as}++)</td></tr>
-<tr><td class="h"><a id="L3636">3636</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$$acc{&#39;cnt&#39;} ? :</td></tr>
-<tr><td class="h"><a id="L3732">3732</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if $column eq &quot;DESTROY&quot;</td></tr>
-<tr><td class="h"><a id="L3733">3733</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $column =~ /\A_/</td></tr>
-<tr><td class="h"><a id="L3735">3735</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless my $self = shift()</td></tr>
-<tr><td class="h"><a id="L3737">3737</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless ref $self</td></tr>
-<tr><td class="h"><a id="L3740">3740</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if exists $self-&gt;{&#39;auto_load&#39;} and not $$self{&quot;auto_load&quot;}</td></tr>
-<tr><td class="h"><a id="L3743">3743</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $column =~ /$SAFE_IDENTIFIER/</td></tr>
-<tr><td class="h"><a id="L3748">3748</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (ref $_[0] eq &#39;HASH&#39;) { }</td></tr>
+<tr><td class="h"><a id="L3803">3803</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$acc{&quot;bad&quot;} and not $warned{$as}++)</td></tr>
+<tr><td class="h"><a id="L3808">3808</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$acc{&quot;bad&quot;} and not $warned{$as}++)</td></tr>
+<tr><td class="h"><a id="L3811">3811</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$$acc{&#39;cnt&#39;} ? :</td></tr>
+<tr><td class="h"><a id="L3907">3907</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if $column eq &quot;DESTROY&quot;</td></tr>
+<tr><td class="h"><a id="L3908">3908</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $column =~ /\A_/</td></tr>
+<tr><td class="h"><a id="L3910">3910</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless my $self = shift()</td></tr>
+<tr><td class="h"><a id="L3912">3912</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless ref $self</td></tr>
+<tr><td class="h"><a id="L3915">3915</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if exists $self-&gt;{&#39;auto_load&#39;} and not $$self{&quot;auto_load&quot;}</td></tr>
+<tr><td class="h"><a id="L3918">3918</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $column =~ /$SAFE_IDENTIFIER/</td></tr>
+<tr><td class="h"><a id="L3923">3923</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (ref $_[0] eq &#39;HASH&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif (scalar(@_) % 2 == 0) { }</td></tr>
 <tr><td class="h"></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">elsif (scalar @_ == 1) { }</td></tr>
-<tr><td class="h"><a id="L3754">3754</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($$self{&quot;no_entry&quot;} and not $$self{&quot;berkeley&quot;})</td></tr>
-<tr><td class="h"><a id="L3760">3760</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($$self{&quot;berkeley&quot;})</td></tr>
-<tr><td class="h"><a id="L3761">3761</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if (my $id = $$self{&quot;id&quot;})</td></tr>
-<tr><td class="h"><a id="L3767">3767</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless defined $$self{&quot;type&quot;}</td></tr>
-<tr><td class="h"><a id="L3772">3772</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (wantarray and not $distinct) { }</td></tr>
-<tr><td class="h"><a id="L3773">3773</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (scalar keys %params == 0 and my $data = $$self{&quot;data&quot;})</td></tr>
-<tr><td class="h"><a id="L3778">3778</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">ref $data eq &#39;ARRAY&#39; ? :</td></tr>
-<tr><td class="h"><a id="L3779">3779</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">exists $_-&gt;{$column} ? :</td></tr>
-<tr><td class="h"><a id="L3781">3781</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if ($$self{&quot;data&quot;} and not $$self{$table} and not $self-&gt;_has_complex_criteria(\%params))</td></tr>
-<tr><td class="h"><a id="L3784">3784</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">ref $$self{&#39;data&#39;} eq &#39;ARRAY&#39; ? :</td></tr>
-<tr><td class="h"><a id="L3785">3785</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">exists $_-&gt;{$column} ? :</td></tr>
-<tr><td class="h"><a id="L3788">3788</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">exists $row-&gt;{$_} ? :</td></tr>
-<tr><td class="h"><a id="L3792">3792</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&#39;type&#39;} eq &#39;CSV&#39; and not $$self{&#39;no_entry&#39;}) { }</td></tr>
-<tr><td class="h"><a id="L3799">3799</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $data = $$self{&quot;data&quot;})</td></tr>
-<tr><td class="h"><a id="L3803">3803</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&#39;no_entry&#39;}) { }</td></tr>
+<tr><td class="h"><a id="L3929">3929</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($$self{&quot;no_entry&quot;} and not $$self{&quot;berkeley&quot;})</td></tr>
+<tr><td class="h"><a id="L3935">3935</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($$self{&quot;berkeley&quot;})</td></tr>
+<tr><td class="h"><a id="L3936">3936</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if (my $id = $$self{&quot;id&quot;})</td></tr>
+<tr><td class="h"><a id="L3942">3942</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless defined $$self{&quot;type&quot;}</td></tr>
+<tr><td class="h"><a id="L3947">3947</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (wantarray and not $distinct) { }</td></tr>
+<tr><td class="h"><a id="L3948">3948</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (scalar keys %params == 0 and my $data = $$self{&quot;data&quot;})</td></tr>
+<tr><td class="h"><a id="L3953">3953</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">ref $data eq &#39;ARRAY&#39; ? :</td></tr>
+<tr><td class="h"><a id="L3954">3954</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">exists $_-&gt;{$column} ? :</td></tr>
+<tr><td class="h"><a id="L3956">3956</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if ($$self{&quot;data&quot;} and not $$self{$table} and not $self-&gt;_has_complex_criteria(\%params))</td></tr>
+<tr><td class="h"><a id="L3959">3959</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">ref $$self{&#39;data&#39;} eq &#39;ARRAY&#39; ? :</td></tr>
+<tr><td class="h"><a id="L3960">3960</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">exists $_-&gt;{$column} ? :</td></tr>
+<tr><td class="h"><a id="L3963">3963</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">exists $row-&gt;{$_} ? :</td></tr>
+<tr><td class="h"><a id="L3967">3967</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&#39;type&#39;} eq &#39;CSV&#39; and not $$self{&#39;no_entry&#39;}) { }</td></tr>
+<tr><td class="h"><a id="L3974">3974</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $data = $$self{&quot;data&quot;})</td></tr>
+<tr><td class="h"><a id="L3978">3978</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&#39;no_entry&#39;}) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif (scalar keys %params == 1 and defined(my $key = $params{&#39;entry&#39;})) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif (scalar keys %params == 0) { }</td></tr>
-<tr><td class="h"><a id="L3806">3806</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if (defined $key)</td></tr>
-<tr><td class="h"><a id="L3810">3810</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless exists $row-&gt;{$key} and defined $$row{$key} and $$row{$key} eq $value</td></tr>
-<tr><td class="h"><a id="L3811">3811</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">exists $row-&gt;{$column} ? :</td></tr>
-<tr><td class="h"><a id="L3812">3812</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">defined $rc ? :</td></tr>
-<tr><td class="h"><a id="L3822">3822</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (exists $data-&gt;{$key} and defined(my $hash = $$data{$key}))</td></tr>
-<tr><td class="h"><a id="L3823">3823</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless (exists $hash-&gt;{$column})</td></tr>
-<tr><td class="h"><a id="L3828">3828</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $rc) { }</td></tr>
-<tr><td class="h"><a id="L3835">3835</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if (wantarray)</td></tr>
-<tr><td class="h"><a id="L3836">3836</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if ($distinct)</td></tr>
-<tr><td class="h"><a id="L3841">3841</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">exists $r-&gt;{$column} ? :</td></tr>
-<tr><td class="h"><a id="L3842">3842</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if defined $v</td></tr>
-<tr><td class="h"><a id="L3853">3853</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">exists $v-&gt;{$column} ? :</td></tr>
-<tr><td class="h"><a id="L3859">3859</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless exists $row-&gt;{$key} and defined $$row{$key} and $$row{$key} eq $value</td></tr>
-<tr><td class="h"><a id="L3860">3860</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless exists $row-&gt;{$column}</td></tr>
-<tr><td class="h"><a id="L3861">3861</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if (my $rc = $$row{$column})</td></tr>
-<tr><td class="h"><a id="L3871">3871</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&#39;type&#39;} eq &#39;CSV&#39; and not $$self{&#39;no_entry&#39;}) { }</td></tr>
-<tr><td class="h"><a id="L3882">3882</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $k =~ /$SAFE_QUALIFIED/</td></tr>
-<tr><td class="h"><a id="L3885">3885</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">defined $value ? :</td></tr>
-<tr><td class="h"><a id="L3886">3886</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $value) { }</td></tr>
-<tr><td class="h"><a id="L3887">3887</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$done_where ? :</td></tr>
-<tr><td class="h"><a id="L3891">3891</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">$done_where ? :</td></tr>
-<tr><td class="h"><a id="L3895">3895</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (wantarray) { }</td></tr>
-<tr><td class="h"><a id="L3900">3900</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (scalar @args and $args[0]) { }</td></tr>
-<tr><td class="h"><a id="L3907">3907</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($cache = $$self{&#39;cache&#39;}) { }</td></tr>
-<tr><td class="h"><a id="L3908">3908</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (wantarray)</td></tr>
-<tr><td class="h"><a id="L3911">3911</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $args[0]) { }</td></tr>
-<tr><td class="h"><a id="L3916">3916</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $rc = $cache-&gt;get($key))</td></tr>
-<tr><td class="h"><a id="L3918">3918</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">wantarray ? :</td></tr>
-<tr><td class="h"><a id="L3925">3925</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $sth-&gt;execute(@args)</td></tr>
-<tr><td class="h"><a id="L3927">3927</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (wantarray)</td></tr>
-<tr><td class="h"><a id="L3931">3931</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($cache)</td></tr>
-<tr><td class="h"><a id="L3934">3934</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if scalar @rc and not $$self{&quot;no_fixate&quot;}</td></tr>
-<tr><td class="h"><a id="L3939">3939</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($cache)</td></tr>
-<tr><td class="h"><a id="L3948">3948</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if (defined $^V and $^V ge &quot;v5.14.0&quot;)</td></tr>
-<tr><td class="h"><a id="L3949">3949</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ${^GLOBAL_PHASE} eq &quot;DESTRUCT&quot;</td></tr>
-<tr><td class="h"><a id="L3956">3956</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $$self{&quot;_temp_fh&quot;})</td></tr>
-<tr><td class="h"><a id="L3962">3962</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if defined $temp_path and -f $temp_path</td></tr>
-<tr><td class="h"><a id="L3967">3967</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (my $redis = delete $self-&gt;{&#39;_redis&#39;})</td></tr>
-<tr><td class="h"><a id="L3975">3975</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $dbh = delete $self-&gt;{$table_name})</td></tr>
-<tr><td class="h"><a id="L3976">3976</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if $dbh-&gt;can(&quot;disconnect&quot;)</td></tr>
-<tr><td class="h"><a id="L3977">3977</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if $dbh-&gt;can(&quot;finish&quot;)</td></tr>
-<tr><td class="h"><a id="L3981">3981</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&quot;berkeley&quot;})</td></tr>
-<tr><td class="h"><a id="L4000">4000</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">ref $join_spec eq &#39;ARRAY&#39; ? :</td></tr>
-<tr><td class="h"><a id="L4005">4005</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless my $jtable = $$j{&quot;table&quot;}</td></tr>
-<tr><td class="h"><a id="L4006">4006</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $jtable =~ /$SAFE_QUALIFIED/</td></tr>
-<tr><td class="h"><a id="L4008">4008</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless my $on = $$j{&quot;on&quot;}</td></tr>
-<tr><td class="h"><a id="L4009">4009</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $VALID_JOIN_TYPES{$type}</td></tr>
-<tr><td class="h"><a id="L4025">4025</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if defined $_</td></tr>
-<tr><td class="h"><a id="L4026">4026</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless @non_null</td></tr>
-<tr><td class="h"><a id="L4027">4027</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if &amp;all(sub {
+<tr><td class="h"><a id="L3981">3981</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if (defined $key)</td></tr>
+<tr><td class="h"><a id="L3985">3985</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless exists $row-&gt;{$key} and defined $$row{$key} and $$row{$key} eq $value</td></tr>
+<tr><td class="h"><a id="L3986">3986</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">exists $row-&gt;{$column} ? :</td></tr>
+<tr><td class="h"><a id="L3987">3987</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">defined $rc ? :</td></tr>
+<tr><td class="h"><a id="L3997">3997</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (exists $data-&gt;{$key} and defined(my $hash = $$data{$key}))</td></tr>
+<tr><td class="h"><a id="L3998">3998</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless (exists $hash-&gt;{$column})</td></tr>
+<tr><td class="h"><a id="L4003">4003</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $rc) { }</td></tr>
+<tr><td class="h"><a id="L4010">4010</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if (wantarray)</td></tr>
+<tr><td class="h"><a id="L4011">4011</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if ($distinct)</td></tr>
+<tr><td class="h"><a id="L4016">4016</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">exists $r-&gt;{$column} ? :</td></tr>
+<tr><td class="h"><a id="L4017">4017</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if defined $v</td></tr>
+<tr><td class="h"><a id="L4028">4028</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">exists $v-&gt;{$column} ? :</td></tr>
+<tr><td class="h"><a id="L4034">4034</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless exists $row-&gt;{$key} and defined $$row{$key} and $$row{$key} eq $value</td></tr>
+<tr><td class="h"><a id="L4035">4035</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless exists $row-&gt;{$column}</td></tr>
+<tr><td class="h"><a id="L4036">4036</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if (my $rc = $$row{$column})</td></tr>
+<tr><td class="h"><a id="L4046">4046</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&#39;type&#39;} eq &#39;CSV&#39; and not $$self{&#39;no_entry&#39;}) { }</td></tr>
+<tr><td class="h"><a id="L4057">4057</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $k =~ /$SAFE_QUALIFIED/</td></tr>
+<tr><td class="h"><a id="L4060">4060</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">defined $value ? :</td></tr>
+<tr><td class="h"><a id="L4061">4061</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $value) { }</td></tr>
+<tr><td class="h"><a id="L4062">4062</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$done_where ? :</td></tr>
+<tr><td class="h"><a id="L4066">4066</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">$done_where ? :</td></tr>
+<tr><td class="h"><a id="L4070">4070</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (wantarray) { }</td></tr>
+<tr><td class="h"><a id="L4075">4075</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (scalar @args and $args[0]) { }</td></tr>
+<tr><td class="h"><a id="L4082">4082</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($cache = $$self{&#39;cache&#39;}) { }</td></tr>
+<tr><td class="h"><a id="L4083">4083</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (wantarray)</td></tr>
+<tr><td class="h"><a id="L4086">4086</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $args[0]) { }</td></tr>
+<tr><td class="h"><a id="L4091">4091</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $rc = $cache-&gt;get($key))</td></tr>
+<tr><td class="h"><a id="L4093">4093</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">wantarray ? :</td></tr>
+<tr><td class="h"><a id="L4100">4100</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless $sth-&gt;execute(@args)</td></tr>
+<tr><td class="h"><a id="L4102">4102</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (wantarray)</td></tr>
+<tr><td class="h"><a id="L4106">4106</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($cache)</td></tr>
+<tr><td class="h"><a id="L4109">4109</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if scalar @rc and not $$self{&quot;no_fixate&quot;}</td></tr>
+<tr><td class="h"><a id="L4114">4114</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($cache)</td></tr>
+<tr><td class="h"><a id="L4123">4123</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if (defined $^V and $^V ge &quot;v5.14.0&quot;)</td></tr>
+<tr><td class="h"><a id="L4124">4124</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ${^GLOBAL_PHASE} eq &quot;DESTRUCT&quot;</td></tr>
+<tr><td class="h"><a id="L4131">4131</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $$self{&quot;_temp_fh&quot;})</td></tr>
+<tr><td class="h"><a id="L4137">4137</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if defined $temp_path and -f $temp_path</td></tr>
+<tr><td class="h"><a id="L4142">4142</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if (my $redis = delete $self-&gt;{&#39;_redis&#39;})</td></tr>
+<tr><td class="h"><a id="L4150">4150</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $dbh = delete $self-&gt;{$table_name})</td></tr>
+<tr><td class="h"><a id="L4151">4151</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if $dbh-&gt;can(&quot;disconnect&quot;)</td></tr>
+<tr><td class="h"><a id="L4152">4152</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if $dbh-&gt;can(&quot;finish&quot;)</td></tr>
+<tr><td class="h"><a id="L4156">4156</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$self{&quot;berkeley&quot;})</td></tr>
+<tr><td class="h"><a id="L4175">4175</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">ref $join_spec eq &#39;ARRAY&#39; ? :</td></tr>
+<tr><td class="h"><a id="L4180">4180</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless my $jtable = $$j{&quot;table&quot;}</td></tr>
+<tr><td class="h"><a id="L4181">4181</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $jtable =~ /$SAFE_QUALIFIED/</td></tr>
+<tr><td class="h"><a id="L4183">4183</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless my $on = $$j{&quot;on&quot;}</td></tr>
+<tr><td class="h"><a id="L4184">4184</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $VALID_JOIN_TYPES{$type}</td></tr>
+<tr><td class="h"><a id="L4200">4200</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if defined $_</td></tr>
+<tr><td class="h"><a id="L4201">4201</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless @non_null</td></tr>
+<tr><td class="h"><a id="L4202">4202</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if &amp;all(sub {
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$_ =~ /$INFER_INT_RE/;
 }
 , @non_null)</td></tr>
-<tr><td class="h"><a id="L4028">4028</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if &amp;all(sub {
+<tr><td class="h"><a id="L4203">4203</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if &amp;all(sub {
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$_ =~ /$INFER_REAL_RE/;
 }
 , @non_null)</td></tr>
-<tr><td class="h"><a id="L4029">4029</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if &amp;all(sub {
+<tr><td class="h"><a id="L4204">4204</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if &amp;all(sub {
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$_ =~ /$INFER_TS_RE/;
 }
 , @non_null)</td></tr>
-<tr><td class="h"><a id="L4030">4030</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if &amp;all(sub {
+<tr><td class="h"><a id="L4205">4205</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if &amp;all(sub {
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$_ =~ /$INFER_DATE_RE/;
 }
 , @non_null)</td></tr>
-<tr><td class="h"><a id="L4053">4053</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $sb</td></tr>
-<tr><td class="h"><a id="L4054">4054</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">ref $sb eq &#39;ARRAY&#39; ? :</td></tr>
-<tr><td class="h"><a id="L4055">4055</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">defined $dir ? :</td></tr>
-<tr><td class="h"><a id="L4056">4056</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless (defined $col and $col =~ /$SAFE_QUALIFIED/)</td></tr>
-<tr><td class="h"><a id="L4060">4060</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ($dir eq &quot;ASC&quot; or $dir eq &quot;DESC&quot;)</td></tr>
-<tr><td class="h"><a id="L4072">4072</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $params</td></tr>
-<tr><td class="h"><a id="L4074">4074</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if exists $params-&gt;{&#39;-or&#39;} or exists $params-&gt;{&#39;-and&#39;}</td></tr>
-<tr><td class="h"><a id="L4083">4083</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">&amp;any(sub {
+<tr><td class="h"><a id="L4228">4228</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $sb</td></tr>
+<tr><td class="h"><a id="L4229">4229</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">ref $sb eq &#39;ARRAY&#39; ? :</td></tr>
+<tr><td class="h"><a id="L4230">4230</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">defined $dir ? :</td></tr>
+<tr><td class="h"><a id="L4231">4231</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless (defined $col and $col =~ /$SAFE_QUALIFIED/)</td></tr>
+<tr><td class="h"><a id="L4235">4235</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ($dir eq &quot;ASC&quot; or $dir eq &quot;DESC&quot;)</td></tr>
+<tr><td class="h"><a id="L4247">4247</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $params</td></tr>
+<tr><td class="h"><a id="L4249">4249</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if exists $params-&gt;{&#39;-or&#39;} or exists $params-&gt;{&#39;-and&#39;}</td></tr>
+<tr><td class="h"><a id="L4258">4258</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">&amp;any(sub {
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ref $_;
 }
 , values %{$params;}) ? :</td></tr>
-<tr><td class="h"><a id="L4134">4134</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $or_list or defined $and_list) { }</td></tr>
-<tr><td class="h"><a id="L4142">4142</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($or_list)</td></tr>
-<tr><td class="h"><a id="L4146">4146</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if ($s)</td></tr>
-<tr><td class="h"><a id="L4151">4151</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (@sub_clauses)</td></tr>
-<tr><td class="h"><a id="L4156">4156</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($and_list)</td></tr>
-<tr><td class="h"><a id="L4160">4160</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if ($s)</td></tr>
-<tr><td class="h"><a id="L4165">4165</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (@sub_clauses)</td></tr>
-<tr><td class="h"><a id="L4172">4172</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($more)</td></tr>
-<tr><td class="h"><a id="L4194">4194</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $col =~ /$SAFE_QUALIFIED/</td></tr>
-<tr><td class="h"><a id="L4197">4197</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (ref $val eq &#39;HASH&#39;) { }</td></tr>
+<tr><td class="h"><a id="L4309">4309</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (defined $or_list or defined $and_list) { }</td></tr>
+<tr><td class="h"><a id="L4317">4317</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($or_list)</td></tr>
+<tr><td class="h"><a id="L4321">4321</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if ($s)</td></tr>
+<tr><td class="h"><a id="L4326">4326</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (@sub_clauses)</td></tr>
+<tr><td class="h"><a id="L4331">4331</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($and_list)</td></tr>
+<tr><td class="h"><a id="L4335">4335</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if ($s)</td></tr>
+<tr><td class="h"><a id="L4340">4340</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (@sub_clauses)</td></tr>
+<tr><td class="h"><a id="L4347">4347</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($more)</td></tr>
+<tr><td class="h"><a id="L4369">4369</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $col =~ /$SAFE_QUALIFIED/</td></tr>
+<tr><td class="h"><a id="L4372">4372</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (ref $val eq &#39;HASH&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif (ref $val) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif (not defined $val) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($val =~ /[%_]/) { }</td></tr>
-<tr><td class="h"><a id="L4200">4200</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($op eq &#39;-in&#39; or $op eq &#39;-not_in&#39;) { }</td></tr>
+<tr><td class="h"><a id="L4375">4375</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($op eq &#39;-in&#39; or $op eq &#39;-not_in&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($op eq &#39;-between&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($op eq &#39;-like&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($op eq &#39;-not_like&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($op eq &#39;!=&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($op =~ /\A[&lt;&gt;]=?\z/) { }</td></tr>
-<tr><td class="h"><a id="L4201">4201</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$op eq &#39;-in&#39; ? :</td></tr>
-<tr><td class="h"><a id="L4215">4215</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (not defined $operand) { }</td></tr>
-<tr><td class="h"><a id="L4262">4262</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (delete $params-&gt;{&#39;join&#39;})</td></tr>
-<tr><td class="h"><a id="L4267">4267</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $_ eq &quot;-or&quot;</td></tr>
+<tr><td class="h"><a id="L4376">4376</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$op eq &#39;-in&#39; ? :</td></tr>
+<tr><td class="h"><a id="L4390">4390</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (not defined $operand) { }</td></tr>
+<tr><td class="h"><a id="L4437">4437</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (delete $params-&gt;{&#39;join&#39;})</td></tr>
+<tr><td class="h"><a id="L4442">4442</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $_ eq &quot;-or&quot;</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (&amp;any(sub {
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$_ eq &quot;-and&quot; unless $_ eq &quot;-or&quot;;
 }
 , keys %{$params;}))</td></tr>
-<tr><td class="h"><a id="L4275">4275</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (@cols) { }</td></tr>
-<tr><td class="h"><a id="L4282">4282</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ($self-&gt;_match_criterion($$row{$col}, $$params{$col}, $col))</td></tr>
-<tr><td class="h"><a id="L4287">4287</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $match</td></tr>
-<tr><td class="h"><a id="L4314">4314</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $pattern eq &quot;%&quot;</td></tr>
-<tr><td class="h"><a id="L4322">4322</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if index($lc_pat, &quot;%&quot;) == -1 and index($lc_pat, &quot;_&quot;) == -1</td></tr>
-<tr><td class="h"><a id="L4327">4327</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (index($lc_pat, &quot;_&quot;) == -1)</td></tr>
-<tr><td class="h"><a id="L4332">4332</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($first_pct == 0 and $last_pct == 0)</td></tr>
-<tr><td class="h"><a id="L4340">4340</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($last_pct == $pat_len - 1 and $first_pct == $pat_len - 1)</td></tr>
-<tr><td class="h"><a id="L4349">4349</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($first_pct == 0 and $last_pct == $pat_len - 1 and $pat_len &gt;= 3)</td></tr>
-<tr><td class="h"><a id="L4351">4351</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (index($needle, &quot;%&quot;) == -1)</td></tr>
-<tr><td class="h"><a id="L4370">4370</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($pc eq &#39;%&#39;) { }</td></tr>
-<tr><td class="h"><a id="L4373">4373</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$$prev[$j] || $$curr[$j - 1] ? :</td></tr>
-<tr><td class="h"><a id="L4377">4377</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$$prev[$j - 1] &amp;&amp; ($pc eq &#39;_&#39; || $pc eq substr($lc_str, $j - 1, 1)) ? :</td></tr>
-<tr><td class="h"><a id="L4395">4395</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$col &amp;&amp; $$self{&#39;_schema&#39;} ? :</td></tr>
-<tr><td class="h"><a id="L4396">4396</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $t eq &quot;INTEGER&quot;</td></tr>
-<tr><td class="h"><a id="L4399">4399</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (ref $crit_val eq &quot;HASH&quot;)</td></tr>
-<tr><td class="h"><a id="L4402">4402</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($op eq &#39;-in&#39;) { }</td></tr>
+<tr><td class="h"><a id="L4450">4450</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (@cols) { }</td></tr>
+<tr><td class="h"><a id="L4457">4457</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless ($self-&gt;_match_criterion($$row{$col}, $$params{$col}, $col))</td></tr>
+<tr><td class="h"><a id="L4462">4462</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $match</td></tr>
+<tr><td class="h"><a id="L4489">4489</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $pattern eq &quot;%&quot;</td></tr>
+<tr><td class="h"><a id="L4497">4497</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if index($lc_pat, &quot;%&quot;) == -1 and index($lc_pat, &quot;_&quot;) == -1</td></tr>
+<tr><td class="h"><a id="L4502">4502</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (index($lc_pat, &quot;_&quot;) == -1)</td></tr>
+<tr><td class="h"><a id="L4507">4507</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($first_pct == 0 and $last_pct == 0)</td></tr>
+<tr><td class="h"><a id="L4515">4515</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($last_pct == $pat_len - 1 and $first_pct == $pat_len - 1)</td></tr>
+<tr><td class="h"><a id="L4524">4524</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($first_pct == 0 and $last_pct == $pat_len - 1 and $pat_len &gt;= 3)</td></tr>
+<tr><td class="h"><a id="L4526">4526</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (index($needle, &quot;%&quot;) == -1)</td></tr>
+<tr><td class="h"><a id="L4545">4545</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($pc eq &#39;%&#39;) { }</td></tr>
+<tr><td class="h"><a id="L4548">4548</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$$prev[$j] || $$curr[$j - 1] ? :</td></tr>
+<tr><td class="h"><a id="L4552">4552</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$$prev[$j - 1] &amp;&amp; ($pc eq &#39;_&#39; || $pc eq substr($lc_str, $j - 1, 1)) ? :</td></tr>
+<tr><td class="h"><a id="L4570">4570</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$col &amp;&amp; $$self{&#39;_schema&#39;} ? :</td></tr>
+<tr><td class="h"><a id="L4571">4571</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $t eq &quot;INTEGER&quot;</td></tr>
+<tr><td class="h"><a id="L4574">4574</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (ref $crit_val eq &quot;HASH&quot;)</td></tr>
+<tr><td class="h"><a id="L4577">4577</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($op eq &#39;-in&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($op eq &#39;-not_in&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($op eq &#39;-between&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($op eq &#39;-like&#39;) { }</td></tr>
@@ -625,55 +625,55 @@ https://pjcj.net
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($op eq &#39;&lt;&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($op eq &#39;&gt;=&#39;) { }</td></tr>
 <tr><td class="h"></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">elsif ($op eq &#39;&lt;=&#39;) { }</td></tr>
-<tr><td class="h"><a id="L4406">4406</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$numeric ? :</td></tr>
+<tr><td class="h"><a id="L4581">4581</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$numeric ? :</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $row_val and $numeric ? grep({$row_val == $_;} @{$operand;}) : grep({$row_val eq $_;} @{$operand;})</td></tr>
-<tr><td class="h"><a id="L4411">4411</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$numeric ? :</td></tr>
+<tr><td class="h"><a id="L4586">4586</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$numeric ? :</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if defined $row_val and $numeric ? grep({$row_val == $_;} @{$operand;}) : grep({$row_val eq $_;} @{$operand;})</td></tr>
-<tr><td class="h"><a id="L4413">4413</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $row_val and $row_val &gt;= $$operand[0] and $row_val &lt;= $$operand[1]</td></tr>
-<tr><td class="h"><a id="L4415">4415</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $row_val</td></tr>
-<tr><td class="h"><a id="L4416">4416</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless _like_match($row_val, $operand)</td></tr>
-<tr><td class="h"><a id="L4418">4418</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $row_val</td></tr>
-<tr><td class="h"><a id="L4419">4419</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if _like_match($row_val, $operand)</td></tr>
-<tr><td class="h"><a id="L4421">4421</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (not defined $operand) { }</td></tr>
+<tr><td class="h"><a id="L4588">4588</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $row_val and $row_val &gt;= $$operand[0] and $row_val &lt;= $$operand[1]</td></tr>
+<tr><td class="h"><a id="L4590">4590</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $row_val</td></tr>
+<tr><td class="h"><a id="L4591">4591</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless _like_match($row_val, $operand)</td></tr>
+<tr><td class="h"><a id="L4593">4593</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $row_val</td></tr>
+<tr><td class="h"><a id="L4594">4594</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if _like_match($row_val, $operand)</td></tr>
+<tr><td class="h"><a id="L4596">4596</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (not defined $operand) { }</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">elsif ($numeric) { }</td></tr>
-<tr><td class="h"><a id="L4422">4422</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $row_val</td></tr>
-<tr><td class="h"><a id="L4424">4424</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $row_val and $row_val != $operand</td></tr>
-<tr><td class="h"><a id="L4426">4426</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $row_val and $row_val ne $operand</td></tr>
-<tr><td class="h"><a id="L4429">4429</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $row_val and $row_val &gt; $operand</td></tr>
-<tr><td class="h"><a id="L4431">4431</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $row_val and $row_val &lt; $operand</td></tr>
-<tr><td class="h"><a id="L4433">4433</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $row_val and $row_val &gt;= $operand</td></tr>
-<tr><td class="h"><a id="L4435">4435</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $row_val and $row_val &lt;= $operand</td></tr>
-<tr><td class="h"><a id="L4441">4441</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$numeric ? :</td></tr>
+<tr><td class="h"><a id="L4597">4597</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $row_val</td></tr>
+<tr><td class="h"><a id="L4599">4599</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $row_val and $row_val != $operand</td></tr>
+<tr><td class="h"><a id="L4601">4601</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $row_val and $row_val ne $operand</td></tr>
+<tr><td class="h"><a id="L4604">4604</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $row_val and $row_val &gt; $operand</td></tr>
+<tr><td class="h"><a id="L4606">4606</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $row_val and $row_val &lt; $operand</td></tr>
+<tr><td class="h"><a id="L4608">4608</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $row_val and $row_val &gt;= $operand</td></tr>
+<tr><td class="h"><a id="L4610">4610</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $row_val and $row_val &lt;= $operand</td></tr>
+<tr><td class="h"><a id="L4616">4616</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">$numeric ? :</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">!(defined $row_val &amp;&amp; defined $crit_val) ? :</td></tr>
 <tr><td class="h"></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">!(defined $row_val || defined $crit_val) ? :</td></tr>
-<tr><td class="h"><a id="L4456">4456</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$params{&#39;table&#39;}) { }</td></tr>
-<tr><td class="h"><a id="L4458">4458</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $table =~ /$SAFE_QUALIFIED/</td></tr>
-<tr><td class="h"><a id="L4471">4471</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $$self{$table} or $$self{&quot;data&quot;} or $$self{&quot;berkeley&quot;}</td></tr>
-<tr><td class="h"><a id="L4484">4484</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $dbh = $$self{$table})</td></tr>
-<tr><td class="h"><a id="L4499">4499</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless do {
+<tr><td class="h"><a id="L4631">4631</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if ($$params{&#39;table&#39;}) { }</td></tr>
+<tr><td class="h"><a id="L4633">4633</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $table =~ /$SAFE_QUALIFIED/</td></tr>
+<tr><td class="h"><a id="L4646">4646</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless $$self{$table} or $$self{&quot;data&quot;} or $$self{&quot;berkeley&quot;}</td></tr>
+<tr><td class="h"><a id="L4659">4659</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if (my $dbh = $$self{$table})</td></tr>
+<tr><td class="h"><a id="L4674">4674</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless do {
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BEGIN {
-&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;autodie::Scope::GuardStack/guard7&#39;} = &#39;autodie::Scope::Guard=CODE(0x55cebc9a6c98)&#39;;
-&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;no Fatal&#39;} = &#39;HASH(0x55cebc6773d8)&#39;;
+&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;autodie::Scope::GuardStack/guard7&#39;} = &#39;autodie::Scope::Guard=CODE(0x55910772f200)&#39;;
+&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;no Fatal&#39;} = &#39;HASH(0x5591073f93f0)&#39;;
 }
 &#11;open $fh, &quot;&lt;&quot;, $file
 }</td></tr>
-<tr><td class="h"><a id="L4505">4505</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($is_db)</td></tr>
-<tr><td class="h"><a id="L4511">4511</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if (tie %bdb, &quot;DB_File&quot;, $file, 0, 420, $DB_File::DB_HASH)</td></tr>
-<tr><td class="h"><a id="L4526">4526</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless &amp;Database::Abstraction::read($fh, \my $buf, 4) == 4</td></tr>
-<tr><td class="h"><a id="L4528">4528</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $magic{unpack &quot;N&quot;, $buf} or $magic{unpack &quot;V&quot;, $buf}</td></tr>
-<tr><td class="h"><a id="L4531">4531</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless &amp;Database::Abstraction::seek($fh, 12, 0)</td></tr>
-<tr><td class="h"><a id="L4532">4532</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless &amp;Database::Abstraction::read($fh, \$buf, 4)</td></tr>
-<tr><td class="h"><a id="L4548">4548</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $bare =~ /\A(?:localhost|127\.0\.0\.1|::1)\z/i</td></tr>
-<tr><td class="h"><a id="L4553">4553</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $lc_bare eq $me</td></tr>
-<tr><td class="h"><a id="L4569">4569</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless do {
+<tr><td class="h"><a id="L4680">4680</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">if ($is_db)</td></tr>
+<tr><td class="h"><a id="L4686">4686</a></td><td class="c0">0</td><td class="c0">T</td><td class="c0">F</td><td class="s">if (tie %bdb, &quot;DB_File&quot;, $file, 0, 420, $DB_File::DB_HASH)</td></tr>
+<tr><td class="h"><a id="L4701">4701</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless &amp;Database::Abstraction::read($fh, \my $buf, 4) == 4</td></tr>
+<tr><td class="h"><a id="L4703">4703</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $magic{unpack &quot;N&quot;, $buf} or $magic{unpack &quot;V&quot;, $buf}</td></tr>
+<tr><td class="h"><a id="L4706">4706</a></td><td class="c0">50</td><td class="c0">T</td><td class="c3">F</td><td class="s">unless &amp;Database::Abstraction::seek($fh, 12, 0)</td></tr>
+<tr><td class="h"><a id="L4707">4707</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless &amp;Database::Abstraction::read($fh, \$buf, 4)</td></tr>
+<tr><td class="h"><a id="L4723">4723</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $bare =~ /\A(?:localhost|127\.0\.0\.1|::1)\z/i</td></tr>
+<tr><td class="h"><a id="L4728">4728</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">if $lc_bare eq $me</td></tr>
+<tr><td class="h"><a id="L4744">4744</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless do {
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BEGIN {
-&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;autodie::Scope::GuardStack/guard8&#39;} = &#39;autodie::Scope::Guard=CODE(0x55cebc9b7568)&#39;;
-&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;no Fatal&#39;} = &#39;HASH(0x55cebc9b7508)&#39;;
+&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;autodie::Scope::GuardStack/guard8&#39;} = &#39;autodie::Scope::Guard=CODE(0x55910773fa40)&#39;;
+&nbsp;&nbsp;&nbsp;&nbsp;$^H{&#39;no Fatal&#39;} = &#39;HASH(0x55910773f9e0)&#39;;
 }
 &#11;open $fh, &quot;&lt;&quot;, $file
 }</td></tr>
-<tr><td class="h"><a id="L4573">4573</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $n and $n == 4</td></tr>
-<tr><td class="h"><a id="L4588">4588</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if (scalar @messages and my $logger = $$self{&quot;logger&quot;})</td></tr>
+<tr><td class="h"><a id="L4748">4748</a></td><td class="c3">100</td><td class="c3">T</td><td class="c3">F</td><td class="s">unless defined $n and $n == 4</td></tr>
+<tr><td class="h"><a id="L4763">4763</a></td><td class="c0">50</td><td class="c3">T</td><td class="c0">F</td><td class="s">if (scalar @messages and my $logger = $$self{&quot;logger&quot;})</td></tr>
 </table>
 </body>
 </html>
