@@ -1531,14 +1531,6 @@ same criteria has already populated it.
 - [JSON::MaybeXS](https://metacpan.org/pod/JSON%3A%3AMaybeXS) - JSON backend (optional; install for `.json` support)
 - [Test Dashboard](https://nigelhorne.github.io/Database-Abstraction/coverage/)
 
-## License and Copyright
-
-Copyright 2015-2026 Nigel Horne.
-
-Usage is subject to the GPL2 licence terms.
-If you use it,
-please let me know.
-
 ## Formal Specification
 
 The following section uses Z-notation to describe the key state
@@ -1704,3 +1696,11 @@ Blocked transitions (croak before state changes):
   S7 -> S*   join() or select()-projection on BerkeleyDB
   S8 -> S*   join() on DBM::Deep
 ```
+
+## License and Copyright
+
+Copyright 2015-2026 Nigel Horne.
+
+Usage is subject to the GPL2 licence terms.
+If you use it,
+please let me know.

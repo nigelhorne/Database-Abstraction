@@ -730,6 +730,7 @@ sub each
 		my $rows = $self->all();
 		my $n = 0;
 		for my $row (@{$rows}) {
+			local $_;
 			$callback->($row);
 			$n++;
 		}
@@ -744,6 +745,7 @@ sub each
 		_apply_perl_sort_limit($rows, $self->{'_order_by'}, $self->{'_offset'}, $self->{'_limit'});
 		my $n = 0;
 		for my $row (@{$rows}) {
+			local $_;
 			$callback->($row);
 			$n++;
 		}
@@ -759,6 +761,7 @@ sub each
 	my $n = 0;
 	eval {
 		while(my $row = $sth->fetchrow_hashref()) {
+			local $_;
 			$callback->($row);
 			$n++;
 		}

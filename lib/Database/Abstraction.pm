@@ -2065,6 +2065,7 @@ sub each_row
 		}
 		my $n = 0;
 		for my $row (@{$rows}) {
+			local $_;
 			$callback->($row);
 			$n++;
 		}
@@ -2145,6 +2146,7 @@ sub each_row
 		}
 		my $n = 0;
 		for my $row (@rc) {
+			local $_;
 			$callback->($row);
 			$n++;
 		}
@@ -2197,6 +2199,7 @@ sub each_row
 	my $n = 0;
 	eval {
 		while(my $row = $sth->fetchrow_hashref()) {
+			local $_;
 			$callback->($row);
 			$n++;
 		}
@@ -5139,14 +5142,6 @@ same criteria has already populated it.
 
 =back
 
-=head1 LICENSE AND COPYRIGHT
-
-Copyright 2015-2026 Nigel Horne.
-
-Usage is subject to the GPL2 licence terms.
-If you use it,
-please let me know.
-
 =head1 FORMAL SPECIFICATION
 
 The following section uses Z-notation to describe the key state
@@ -5300,6 +5295,14 @@ in parentheses.
                  (no DBI handle)
       S7 -> S*   join() or select()-projection on BerkeleyDB
       S8 -> S*   join() on DBM::Deep
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2015-2026 Nigel Horne.
+
+Usage is subject to the GPL2 licence terms.
+If you use it,
+please let me know.
 
 =cut
 
