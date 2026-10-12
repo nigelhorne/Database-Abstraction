@@ -85,6 +85,7 @@ WriteMakefile(
 		'Test::Needs' => 0,
 		'Test::Mockingbird' => 0,
 		'Test::NoWarnings' => 0,
+		'Test::Permissions' => 0,
 		'Test::Returns' => 0,
 		'Test::Warn' => 0,
 		'Test::Which' => 0,

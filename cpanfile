@@ -72,6 +72,7 @@ on 'test' => sub {
 	requires 'Test::Most';
 	requires 'Test::Needs';
 	requires 'Test::NoWarnings';
+	requires 'Test::Permissions';
 	requires 'Test::Returns';
 	requires 'Test::Warn';
 	requires 'Test::Which';
