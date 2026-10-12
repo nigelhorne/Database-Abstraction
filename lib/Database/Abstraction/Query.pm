@@ -11,6 +11,8 @@ use autodie qw(:all);
 use Carp;
 use Scalar::Util qw(blessed);
 
+=encoding utf8
+
 =head1 NAME
 
 Database::Abstraction::Query - Fluent, chainable query builder for Database::Abstraction
@@ -300,6 +302,16 @@ Set the C<GROUP BY> columns for an aggregate query.  Replaces any previously
 set list.  Has no effect unless at least one C<measure()> call follows.
 Returns C<$self>.
 
+=head3 API SPECIFICATION
+
+=head4 Arguments
+
+    @cols   # one or more column name strings (replaces any previous group_by)
+
+=head4 Returns
+
+    $self   (the same Query object, for chaining)
+
 =cut
 
 sub group_by
@@ -325,6 +337,22 @@ C<count_distinct>.  C<col> is optional only for C<count> (COUNT(*)).
 
 Returns C<$self>.
 
+=head3 API SPECIFICATION
+
+=head4 Arguments
+
+    $col  # Str | undef -- column to aggregate; omit/undef for COUNT(*)
+    $fn   # Str         -- one of: sum avg min max count count_distinct
+    $as   # Str         -- result key alias (required; valid SQL identifier)
+
+=head4 Returns
+
+    $self   (the same Query object, for chaining)
+
+Calls to C<measure()> accumulate: each call appends one measure to
+the list.  To start over, create a new query builder with
+C<< $db->query() >>.
+
 =cut
 
 sub measure
@@ -347,6 +375,21 @@ semantics, exactly like C<where()>.  Keys must be C<by> column names or
 measure aliases (validated by C<aggregate()>).
 
 Returns C<$self>.
+
+=head3 API SPECIFICATION
+
+=head4 Arguments
+
+    %criteria   # key-value pairs where each key is a by-column name or
+                # a measure alias, and each value is a scalar or an
+                # operator hashref (same syntax as selectall_arrayref)
+
+=head4 Returns
+
+    $self   (the same Query object, for chaining)
+
+Multiple calls to C<having()> are merged with AND semantics, exactly
+like multiple calls to C<where()>.
 
 =cut
 
@@ -445,6 +488,24 @@ B<Terminal method.>  Executes the assembled query and returns an array
 reference of hash references, one per matching row.  Returns an empty
 array reference when there are no matches (never C<undef>).
 
+=head3 API SPECIFICATION
+
+=head4 Arguments
+
+None.  All query parameters are set via the builder methods before
+calling C<all()>.
+
+=head4 Returns
+
+    ArrayRef[HashRef]
+
+An arrayref of row hashrefs.  Returns C<[]> (empty arrayref) when
+no rows match -- never C<undef>.  Each hashref is read-only unless
+the database was constructed with C<< no_fixate => 1 >>.
+
+When C<measure()> has been called, delegates to C<< $db->aggregate() >>
+and returns grouped rows (see L<Database::Abstraction/aggregate>).
+
 =cut
 
 sub all
@@ -509,6 +570,23 @@ first matching row as a hash reference, or C<undef> when there is no match.
 Any C<limit()> or C<offset()> you have set is temporarily overridden for
 efficiency (only the LIMIT is overridden; offset is still applied).
 
+=head3 API SPECIFICATION
+
+=head4 Arguments
+
+None.
+
+=head4 Returns
+
+    HashRef | undef
+
+The first matching row hashref, or C<undef> when no row matches.
+Internally applies C<LIMIT 1> for SQL backends; for in-memory
+backends it returns the first element of the sorted result.
+
+When C<measure()> has been called, returns the first aggregate group
+row (the same as C<< ->all()->[0] >>).
+
 =cut
 
 sub first
@@ -557,6 +635,24 @@ B<Terminal method.>  Executes C<SELECT COUNT(*)> with the current C<WHERE>
 and C<JOIN> clauses and returns the integer count.  C<ORDER BY>, C<LIMIT>,
 and C<OFFSET> are ignored for the count query.
 
+=head3 API SPECIFICATION
+
+=head4 Arguments
+
+None.
+
+=head4 Returns
+
+    Int (>= 0)
+
+The number of matching rows.  Returns C<0> when nothing matches --
+never C<undef>.
+
+B<Restriction:> croaks with
+C<"count() is not available once measure() has been called">
+if any C<measure()> call has been made on this query builder.  Use
+C<all()> and examine C<scalar @{$rows}> instead.
+
 =cut
 
 sub count
@@ -600,6 +696,22 @@ Applies any C<where()>, C<join()>, C<order_by()>, C<limit()>, and C<offset()>
 set on the builder.
 
 Returns the number of rows passed to C<\&callback>.
+
+=head3 API SPECIFICATION
+
+=head4 Arguments
+
+    CodeRef   # required: callback invoked with one row hashref per call
+
+=head4 Returns
+
+    Int (>= 0)
+
+The number of rows visited.  Any exception thrown inside the callback
+is re-thrown after the DBI statement handle is properly closed.
+
+When C<measure()> has been called, each group row is passed to the
+callback in the same order as C<all()> would return them.
 
 =cut
 
@@ -670,6 +782,100 @@ Nigel Horne, C<< <njh at nigelhorne.com> >>
 
 Please report bugs at
 L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Database-Abstraction>.
+
+=head1 COMMON PITFALLS
+
+=over 4
+
+=item B<C<where()> is AND, not OR>
+
+Each call to C<where()> ANDs with all previous C<where()> calls.
+Use C<< -or => [...] >> inside a single C<where()> call for OR logic.
+
+=item B<C<measure()> calls accumulate>
+
+Every C<measure()> call appends a new measure to the query.  To
+build a fresh aggregate query call C<< $db->query() >> again rather
+than re-using the same builder object.
+
+=item B<C<group_by()> replaces, not appends>
+
+Calling C<group_by()> a second time replaces the previous group-by
+columns entirely.  It does not accumulate like C<measure()> or
+C<where()>.
+
+=item B<C<count()> is unavailable after C<measure()>>
+
+Once you have called C<measure()> on a query builder, calling
+C<count()> will croak.  Use C<all()> and check C<scalar @{$rows}>.
+
+=item B<Sort column for aggregate queries must use C<order_by()>>
+
+To sort aggregate results, call C<< ->order_by('col') >> on the
+builder before C<< ->all() >>.  Passing C<sort_by> directly to
+C<all()> has no effect because the terminal method ignores extra
+arguments.
+
+=back
+
+=head1 FORMAL SPECIFICATION
+
+=head2 Query builder state
+
+    QueryState == [
+        _db       : Database::Abstraction,
+        _select   : Str,
+        _where    : CRITERIA,
+        _joins    : seq JOIN_SPEC,
+        _order_by : Str | undef,
+        _limit    : Int | undef,
+        _offset   : Int | undef,
+        _group_by : seq COLNAME,
+        _measures : seq MEASURE_SPEC,
+        _having   : CRITERIA
+    ]
+
+    Initial state Q0 == [
+        _select?   = '*',
+        _where?    = {},
+        _joins?    = [],
+        _order_by? = undef,
+        _limit?    = undef,
+        _offset?   = undef,
+        _group_by? = [],
+        _measures? = [],
+        _having?   = {}
+    ]
+
+=head2 Builder method invariants
+
+    where(C) ____________________________________________
+    DeltaQueryState
+    C? : CRITERIA
+    ────────────────────────────────────────────────────
+    post: _where' = _where UNION C   (AND semantics)
+
+    measure(col, fn, as) ________________________________
+    DeltaQueryState
+    ────────────────────────────────────────────────────
+    post: _measures' = _measures CONCAT [{col,fn,as}]
+
+    group_by(cols) ______________________________________
+    DeltaQueryState
+    ────────────────────────────────────────────────────
+    post: _group_by' = cols  (replaces previous value)
+
+=head2 all() dispatch
+
+    all _________________________________________________
+    XiQueryState  (read-only)
+    ────────────────────────────────────────────────────
+    result == (_measures != empty
+               IMPLIES _db.aggregate(_group_by, _measures, _where,
+                                     _having, _order_by, _limit, _offset)
+               ELSE    _db.selectall_arrayref(_where, _joins,
+                                              _order_by, _limit, _offset))
+    post: result : seq ROW
 
 =head1 LICENSE AND COPYRIGHT
 
