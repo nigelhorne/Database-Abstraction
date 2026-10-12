@@ -17,11 +17,11 @@ Database::Abstraction::Query - Fluent, chainable query builder for Database::Abs
 
 =head1 VERSION
 
-Version 0.48
+Version 0.49
 
 =cut
 
-our $VERSION = '0.48';
+our $VERSION = '0.49';
 
 =head1 SYNOPSIS
 
@@ -78,7 +78,8 @@ then execute it with a terminal method.
 =item *
 
 B<Builder methods> (C<select>, C<where>, C<join>, C<order_by>, C<limit>,
-C<offset>) all return C<$self>, so calls can be chained in any order.
+C<offset>, C<group_by>, C<measure>, C<having>) all return C<$self>, so
+calls can be chained in any order.
 
 =item *
 
@@ -138,6 +139,9 @@ sub new
 		_order_by => undef,
 		_limit    => undef,
 		_offset   => undef,
+		_group_by => [],
+		_measures => [],
+		_having   => {},
 	}, $class;
 }
 
@@ -286,6 +290,76 @@ sub offset
 	return $self;
 }
 
+=head2 group_by
+
+    $q->group_by('region', 'month');
+    $q->group_by(\@cols);
+    $q->group_by([]);    # clear (grand total)
+
+Set the C<GROUP BY> columns for an aggregate query.  Replaces any previously
+set list.  Has no effect unless at least one C<measure()> call follows.
+Returns C<$self>.
+
+=cut
+
+sub group_by
+{
+	my $self = shift;
+	my @cols = (@_ == 1 && ref($_[0]) eq 'ARRAY') ? @{$_[0]} : @_;
+	$self->{'_group_by'} = \@cols;
+	return $self;
+}
+
+=head2 measure
+
+    $q->measure('amount', 'sum', 'revenue');
+    $q->measure(undef, 'count', 'orders');       # COUNT(*)
+    $q->measure({ col => 'c', fn => 'avg', as => 'mean' });
+
+Append a measure to the aggregate query.  May be called multiple times;
+measures accumulate.  Accepts either three positional arguments
+(C<col>, C<fn>, C<as>) or a single hashref with those keys.
+
+C<fn> must be one of C<sum>, C<avg>, C<min>, C<max>, C<count>,
+C<count_distinct>.  C<col> is optional only for C<count> (COUNT(*)).
+
+Returns C<$self>.
+
+=cut
+
+sub measure
+{
+	my ($self, $col_or_spec, $fn, $as) = @_;
+	my $spec = ref($col_or_spec) eq 'HASH'
+		? $col_or_spec
+		: { col => $col_or_spec, fn => $fn, as => $as };
+	push @{$self->{'_measures'}}, $spec;
+	return $self;
+}
+
+=head2 having
+
+    $q->having(revenue => { '>' => 1000 });
+    $q->having(\%criteria);
+
+Add post-aggregation filter criteria.  Multiple calls are merged with AND
+semantics, exactly like C<where()>.  Keys must be C<by> column names or
+measure aliases (validated by C<aggregate()>).
+
+Returns C<$self>.
+
+=cut
+
+sub having
+{
+	my $self = shift;
+	my %criteria = ref($_[0]) eq 'HASH' ? %{$_[0]} : @_;
+	for my $k (keys %criteria) {
+		$self->{'_having'}{$k} = $criteria{$k};
+	}
+	return $self;
+}
+
 # Apply Perl-side sort, offset, and limit to an arrayref of rows in place.
 # Used by the BerkeleyDB execution paths in all() and first().
 # order_by must be a single "column [ASC|DESC]" string (multi-column not supported).
@@ -381,6 +455,29 @@ sub all
 	# Ensure _open() fires before checking the backend type.
 	$db->_open_table({});
 
+	# Aggregate path: delegate to $db->aggregate when measures have been set.
+	if(@{$self->{'_measures'}}) {
+		my %ap = (%{$self->{'_where'}}, measures => $self->{'_measures'});
+		$ap{'by'}     = $self->{'_group_by'} if @{$self->{'_group_by'}};
+		$ap{'having'} = $self->{'_having'}   if %{$self->{'_having'}};
+		if(@{$self->{'_joins'}}) {
+			$ap{'join'} = $self->{'_joins'};
+		}
+		if(defined $self->{'_order_by'}) {
+			# Parse "col [ASC|DESC]" from order_by into sort_by format.
+			# Multi-column order_by expressions are not supported for aggregates;
+			# only the first token is used.
+			my ($col, $dir) = ($self->{'_order_by'} =~ /\A(\S+)(?:\s+(ASC|DESC))?\z/i);
+			$ap{'sort_by'} = defined($col)
+				? (defined($dir) ? [$col, uc($dir)] : $col)
+				: undef;
+			delete $ap{'sort_by'} unless defined $ap{'sort_by'};
+		}
+		$ap{'limit'}  = $self->{'_limit'}  if defined $self->{'_limit'};
+		$ap{'offset'} = $self->{'_offset'} if defined $self->{'_offset'};
+		return $db->aggregate(%ap);
+	}
+
 	if($db->{'berkeley'} || ($db->{'type'} // '') =~ /\A(?:Deep|XLSX)\z/) {
 		my $backend = $db->{'berkeley'} ? 'BerkeleyDB' : ($db->{'type'} // '');
 		croak(ref($db), ": query->all() with JOINs is not supported on $backend")
@@ -420,6 +517,12 @@ sub first
 	my $db = $self->{'_db'};
 
 	$db->_open_table({});
+
+	if(@{$self->{'_measures'}}) {
+		local $self->{'_limit'} = 1;
+		my $rows = $self->all();
+		return ref($rows) eq 'ARRAY' ? $rows->[0] : undef;
+	}
 
 	if($db->{'berkeley'} || ($db->{'type'} // '') =~ /\A(?:Deep|XLSX)\z/) {
 		my $backend = $db->{'berkeley'} ? 'BerkeleyDB' : ($db->{'type'} // '');
@@ -462,6 +565,9 @@ sub count
 	my $db   = $self->{'_db'};
 
 	$db->_open_table({});
+
+	croak('Database::Abstraction::Query: count() is not available once measure() has been called')
+		if @{$self->{'_measures'}};
 
 	if($db->{'berkeley'} || ($db->{'type'} // '') =~ /\A(?:Deep|XLSX)\z/) {
 		my $backend = $db->{'berkeley'} ? 'BerkeleyDB' : ($db->{'type'} // '');
@@ -506,6 +612,17 @@ sub each
 		unless ref($callback) eq 'CODE';
 
 	$db->_open_table({});
+
+	# Aggregate path: collect all rows then iterate.  Not constant-memory.
+	if(@{$self->{'_measures'}}) {
+		my $rows = $self->all();
+		my $n = 0;
+		for my $row (@{$rows}) {
+			$callback->($row);
+			$n++;
+		}
+		return $n;
+	}
 
 	if($db->{'berkeley'} || ($db->{'type'} // '') =~ /\A(?:Deep|XLSX)\z/) {
 		my $backend = $db->{'berkeley'} ? 'BerkeleyDB' : ($db->{'type'} // '');

@@ -4,7 +4,7 @@ Database::Abstraction - Read-only Database Abstraction Layer (ORM)
 
 ## Version
 
-Version 0.47
+Version 0.48
 
 ## Description
 
@@ -28,6 +28,9 @@ combine tables with INNER, LEFT, RIGHT, FULL, or CROSS joins.
 - **Chained query builder.**  The `query()` method returns a
 [Database::Abstraction::Query](https://metacpan.org/pod/Database%3A%3AAbstraction%3A%3AQuery) object for fluent, composable queries:
 `$db->query->where(...)->order_by(...)->limit(...)->all()`.
+- **Aggregation.**  The `aggregate()` method and the fluent
+`->group_by()->measure()->having()->all()` chain push `GROUP BY` to
+SQL backends and fold rows in Perl on slurp-only backends.
 - **Schema introspection.**  `columns()` lists column names; `schema()`
 returns full type/nullability metadata, using native driver introspection
 (`PRAGMA table_info` for SQLite, `column_info` for others).
@@ -890,6 +893,78 @@ None beyond the implicit invocant.
 A hashref `{ dbh => DBI::db, table => Str }` on a SQLite-backed
 instance, or `undef` on all other backends.
 
+### Aggregate
+
+Groups matching rows and computes aggregate measures over each group.
+Pushes `GROUP BY` SQL to the backend when a DBI handle is available;
+otherwise folds rows in Perl (BerkeleyDB, DBM::Deep, XLSX, JSON, HTML, Redis).
+
+```perl
+my $rows = $db->aggregate(
+    by       => ['region', 'month'],
+    measures => [
+        { col => 'amount', fn => 'sum',   as => 'revenue' },
+        {                  fn => 'count', as => 'orders'  },
+    ],
+    status => 'active',
+);
+
+# Grand total (no 'by')
+my $row = $db->aggregate(
+    measures => [{ col => 'score', fn => 'avg', as => 'mean_score' }],
+)->[0];
+```
+
+Reserved parameter keys (extracted before the rest is treated as WHERE criteria):
+`by`, `measures`, `having`, `sort_by`, `limit`, `offset`, `table`, `join`.
+
+Always returns an **arrayref of hashrefs** (never `undef`); returns `[]` when
+no group qualifies.  Row keys are the `by` column names (in declaration order)
+followed by the measure aliases.
+
+#### Measure Specification
+
+Each measure hashref:
+
+```perl
+{ col => 'amount', fn => 'sum',           as => 'revenue'   }
+{                  fn => 'count',         as => 'orders'    }  # COUNT(*)
+{ col => 'amount', fn => 'count',         as => 'paid'      }  # COUNT(col)
+{ col => 'customer', fn => 'count_distinct', as => 'customers' }
+```
+
+`fn` must be one of `sum`, `avg`, `min`, `max`, `count`, `count_distinct`
+(case-insensitive).  `col` is required for every function except plain
+`count`.  `as` (the result key) must be a valid SQL identifier and must not
+duplicate another alias or a `by` column name.
+
+#### Having
+
+Pass `having => { alias_or_by_col => criterion }` to filter groups
+after aggregation.  Accepts the full criteria syntax.
+
+```perl
+having => { revenue => { '>' => 1000 } }
+```
+
+#### Pseudocode
+
+```
+1. _open_table; croak if JOIN requested on no-DBI backend.
+2. _validate_aggregate_spec: extract/validate by/measures/having/
+   sort_by/limit/offset; remainder of params is WHERE criteria.
+3. Merge base_criteria.
+4. SQL path (DBI handle): _build_aggregate_sql; prepare_cached+execute;
+   normalise empty-set values; cache; fixate; return.
+5. Perl fold: selectall_arrayref(criteria); _fold_aggregate;
+   HAVING via _match_criteria; sort; offset; limit; fixate; return.
+```
+
+#### Backend Notes
+
+On slurp-only backends all matching rows are materialised before folding.
+Use a SQL backend (SQLite DSN, PostgreSQL, MySQL) for large datasets.
+
 ### Query
 
 Returns a new [Database::Abstraction::Query](https://metacpan.org/pod/Database%3A%3AAbstraction%3A%3AQuery) builder object bound to this
@@ -1043,6 +1118,66 @@ triggers it, and how to resolve it.
     A relational method (`selectall_arrayref`, `count`, `execute`, etc.)
     was called on a BerkeleyDB backend, which only supports key-value lookup
     via `fetchrow_hashref`.
+
+- `_Class_: aggregate: 'measures' must be a non-empty arrayref`
+
+    `aggregate()` was called without a `measures` arrayref, or with an empty one.
+
+- `_Class_: aggregate: measure must be a hashref, got _ref_`
+
+    An element of the `measures` arrayref is not a hashref.
+
+- `_Class_: aggregate: unknown measure function '_fn_'`
+
+    `fn` must be one of `sum`, `avg`, `min`, `max`, `count`, `count_distinct`.
+
+- `_Class_: aggregate: measure column is required for function '_fn_'`
+
+    `col` was omitted for a function that requires it.  Only plain `count` (COUNT(\*)) accepts a missing `col`.
+
+- `_Class_: aggregate: unsafe measure column '_col_'`
+
+    The `col` value is not a valid SQL identifier.
+
+- `_Class_: aggregate: measure 'as' is required`
+
+    The `as` alias was missing from a measure hashref.
+
+- `_Class_: aggregate: unsafe measure alias '_as_'`
+
+    The `as` value is not a valid SQL identifier.
+
+- `_Class_: aggregate: duplicate measure alias '_as_'`
+
+    Two measure hashrefs share the same `as` alias.
+
+- `_Class_: aggregate: measure alias '_as_' collides with a group-by column`
+
+    A measure alias duplicates a name in the `by` list.
+
+- `_Class_: aggregate: 'by' must be an arrayref of column names`
+
+    The `by` parameter was not an arrayref.
+
+- `_Class_: aggregate: unsafe group-by column '_col_'`
+
+    A `by` element is not a valid SQL identifier.
+
+- `_Class_: aggregate: having key '_key_' is not a group-by column or measure alias`
+
+    A `having` key does not match any `by` column name or measure `as` alias.
+
+- `_Class_: aggregate: sort_by names '_name_', which is not a group-by column or measure alias`
+
+    The `sort_by` column is not one of the `by` columns or measure aliases.
+
+- `_Class_: aggregate: cannot aggregate a JOIN on the _backend_ backend`
+
+    `join` was passed to `aggregate()` on a slurp-only backend that has no DBI handle.
+
+- `Database::Abstraction::Query: count() is not available once measure() has been called`
+
+    `count()` was called on a query builder that has measures set.  Use `all()` and check `scalar @{$rows}`.
 
 ## Known Limitations
 
