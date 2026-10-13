@@ -2,14 +2,18 @@ Revision history for Database-Abstraction
 
 0.51
 	[ Enhancements ]
-	- selectall_arrayref(): new distinct => 1 parameter emits SELECT DISTINCT
-	  on SQL-capable backends (SQLite, PostgreSQL, MySQL) and performs Perl-side
-	  deduplication on the slurp/in-memory path and the DBD::CSV path (which
-	  does not support SELECT DISTINCT natively).
+	- selectall_arrayref(): new distinct => 1 parameter deduplicates the
+	  result set.  On SQL-capable backends (SQLite, PostgreSQL, MySQL,
+	  DBD::CSV >= 0.64) it emits SELECT DISTINCT; on the slurp/in-memory
+	  path Perl-side deduplication is performed by _apply_distinct().
+	  Requires DBD::CSV >= 0.64 (SQL::Statement >= 1.414) for the CSV
+	  backend; minimum version raised accordingly in Makefile.PL and cpanfile.
 	- selectall_arrayref(): new columns => \@cols parameter restricts which
 	  columns appear in the returned rows; column names are validated with
 	  SAFE_QUALIFIED; missing keys in fixated slurp rows are returned as undef.
 	  Can be used independently or together with distinct => 1.
+	  Note: _apply_distinct() runs after sort/offset/limit, so limit => N,
+	  distinct => 1 deduplicates the already-limited slice, not the full set.
 	- aggregate(): added median and stddev to the measure vocabulary.
 	  Both are Perl-fold-only (no SQL pushdown); on SQL-backed databases the
 	  full matching result set is fetched and then folded in memory.

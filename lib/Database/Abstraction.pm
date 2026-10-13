@@ -9,14 +9,12 @@ package Database::Abstraction;
 #	though that wouldn't be so nice for AUTOLOAD
 # TODO:	support a directory hierarchy of databases
 # TODO:	consider returning an object or array of objects, rather than hashes
-# TODO:	Add redis database - could be of use for Geo::Coder::Free
-#	use select() to select a database - use the table arg
-#	new(database => 'redis://servername');
+# Redis backend (database => 'redis://...') was added in 0.48.
 # TODO:	Add a "key" property, defaulting to "entry", which would be the name of the key
 # TODO:	The maximum number to return should be tuneable (as a LIMIT)
 # TODO:	Add full CRUD support
 # TODO:	It would be better for the default sep_char to be ',' rather than '!'
-# TODO:	Other databases e.g., Redis, noSQL, remote databases such as MySQL, PostgreSQL
+# TODO:	Other noSQL databases e.g., MongoDB, Cassandra
 # TODO: The no_entry/entry terminology is confusing.  Replace with no_id/id_column
 # TODO: Log queries and the time that they took to execute per database
 # TODO: Use DBD::JSON if one is ever written
@@ -1767,6 +1765,11 @@ parameters; invalid names are dropped with a C<carp> warning.
 On SQL-capable backends (SQLite, PostgreSQL, MySQL, DBD::CSV E<ge> 0.64)
 C<distinct =E<gt> 1> emits C<SELECT DISTINCT>.  On the slurp (in-memory) path
 C<distinct> without C<columns> is a no-op because each row is already unique.
+
+B<Order of operations:> sort E<rarr> offset E<rarr> limit E<rarr> C<_apply_distinct>.
+This means C<< limit => N, distinct => 1 >> deduplicates the already-limited
+slice, not the full result set.  If you need N distinct rows from a larger set,
+omit C<limit> and slice the returned arrayref yourself.
 
 Results are returned in the cache (if configured) and the returned array
 reference is made read-only unless C<no_fixate> was set.
@@ -4476,10 +4479,11 @@ sub _fixate :Private
 	# (see selectall_arrayref / selectall_array) but also affects the slurp
 	# fixate when earlier objects go out of scope before a new slurp runs.
 	Data::Reuse::forget();
+	# Suppress the benign "Use of uninitialized value in hash slice" warning
+	# that Data::Reuse/Data::Alias emits on some Perl < 5.34 builds when a
+	# row has undef columns.  All other warnings are re-emitted verbatim so
+	# unrelated problems remain visible.  This is intentional, not debug code.
 	local $SIG{__WARN__} = sub {
-		# Two index() calls replace the former /.*\b/ — no backtracking at all.
-		# The prefix check is constant-time; the suffix scan is O(n) but stops
-		# at the first match rather than first matching greedily then retreating.
 		warn @_ unless
 			index($_[0], 'Use of uninitialized value') == 0
 			&& index($_[0], 'in hash slice') >= 0;
