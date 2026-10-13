@@ -688,10 +688,9 @@ Pass `columns => \@cols` to restrict which columns appear in the returned
 rows.  Column names are validated against the same identifier rules as other
 parameters; invalid names are dropped with a `carp` warning.
 
-On SQL-capable backends (SQLite, PostgreSQL, MySQL) `distinct => 1` emits
-`SELECT DISTINCT`; on DBD::CSV the deduplication is performed in Perl after
-fetching.  On the slurp (in-memory) path `distinct` without `columns` is a
-no-op because each row is already unique.
+On SQL-capable backends (SQLite, PostgreSQL, MySQL, DBD::CSV ≥ 0.64)
+`distinct => 1` emits `SELECT DISTINCT`.  On the slurp (in-memory) path
+`distinct` without `columns` is a no-op because each row is already unique.
 
 Results are returned in the cache (if configured) and the returned array
 reference is made read-only unless `no_fixate` was set.
@@ -701,7 +700,7 @@ in scalar context, or `$db->query->limit(1)->all()`, to fetch just one row.
 
 #### Pseudocode
 
-```
+```perl
 1. Parse criteria; extract and build any JOIN clause.
    Extract distinct, columns, limit, offset, sort_by.
 2. If data is slurped AND no joins AND criteria are simple:
@@ -712,7 +711,7 @@ in scalar context, or `$db->query->limit(1)->all()`, to fetch just one row.
    offset/limit, then _apply_distinct (columns projection + dedup).
 3. Otherwise build SQL: SELECT [DISTINCT] [columns|*] FROM table
    [JOIN] [WHERE] ORDER BY sort_by [else id] [LIMIT] [OFFSET].
-   DBD::CSV path: SELECT * then Perl-side dedup via _apply_distinct.
+   All DBI backends (including DBD::CSV >= 0.64) use native SELECT DISTINCT.
 4. Check cache; return cached arrayref on HIT.
 5. prepare_cached + execute; fetch all rows.
 6. Store result in cache; fixate the array; return arrayref.

@@ -21,6 +21,7 @@ requires 'Sub::Protected';
 requires 'autodie';
 requires 'strict';
 requires 'warnings';
+recommends 'DBD::CSV', '0.64';   # CSV/PSV/TSV DBI backend; 0.64+ required for SELECT DISTINCT
 recommends 'DBD::Excel';   # .xls (old binary Excel) backend
 recommends 'DBM::Deep';   # .dbm/.deep/magic-byte .db backend
 recommends 'File::Slurp::Remote';   # remote host backend (SSH/SCP)
@@ -40,7 +41,7 @@ on 'configure' => sub {
 
 on 'test' => sub {
 	requires 'CHI';
-	requires 'DBD::CSV';
+	requires 'DBD::CSV', '0.64';   # 0.64+ (SQL::Statement 1.414+) required for correct SELECT DISTINCT
 	requires 'DBD::XMLSimple', '0.07';
 	requires 'DBM::Deep';
 	requires 'Excel::Writer::XLSX';

@@ -1764,10 +1764,9 @@ Pass C<columns =E<gt> \@cols> to restrict which columns appear in the returned
 rows.  Column names are validated against the same identifier rules as other
 parameters; invalid names are dropped with a C<carp> warning.
 
-On SQL-capable backends (SQLite, PostgreSQL, MySQL) C<distinct =E<gt> 1> emits
-C<SELECT DISTINCT>; on DBD::CSV the deduplication is performed in Perl after
-fetching.  On the slurp (in-memory) path C<distinct> without C<columns> is a
-no-op because each row is already unique.
+On SQL-capable backends (SQLite, PostgreSQL, MySQL, DBD::CSV E<ge> 0.64)
+C<distinct =E<gt> 1> emits C<SELECT DISTINCT>.  On the slurp (in-memory) path
+C<distinct> without C<columns> is a no-op because each row is already unique.
 
 Results are returned in the cache (if configured) and the returned array
 reference is made read-only unless C<no_fixate> was set.
@@ -1787,7 +1786,7 @@ in scalar context, or C<< $db->query->limit(1)->all() >>, to fetch just one row.
        offset/limit, then _apply_distinct (columns projection + dedup).
     3. Otherwise build SQL: SELECT [DISTINCT] [columns|*] FROM table
        [JOIN] [WHERE] ORDER BY sort_by [else id] [LIMIT] [OFFSET].
-       DBD::CSV path: SELECT * then Perl-side dedup via _apply_distinct.
+       All DBI backends (including DBD::CSV >= 0.64) use native SELECT DISTINCT.
     4. Check cache; return cached arrayref on HIT.
     5. prepare_cached + execute; fetch all rows.
     6. Store result in cache; fixate the array; return arrayref.
@@ -2019,16 +2018,14 @@ sub selectall_arrayref {
 	my ($where, $wargs) = $self->_build_where($params);
 	my @query_args = @{$wargs};
 
-	# DBD::CSV does not support SELECT DISTINCT; use Perl-side dedup instead.
-	my $csv_path = ($self->{'type'} // '') eq 'CSV';
 	my $select_expr;
-	if($distinct && !$csv_path) {
+	if($distinct) {
 		if($columns) {
 			$select_expr = 'SELECT DISTINCT ' . join(', ', @{$columns});
 		} else {
 			$select_expr = 'SELECT DISTINCT *';
 		}
-	} elsif($columns && !$csv_path) {
+	} elsif($columns) {
 		$select_expr = 'SELECT ' . join(', ', @{$columns});
 	} else {
 		$select_expr = 'SELECT *';
@@ -2098,11 +2095,6 @@ sub selectall_arrayref {
 		my $rc;
 		while(my $href = $sth->fetchrow_hashref()) {
 			push @{$rc}, $href;
-		}
-
-		# DBD::CSV doesn't support SELECT DISTINCT; apply Perl-side dedup.
-		if($rc && $csv_path && ($distinct || $columns)) {
-			$rc = _apply_distinct($rc, $columns, $distinct);
 		}
 
 		$c->set($key, $rc, $self->{'cache_duration'}) if $c;
@@ -3555,7 +3547,7 @@ sub _validate_aggregate_spec
 
 	my (@by_names, %by_name_set);
 	for my $col (@{$by}) {
-		Carp::croak(ref($self), ": aggregate: unsafe group-by column '$col'")
+		Carp::croak(ref($self), ": aggregate: unsafe group-by column '". ($col // '') ."'")
 			unless defined($col) && $col =~ $SAFE_QUALIFIED;
 		push @by_names, $col;
 		$by_name_set{$col} = 1;
@@ -3628,9 +3620,9 @@ sub _validate_aggregate_spec
 			? ($sort_by->[0], $sort_by->[1])
 			: ($sort_by, 'ASC');
 		$sort_dir = defined($sort_dir) ? uc($sort_dir) : 'ASC';
-		Carp::croak(ref($self), ": aggregate: sort_by names '$sort_col', which is not a group-by column or measure alias")
+		Carp::croak(ref($self), ": aggregate: sort_by names '". ($sort_col // '') ."', which is not a group-by column or measure alias")
 			unless defined($sort_col) && ($by_name_set{$sort_col} || $alias_set{$sort_col});
-		Carp::croak(ref($self), ": aggregate: sort_by names '$sort_col', which is not a group-by column or measure alias")
+		Carp::croak(ref($self), ": aggregate: sort_by names '". ($sort_col // '') ."', which is not a group-by column or measure alias")
 			unless $sort_dir eq 'ASC' || $sort_dir eq 'DESC';
 	}
 
