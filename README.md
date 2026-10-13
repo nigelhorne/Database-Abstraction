@@ -4,7 +4,7 @@ Database::Abstraction - Read-only Database Abstraction Layer (ORM)
 
 ## Version
 
-Version 0.50
+Version 0.51
 
 ## Description
 
@@ -691,6 +691,11 @@ parameters; invalid names are dropped with a `carp` warning.
 On SQL-capable backends (SQLite, PostgreSQL, MySQL, DBD::CSV ≥ 0.64)
 `distinct => 1` emits `SELECT DISTINCT`.  On the slurp (in-memory) path
 `distinct` without `columns` is a no-op because each row is already unique.
+
+**Order of operations:** sort → offset → limit → `_apply_distinct`.
+This means `limit => N, distinct => 1` deduplicates the already-limited
+slice, not the full result set.  If you need N distinct rows from a larger set,
+omit `limit` and slice the returned arrayref yourself.
 
 Results are returned in the cache (if configured) and the returned array
 reference is made read-only unless `no_fixate` was set.

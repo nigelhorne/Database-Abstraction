@@ -1,6 +1,6 @@
 Revision history for Database-Abstraction
 
-0.51
+0.51	Tue Oct 13 01:56:46 PM EDT 2026
 	[ Enhancements ]
 	- selectall_arrayref(): new distinct => 1 parameter deduplicates the
 	  result set.  On SQL-capable backends (SQLite, PostgreSQL, MySQL,
