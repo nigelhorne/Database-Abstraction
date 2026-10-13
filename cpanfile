@@ -11,7 +11,7 @@ requires 'Data::Reuse';   # Required for result-set memory deduplication; see al
 requires 'File::Spec';
 requires 'File::Temp';
 requires 'List::Util', '1.33';
-requires 'Log::Abstraction', '0.39';
+requires 'Log::Abstraction', '0.40';
 requires 'Object::Configure', '0.24';
 requires 'Params::Get', '0.17';
 requires 'Return::Set';
@@ -68,7 +68,7 @@ on 'test' => sub {
 	requires 'Test::DescribeMe';
 	requires 'Test::Log::Abstraction';
 	requires 'Test::Memory::Cycle';
-	requires 'Test::Mockingbird';
+	requires 'Test::Mockingbird', '0.14';
 	requires 'Test::Most';
 	requires 'Test::Needs';
 	requires 'Test::NoWarnings';
