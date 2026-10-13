@@ -1,5 +1,22 @@
 Revision history for Database-Abstraction
 
+0.51
+	[ Enhancements ]
+	- selectall_arrayref(): new distinct => 1 parameter emits SELECT DISTINCT
+	  on SQL-capable backends (SQLite, PostgreSQL, MySQL) and performs Perl-side
+	  deduplication on the slurp/in-memory path and the DBD::CSV path (which
+	  does not support SELECT DISTINCT natively).
+	- selectall_arrayref(): new columns => \@cols parameter restricts which
+	  columns appear in the returned rows; column names are validated with
+	  SAFE_QUALIFIED; missing keys in fixated slurp rows are returned as undef.
+	  Can be used independently or together with distinct => 1.
+	- aggregate(): added median and stddev to the measure vocabulary.
+	  Both are Perl-fold-only (no SQL pushdown); on SQL-backed databases the
+	  full matching result set is fetched and then folded in memory.
+	  median: middle value for odd count, average of two middle values for even
+	  count; undef for empty group.  stddev: sample standard deviation (N-1
+	  denominator); 0 for single-row group, undef for empty group.
+
 0.50	Tue Oct 13 09:44:14 AM EDT 2026
 	[ Bug Fixes ]
 	- new(): added redis_key parameter — a new constructor argument that bypasses SAFE_QUALIFIED validation. It's only accepted when a redis:// database URL is also present, so it can't be injected into SQL paths.

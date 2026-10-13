@@ -94,7 +94,10 @@ my $INFER_DATE_RE = qr/
 my %VALID_JOIN_TYPES = map { $_ => 1 } qw(INNER LEFT RIGHT FULL CROSS);
 
 # Valid aggregate functions (lower-cased) for _validate_aggregate_spec.
-my %VALID_AGG_FNS = map { $_ => 1 } qw(sum avg min max count count_distinct);
+my %VALID_AGG_FNS = map { $_ => 1 } qw(sum avg min max count count_distinct median stddev);
+
+# Functions that are Perl-fold-only (no SQL pushdown).
+my %PERL_ONLY_AGG_FNS = map { $_ => 1 } qw(median stddev);
 
 =encoding utf8
 
@@ -108,7 +111,7 @@ Version 0.50
 
 =cut
 
-our $VERSION = '0.50';
+our $VERSION = '0.51';
 
 =head1 DESCRIPTION
 
@@ -1683,6 +1686,35 @@ sub _open :Protected
 	return $self;
 }
 
+# Project columns and/or deduplicate an arrayref of row hashrefs.
+# $rows     - arrayref of hashrefs
+# $cols     - arrayref of column names to keep, or undef for all columns
+# $distinct - true to remove duplicate rows (after projection)
+# Returns a new arrayref; input row hashrefs are not modified.
+sub _apply_distinct {
+	my ($rows, $cols, $distinct) = @_;
+	return $rows unless defined($cols) || $distinct;
+	return $rows unless defined($rows) && @{$rows};
+
+	my (@out, %seen);
+	for my $row (@{$rows}) {
+		my $r;
+		if(defined $cols) {
+			# Use exists() guard: fixate() locks all keys in slurp hashrefs;
+			# accessing a missing key on a locked hash throws an exception.
+			$r = { map { $_ => (exists($row->{$_}) ? $row->{$_} : undef) } @{$cols} };
+		} else {
+			$r = $row;
+		}
+		if($distinct) {
+			my $key = join("\x00", map { defined($r->{$_}) ? $r->{$_} : "\x01" } sort keys %{$r});
+			next if $seen{$key}++;
+		}
+		push @out, $r;
+	}
+	return \@out;
+}
+
 =head2 selectall_arrayref
 
 Returns a reference to an array of hash references for every row that
@@ -1723,6 +1755,20 @@ than C<ASC> or C<DESC>, case-insensitive) is ignored with a C<carp> warning and
 the default sort order is used instead.  Sorting is applied before
 C<limit>/C<offset> pagination.
 
+Pass C<distinct =E<gt> 1> to return only unique rows (deduplication):
+
+    my $rows = $db->selectall_arrayref(distinct => 1);
+    my $rows = $db->selectall_arrayref(distinct => 1, columns => [qw(status dept)]);
+
+Pass C<columns =E<gt> \@cols> to restrict which columns appear in the returned
+rows.  Column names are validated against the same identifier rules as other
+parameters; invalid names are dropped with a C<carp> warning.
+
+On SQL-capable backends (SQLite, PostgreSQL, MySQL) C<distinct =E<gt> 1> emits
+C<SELECT DISTINCT>; on DBD::CSV the deduplication is performed in Perl after
+fetching.  On the slurp (in-memory) path C<distinct> without C<columns> is a
+no-op because each row is already unique.
+
 Results are returned in the cache (if configured) and the returned array
 reference is made read-only unless C<no_fixate> was set.
 
@@ -1732,13 +1778,16 @@ in scalar context, or C<< $db->query->limit(1)->all() >>, to fetch just one row.
 =head3 PSEUDOCODE
 
     1. Parse criteria; extract and build any JOIN clause.
+       Extract distinct, columns, limit, offset, sort_by.
     2. If data is slurped AND no joins AND criteria are simple:
        a. No criteria -> return all rows as arrayref.
        b. entry-only lookup -> return [$data{entry}].
        c. Otherwise -> scan rows in-memory with _match_criterion.
-       In all slurp cases: sort by sort_by column (if given), then apply offset/limit.
-    3. Otherwise build SQL: SELECT * FROM table [JOIN] [WHERE]
-       ORDER BY sort_by [else id] [LIMIT] [OFFSET].
+       In all slurp cases: sort by sort_by column (if given), then apply
+       offset/limit, then _apply_distinct (columns projection + dedup).
+    3. Otherwise build SQL: SELECT [DISTINCT] [columns|*] FROM table
+       [JOIN] [WHERE] ORDER BY sort_by [else id] [LIMIT] [OFFSET].
+       DBD::CSV path: SELECT * then Perl-side dedup via _apply_distinct.
     4. Check cache; return cached arrayref on HIT.
     5. prepare_cached + execute; fetch all rows.
     6. Store result in cache; fixate the array; return arrayref.
@@ -1752,6 +1801,8 @@ in scalar context, or C<< $db->query->limit(1)->all() >>, to fetch just one row.
     sort_by     => Str | ArrayRef      # optional: 'col' or ['col','DESC']
     limit       => Int                 # optional: max rows
     offset      => Int                 # optional: rows to skip
+    distinct    => Bool                # optional: deduplicate rows
+    columns     => ArrayRef[Str]       # optional: restrict output columns
     no_fixate   => Bool                # optional: skip read-only locking
     table       => Str                 # optional: override table name
 
@@ -1777,8 +1828,10 @@ sub selectall_arrayref {
 
 	if($self->{'berkeley'}) {
 		$params = Params::Get::get_params(undef, \@_) // {};
-		my $bl = delete $params->{'limit'};
-		my $bo = delete $params->{'offset'};
+		my $bl       = delete $params->{'limit'};
+		my $bo       = delete $params->{'offset'};
+		my $bdist    = delete $params->{'distinct'};
+		my $bcols    = delete $params->{'columns'};
 		my ($bsc, $bsd) = _parse_sort_by(delete($params->{'sort_by'}), 'selectall_arrayref');
 		if(defined($bl) && $bl !~ /\A\d+\z/) {
 			Carp::carp('selectall_arrayref: limit must be a non-negative integer, ignoring');
@@ -1801,6 +1854,7 @@ sub selectall_arrayref {
 			splice(@{$rows}, 0, int($bo)) if $bo;
 			splice(@{$rows}, int($bl))    if defined $bl;
 		}
+		$rows = _apply_distinct($rows, $bcols, $bdist) if $bcols || $bdist;
 		return set_return($rows, { type => 'arrayref' });
 	}
 
@@ -1839,6 +1893,26 @@ sub selectall_arrayref {
 	}
 
 	my ($sort_col, $sort_dir) = _parse_sort_by(delete($params->{'sort_by'}), 'selectall_arrayref');
+
+	my $distinct = delete $params->{'distinct'};
+	my $columns  = delete $params->{'columns'};
+	if(defined $columns) {
+		if(ref($columns) ne 'ARRAY') {
+			Carp::carp('selectall_arrayref: columns must be an arrayref, ignoring');
+			undef $columns;
+		} else {
+			my @valid;
+			for my $c (@{$columns}) {
+				if(defined($c) && $c =~ $SAFE_QUALIFIED) {
+					push @valid, $c;
+				} else {
+					Carp::carp("selectall_arrayref: unsafe column name '$c', ignoring");
+				}
+			}
+			$columns = @valid ? \@valid : undef;
+		}
+	}
+
 	$params = $self->_merge_base_criteria($params);
 
 	if(!$join_clause && $self->{'data'} && !$self->_has_complex_criteria($params)) {
@@ -1865,6 +1939,8 @@ sub selectall_arrayref {
 				splice(@rc, 0, $offset) if $offset;
 				splice(@rc, $limit)     if defined $limit;
 			}
+			@rc = @{ _apply_distinct(\@rc, $columns, $columns ? $distinct : undef) }
+				if $columns;
 			return set_return(\@rc, { type => 'arrayref' });
 		} elsif((scalar(keys %{$params}) == 1) && defined($params->{'entry'}) && !$self->{'no_entry'}) {
 			# exists() guard: fixate() locks all keys in the slurp hash; return []
@@ -1883,6 +1959,8 @@ sub selectall_arrayref {
 				splice(@rc, 0, $offset) if $offset;
 				splice(@rc, $limit)     if defined $limit;
 			}
+			@rc = @{ _apply_distinct(\@rc, $columns, $columns ? $distinct : undef) }
+				if $columns;
 			return set_return(\@rc, { type => 'arrayref' });
 		} elsif(ref($self->{'data'}) eq 'HASH') {
 			# Scan in-memory hash for simple column criteria without touching DBI.
@@ -1906,6 +1984,7 @@ sub selectall_arrayref {
 				splice(@rc, 0, $offset) if $offset;
 				splice(@rc, $limit)     if defined $limit;
 			}
+			@rc = @{ _apply_distinct(\@rc, $columns, $distinct) } if $columns || $distinct;
 			return set_return(\@rc, { type => 'arrayref' });
 		} elsif(ref($self->{'data'}) eq 'ARRAY' && !$self->{$table}) {
 			# In-memory scan for array-backed no_entry stores (JSON, XLSX, HTML URL)
@@ -1927,6 +2006,7 @@ sub selectall_arrayref {
 				splice(@rc, 0, $offset) if $offset;
 				splice(@rc, $limit)     if defined $limit;
 			}
+			@rc = @{ _apply_distinct(\@rc, $columns, $distinct) } if $columns || $distinct;
 			return set_return(\@rc, { type => 'arrayref' });
 		}
 	}
@@ -1939,7 +2019,21 @@ sub selectall_arrayref {
 	my ($where, $wargs) = $self->_build_where($params);
 	my @query_args = @{$wargs};
 
-	my $query = "SELECT * FROM $table";
+	# DBD::CSV does not support SELECT DISTINCT; use Perl-side dedup instead.
+	my $csv_path = ($self->{'type'} // '') eq 'CSV';
+	my $select_expr;
+	if($distinct && !$csv_path) {
+		if($columns) {
+			$select_expr = 'SELECT DISTINCT ' . join(', ', @{$columns});
+		} else {
+			$select_expr = 'SELECT DISTINCT *';
+		}
+	} elsif($columns && !$csv_path) {
+		$select_expr = 'SELECT ' . join(', ', @{$columns});
+	} else {
+		$select_expr = 'SELECT *';
+	}
+	my $query = "$select_expr FROM $table";
 	$query .= " $join_clause" if $join_clause;
 	if($join_clause) {
 		$query .= " WHERE $where" if $where;
@@ -2005,6 +2099,12 @@ sub selectall_arrayref {
 		while(my $href = $sth->fetchrow_hashref()) {
 			push @{$rc}, $href;
 		}
+
+		# DBD::CSV doesn't support SELECT DISTINCT; apply Perl-side dedup.
+		if($rc && $csv_path && ($distinct || $columns)) {
+			$rc = _apply_distinct($rc, $columns, $distinct);
+		}
+
 		$c->set($key, $rc, $self->{'cache_duration'}) if $c;
 
 		if($rc && !$self->{'no_fixate'}) {
@@ -3236,10 +3336,18 @@ Each measure hashref:
     { col => 'amount', fn => 'count',         as => 'paid'      }  # COUNT(col)
     { col => 'customer', fn => 'count_distinct', as => 'customers' }
 
-C<fn> must be one of C<sum>, C<avg>, C<min>, C<max>, C<count>, C<count_distinct>
-(case-insensitive).  C<col> is required for every function except plain
-C<count>.  C<as> (the result key) must be a valid SQL identifier and must not
-duplicate another alias or a C<by> column name.
+C<fn> must be one of C<sum>, C<avg>, C<min>, C<max>, C<count>, C<count_distinct>,
+C<median>, C<stddev> (case-insensitive).  C<col> is required for every function
+except plain C<count>.  C<as> (the result key) must be a valid SQL identifier
+and must not duplicate another alias or a C<by> column name.
+
+C<median> computes the median (middle value of sorted values; average of two
+middle values for even count).  C<stddev> computes the sample standard deviation
+(using N-1 denominator).  Both are computed in Perl (no SQL pushdown); on SQL
+backends the full result set is fetched first and then folded in memory.
+
+Empty-set normalisation: C<median> and C<stddev> become C<undef> when no rows
+are present; C<stddev> on a single-row group returns C<0>.
 
 =head3 HAVING
 
@@ -3281,7 +3389,7 @@ Use a SQL backend (SQLite DSN, PostgreSQL, MySQL) for large datasets.
 Each element of C<measures> is a hashref with keys:
 
     col  => Str    # column to aggregate; omit only for plain count()
-    fn   => Str    # one of: sum avg min max count count_distinct
+    fn   => Str    # one of: sum avg min max count count_distinct median stddev
     as   => Str    # result key name (required; valid SQL identifier)
 
 =head4 Returns
@@ -3293,7 +3401,8 @@ and one key per measure C<as> alias.  Returns C<[]> (empty arrayref)
 when no groups match -- never C<undef>.
 
 Empty-set normalisation: C<sum>/C<count>/C<count_distinct> become
-C<0>; C<avg>/C<min>/C<max> become C<undef> when no rows are present.
+C<0>; C<avg>/C<min>/C<max>/C<median>/C<stddev> become C<undef> when no rows
+are present.
 
 =cut
 
@@ -3330,7 +3439,10 @@ sub aggregate
 
 	$spec->{'criteria'} = $self->_merge_base_criteria($spec->{'criteria'});
 
-	if($self->{$table}) {
+	# median and stddev are computed in Perl; skip SQL pushdown for them.
+	my $has_perl_only = grep { $PERL_ONLY_AGG_FNS{$_->{'fn'}} } @{$spec->{'measures'}};
+
+	if($self->{$table} && !$has_perl_only) {
 		my ($sql, $args) = $self->_build_aggregate_sql($spec, $join_clause, $table, $self->{$table});
 
 		if(defined($args->[0])) {
@@ -3489,6 +3601,10 @@ sub _validate_aggregate_spec
 			$sql_expr = 'COUNT(*)';
 		} elsif($fn eq 'count_distinct') {
 			$sql_expr = "COUNT(DISTINCT $col)";
+		} elsif($fn eq 'median') {
+			$sql_expr = "MEDIAN($col)";   # Perl-fold path only; SQL expr unused
+		} elsif($fn eq 'stddev') {
+			$sql_expr = "STDDEV($col)";   # Perl-fold path only; SQL expr unused
 		} else {
 			$sql_expr = uc($fn) . "($col)";
 		}
@@ -3776,6 +3892,8 @@ sub _fold_aggregate
 					$g{"__agg_$as"} = { cnt => 0 };
 				} elsif($fn eq 'count_distinct') {
 					$g{"__agg_$as"} = { seen => {} };
+				} elsif($fn eq 'median' || $fn eq 'stddev') {
+					$g{"__agg_$as"} = { vals => [] };
 				}
 			}
 			$groups{$key} = \%g;
@@ -3830,6 +3948,13 @@ sub _fold_aggregate
 				}
 			} elsif($fn eq 'count_distinct') {
 				$acc->{'seen'}{$val}++ if defined($val);
+			} elsif($fn eq 'median' || $fn eq 'stddev') {
+				if(defined($val) && length($val) && Scalar::Util::looks_like_number($val)) {
+					push @{$acc->{'vals'}}, $val + 0;
+				} elsif(defined($val) && length($val)) {
+					$acc->{'bad'}++;
+					$acc->{'first_bad'} //= $val;
+				}
 			}
 		}
 	}
@@ -3866,6 +3991,34 @@ sub _fold_aggregate
 				$val = $acc->{'cnt'};
 			} elsif($fn eq 'count_distinct') {
 				$val = scalar(keys %{$acc->{'seen'}});
+			} elsif($fn eq 'median') {
+				if($acc->{'bad'} && !$warned{$as}++) {
+					Carp::carp("aggregate: column '$col' has $acc->{'bad'} non-numeric value(s), skipped, e.g. '$acc->{'first_bad'}'");
+				}
+				my @sorted = sort { $a <=> $b } @{$acc->{'vals'}};
+				my $n = scalar @sorted;
+				if($n == 0) {
+					$val = undef;
+				} elsif($n % 2) {
+					$val = $sorted[int($n / 2)];
+				} else {
+					$val = ($sorted[$n / 2 - 1] + $sorted[$n / 2]) / 2;
+				}
+			} elsif($fn eq 'stddev') {
+				if($acc->{'bad'} && !$warned{$as}++) {
+					Carp::carp("aggregate: column '$col' has $acc->{'bad'} non-numeric value(s), skipped, e.g. '$acc->{'first_bad'}'");
+				}
+				my $n = scalar @{$acc->{'vals'}};
+				if($n < 2) {
+					$val = $n == 1 ? 0 : undef;
+				} else {
+					my $mean = 0;
+					$mean += $_ for @{$acc->{'vals'}};
+					$mean /= $n;
+					my $sq_sum = 0;
+					$sq_sum += ($_ - $mean) ** 2 for @{$acc->{'vals'}};
+					$val = sqrt($sq_sum / ($n - 1));
+				}
 			}
 			$result{$as} = $val;
 		}
@@ -4939,7 +5092,8 @@ An element of the C<measures> arrayref is not a hashref.
 
 =item C<< I<Class>: aggregate: unknown measure function 'I<fn>' >>
 
-C<fn> must be one of C<sum>, C<avg>, C<min>, C<max>, C<count>, C<count_distinct>.
+C<fn> must be one of C<sum>, C<avg>, C<min>, C<max>, C<count>, C<count_distinct>,
+C<median>, C<stddev>.
 
 =item C<< I<Class>: aggregate: measure column is required for function 'I<fn>' >>
 
