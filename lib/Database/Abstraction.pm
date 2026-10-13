@@ -511,7 +511,7 @@ current defaults hash, so you can read them back:
 # Subroutine to initialize with args
 sub init
 {
-	if(my $params = Params::Get::get_params(undef, @_)) {
+	if(my $params = Params::Get::get_params(undef, \@_)) {
 		if(($params->{'expires_in'} && !$params->{'cache_duration'})) {
 			# Compatibility with CHI
 			$params->{'cache_duration'} = $params->{'expires_in'};
@@ -940,7 +940,7 @@ for chaining.  Croaks if the object is not backed by a Redis connection.
 sub select
 {
 	my $self = shift;
-	my $db_num = Params::Get::get_params('database', @_)->{'database'};
+	my $db_num = Params::Get::get_params('database', \@_)->{'database'};
 
 	Carp::croak(ref($self), ': select: db number must be a non-negative integer')
 		unless defined($db_num) && $db_num =~ /\A\d+\z/;
@@ -970,7 +970,7 @@ sub _open :Protected
 	do { my $c = (caller)[0]; Carp::croak('Illegal Operation: _open may only be called within ', __PACKAGE__) unless $c && $c->isa(__PACKAGE__) };
 
 	my $self = shift;
-	my $params = Params::Get::get_params(undef, @_);
+	my $params = Params::Get::get_params(undef, \@_);
 
 	$params->{'sep_char'} ||= $self->{'sep_char'} ? $self->{'sep_char'} : '!';
 	my $max_slurp_size = $params->{'max_slurp_size'} || $self->{'max_slurp_size'};
@@ -2571,13 +2571,12 @@ sub count
 
 	$self->_open_table({});
 
+	my $params = Params::Get::get_params(undef, \@_) // {};
 	if($self->{'berkeley'}) {
-		my $params = Params::Get::get_params(undef, \@_) // {};
 		$params = $self->_merge_base_criteria($params);
 		return scalar @{$self->_scan_berkeley($params)};
 	}
 
-	my $params = Params::Get::get_params(undef, \@_);
 	my $table = $self->_open_table($params);
 	$params = $self->_merge_base_criteria($params // {});
 
