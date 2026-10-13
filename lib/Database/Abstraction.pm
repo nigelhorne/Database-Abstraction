@@ -104,11 +104,11 @@ Database::Abstraction - Read-only Database Abstraction Layer (ORM)
 
 =head1 VERSION
 
-Version 0.49
+Version 0.50
 
 =cut
 
-our $VERSION = '0.49';
+our $VERSION = '0.50';
 
 =head1 DESCRIPTION
 
@@ -871,6 +871,14 @@ sub new {
 			croak("$class: unsafe table name '$src->{table}'")
 				unless $src->{'table'} =~ $SAFE_QUALIFIED;
 		}
+		# redis_key: the literal Redis key name used for lookups.  It is
+		# intentionally NOT validated as a SQL identifier — Redis key names
+		# may contain colons, hyphens and other non-SQL characters.  Only
+		# accepted when a database (redis://) URL is also present so it
+		# cannot be injected into non-Redis SQL paths.
+		if(defined $src->{'redis_key'} && !defined $src->{'database'}) {
+			croak("$class: redis_key is only valid with a redis:// database URL");
+		}
 		if(defined $src->{'base_criteria'}) {
 			my $bc = $src->{'base_criteria'};
 			croak("$class: base_criteria must be a hashref")
@@ -1034,8 +1042,12 @@ sub _open :Protected
 		}
 		$self->{'_redis'}->select($db_idx) if $db_idx;
 
-		my $id   = $self->{'id'};
-		my @keys = $self->{'_redis'}->keys("${table}:*");
+		my $id        = $self->{'id'};
+		# redis_key overrides table for the actual Redis key lookup so that
+		# callers can pass an arbitrary key name (colons, hyphens, etc.) without
+		# it needing to pass the SQL-identifier check on the table parameter.
+		my $redis_key = $self->{'redis_key'} // $table;
+		my @keys = $self->{'_redis'}->keys("${redis_key}:*");
 
 		if($self->{'no_entry'}) {
 			my @data;
@@ -1047,11 +1059,46 @@ sub _open :Protected
 		} else {
 			my %data;
 			for my $key (@keys) {
-				(my $entry = $key) =~ s/\A\Q${table}\E://;
+				(my $entry = $key) =~ s/\A\Q${redis_key}\E://;
 				my %fields = $self->{'_redis'}->hgetall($key);
 				$data{$entry} = { $id => $entry, %fields } if %fields;
 			}
 			$self->{'data'} = %data ? \%data : undef;
+		}
+
+		# Fallback: if no compound "keyname:entry" sub-keys were found, try
+		# the key itself as a standalone value.  This supports any Redis data
+		# structure (hash, list, set, sorted set, string) stored under a plain
+		# key rather than the keyname:entry compound-key convention.
+		unless(@keys) {
+			my $key_type = lc($self->{'_redis'}->type($redis_key));
+			if($key_type eq 'hash') {
+				my %fields = $self->{'_redis'}->hgetall($redis_key);
+				if(%fields) {
+					$self->{'data'} = $self->{'no_entry'}
+						? [\%fields]
+						: { $redis_key => { $id => $redis_key, %fields } };
+				}
+			} elsif($key_type eq 'list') {
+				my @items = $self->{'_redis'}->lrange($redis_key, 0, -1);
+				my $i = 0;
+				$self->{'data'} = [map { { index => $i++, value => $_ } } @items];
+			} elsif($key_type eq 'set') {
+				my @members = sort $self->{'_redis'}->smembers($redis_key);
+				$self->{'data'} = [map { { member => $_ } } @members];
+			} elsif($key_type eq 'zset') {
+				my @pairs = $self->{'_redis'}->zrange($redis_key, 0, -1, 'WITHSCORES');
+				my @rows;
+				while(@pairs) {
+					my($m, $s) = splice @pairs, 0, 2;
+					push @rows, { member => $m, score => $s };
+				}
+				$self->{'data'} = \@rows;
+			} elsif($key_type eq 'string') {
+				my $val = $self->{'_redis'}->get($redis_key);
+				$self->{'data'} = [{ value => $val }] if defined $val;
+			}
+			# 'none': key does not exist -- data stays undef; returns empty below.
 		}
 
 		$self->{'type'}     = 'Redis';
@@ -1883,6 +1930,11 @@ sub selectall_arrayref {
 			return set_return(\@rc, { type => 'arrayref' });
 		}
 	}
+
+	# Redis backend: when _open found no data (key doesn't exist or is empty),
+	# avoid crashing on the DBI path which has no handle for a Redis connection.
+	return set_return([], { type => 'arrayref' })
+		if ($self->{'type'} // '') eq 'Redis';
 
 	my ($where, $wargs) = $self->_build_where($params);
 	my @query_args = @{$wargs};
