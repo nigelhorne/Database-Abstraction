@@ -1,6 +1,6 @@
 Revision history for Database-Abstraction
 
-0.52	Fri Oct 23 2026
+0.52
 	[ Bug Fixes ]
 	- use Sub::Private { mode => 'enforce' } instead of bare use Sub::Private.
 	  Sub::Private 0.07 changed the global default mode from 'enforce' to
