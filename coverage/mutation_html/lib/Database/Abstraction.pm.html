@@ -293,8 +293,8 @@ a.intra-dot:hover { color: #7700bb; }
 <div class="nav"><a href="../../../index.html">Index</a>
  <a href="Abstraction/Query.pm.html">Next ➡</a></div><div class='summary'>
 <strong>Structural Coverage (Approximate)</strong><p>
-TER1 (Statement): 86.02%<br>
-TER2 (Branch): 77.29%<br>
+TER1 (Statement): 86.07%<br>
+TER2 (Branch): 77.36%<br>
 TER3 (LCSAJ): 100.0% (132/132)<br>
 Approximate LCSAJ segments: 1291<br>
 </div>
@@ -446,7 +446,7 @@ Approximate LCSAJ segments: 1291<br>
 </span><span class="">  105: 
 </span><span class="">  106: =head1 VERSION
 </span><span class="">  107: 
-</span><span class="">  108: Version 0.51
+</span><span class="">  108: Version 0.52
 </span><span class="">  109: 
 </span><span class="">  110: =cut
 </span><span class="">  111: 
@@ -2879,7 +2879,7 @@ is( func(VALUE_AT_BOUNDARY), EXPECTED, &#39;Test boundary behaviour&#39; );
 </span><span class=""> 2468: 				my @rc = ($self-&gt;{&#39;data&#39;}-&gt;{$params-&gt;{&#39;entry&#39;}});
 </span><span class=""> 2469: 				splice(@rc, 0, $offset) if $offset;
 </span><span class=""> 2470: 				splice(@rc, $limit)     if defined $limit;
-</span><span class="survived-2 tooltip" data-tooltip="Boolean logic mutation survived. Add tests covering both true and false paths. Return value mutation survived. Add tests asserting exact return values."> 2471: 				return wantarray ? @rc : $rc[0];
+</span><span class="survived-2 tooltip" data-tooltip="Return value mutation survived. Add tests asserting exact return values. Boolean logic mutation survived. Add tests covering both true and false paths."> 2471: 				return wantarray ? @rc : $rc[0];
 </span>
 					<details class="mutant-details">
 					<summary>Mutants (Total: 2, Killed: 0, Survived: 2)</summary>
