@@ -378,7 +378,7 @@ Approximate LCSAJ segments: 1291<br>
 </span><span class="">   37: use Params::Get 0.17;
 </span><span class="">   38: use Return::Set qw(set_return);
 </span><span class="">   39: use Scalar::Util;
-</span><span class="">   40: use Sub::Private;
+</span><span class="">   40: use Sub::Private { mode =&gt; &#39;enforce&#39; };
 </span><span class="">   41: use Sub::Protected;
 </span><span class="">   42: 
 </span><span class="">   43: # File::Slurp::Remote is loaded lazily in _open() when host =&gt; &#39;...&#39; is given.
@@ -450,7 +450,7 @@ Approximate LCSAJ segments: 1291<br>
 </span><span class="">  109: 
 </span><span class="">  110: =cut
 </span><span class="">  111: 
-</span><span class="">  112: our $VERSION = &#39;0.51&#39;;
+</span><span class="">  112: our $VERSION = &#39;0.52&#39;;
 </span><span class="">  113: 
 </span><span class="">  114: =head1 DESCRIPTION
 </span><span class="">  115: 
@@ -2879,7 +2879,7 @@ is( func(VALUE_AT_BOUNDARY), EXPECTED, &#39;Test boundary behaviour&#39; );
 </span><span class=""> 2468: 				my @rc = ($self-&gt;{&#39;data&#39;}-&gt;{$params-&gt;{&#39;entry&#39;}});
 </span><span class=""> 2469: 				splice(@rc, 0, $offset) if $offset;
 </span><span class=""> 2470: 				splice(@rc, $limit)     if defined $limit;
-</span><span class="survived-2 tooltip" data-tooltip="Return value mutation survived. Add tests asserting exact return values. Boolean logic mutation survived. Add tests covering both true and false paths."> 2471: 				return wantarray ? @rc : $rc[0];
+</span><span class="survived-2 tooltip" data-tooltip="Boolean logic mutation survived. Add tests covering both true and false paths. Return value mutation survived. Add tests asserting exact return values."> 2471: 				return wantarray ? @rc : $rc[0];
 </span>
 					<details class="mutant-details">
 					<summary>Mutants (Total: 2, Killed: 0, Survived: 2)</summary>
