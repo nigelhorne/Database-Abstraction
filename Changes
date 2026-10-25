@@ -1,5 +1,9 @@
 Revision history for Database-Abstraction
 
+0.53
+	[ Tests ]
+	- Added more domain tests
+
 0.52	Fri Oct 23 12:19:45 PM EDT 2026
 	[ Bug Fixes ]
 	- use Sub::Private { mode => 'enforce' } instead of bare use Sub::Private.
