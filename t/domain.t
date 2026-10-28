@@ -787,9 +787,10 @@ subtest 'multibyte — data values: non-ASCII survives round-trip via CSV slurp'
 		our @ISA = ('Database::Abstraction');
 	}
 
-	my $tmpdir_abs = (File::Spec->splitpath($tmpcsv))[1];
-	$tmpdir_abs =~ s{[\\/]$}{};
-	(my $dbname_short = $tmpcsv) =~ s{.*/}{}; $dbname_short =~ s/\.csv$//;
+	my ($vol, $dirs, $base) = File::Spec->splitpath($tmpcsv);
+	my $tmpdir_abs = File::Spec->catpath($vol, $dirs, '');
+	$tmpdir_abs =~ s{[\\/]+$}{};
+	(my $dbname_short = $base) =~ s/\.csv$//;
 
 	plan tests => 4;
 	my $db;

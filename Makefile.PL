@@ -44,7 +44,7 @@ WriteMakefile(
 		'Params::Get' => 0.17,
 		'Return::Set' => 0,
 		'Scalar::Util' => 0,
-		'Sub::Private' => 0,
+		'Sub::Private' => 0.09,
 		'Sub::Protected' => 0,
 		# Core modules required lazily at runtime — not listed as deps because
 		# MIN_PERL_VERSION (5.010) guarantees their presence on all targets:
