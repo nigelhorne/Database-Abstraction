@@ -23,6 +23,7 @@ requires 'strict';
 requires 'warnings';
 recommends 'DBD::CSV', '0.64';   # CSV/PSV/TSV DBI backend; 0.64+ required for SELECT DISTINCT
 recommends 'DBD::Excel';   # .xls (old binary Excel) backend
+recommends 'DBD::MariaDB';   # MariaDB/MySQL backend (preferred over DBD::mysql for MariaDB)
 recommends 'DBM::Deep';   # .dbm/.deep/magic-byte .db backend
 recommends 'File::Slurp::Remote';   # remote host backend (SSH/SCP)
 recommends 'Gzip::Faster';   # gzip CSV backend

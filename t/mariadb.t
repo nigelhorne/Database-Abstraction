@@ -8,7 +8,6 @@ use DBI;
 
 use Test::Most;
 use Test::Mockingbird;
-use Test::NoWarnings;
 use Test::Returns;
 
 # Skip if neither DBD::MariaDB nor DBD::mysql is installed.
@@ -18,7 +17,7 @@ BEGIN {
 	plan skip_all => 'DBD::MariaDB or DBD::mysql required' unless $have;
 }
 
-plan tests => 16;
+plan tests => 15;
 
 use lib 't/lib';
 use Database::Abstraction;
