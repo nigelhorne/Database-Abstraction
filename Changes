@@ -1,6 +1,9 @@
 Revision history for Database-Abstraction
 
 0.53
+	[ Enhancements ]
+	- Added support for MariaDB
+
 	[ Tests ]
 	- Added more domain tests
 	- Test user@host is supported as a username

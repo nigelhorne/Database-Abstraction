@@ -105,6 +105,7 @@ WriteMakefile(
 			# Optional runtime backends — lazy-loaded; install for full functionality
 			'DBD::CSV' => 0.64,		# CSV/PSV/TSV DBI backend; 0.64+ required for SELECT DISTINCT
 			'DBD::Excel' => 0,		# .xls (old binary Excel) backend
+			'DBD::MariaDB' => 0,		# MariaDB/MySQL backend (preferred over DBD::mysql for MariaDB)
 			'DBM::Deep' => 0,		# .dbm/.deep/magic-byte .db backend
 			'File::Slurp::Remote' => 0,	# remote host backend (SSH/SCP)
 			'Gzip::Faster' => 0,		# gzip CSV backend
