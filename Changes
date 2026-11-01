@@ -1,5 +1,15 @@
 Revision history for Database-Abstraction
 
+0.54	TBD
+	[ Enhancements ]
+	- join 'on' condition now accepts Perl-native forms in addition to raw SQL
+	  strings.  Hashref form { 'left.col' => 'right.col', ... } expresses one
+	  or more equality conditions (multiple pairs are AND-ed); arrayref 2-element
+	  form [ 'left.col', 'right.col' ] implies '='; arrayref 3-element form
+	  [ 'left.col', operator, 'right.col' ] accepts any of = != <> < > <= >=.
+	  Column names in both structured forms are validated against $SAFE_QUALIFIED
+	  to prevent SQL injection.  The existing raw-string form is unchanged.
+
 0.53	Wed Oct 28 12:45:08 PM EDT 2026
 	[ Enhancements ]
 	- Added support for MariaDB via dbi:MariaDB: DSN (maps to mysql dialect)

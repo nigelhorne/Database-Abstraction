@@ -483,14 +483,30 @@ hashrefs) describing the join:
 
     join => {
         table => 'dept',
-        on    => 'employees.dept_id = dept.id',
+        on    => 'employees.dept_id = dept.id',   # raw SQL string
         type  => 'LEFT',    # INNER (default) | LEFT | RIGHT | FULL | CROSS
     }
 
+The C<on> condition can also be expressed in Perl-native forms that avoid
+writing raw SQL:
+
+    # Hashref: { left_col => right_col }  — equality, SQL-injection-safe
+    join => { table => 'dept', on => { 'employees.dept_id' => 'dept.id' } }
+
+    # Multi-column equality join (hash pairs AND-ed together)
+    join => { table => 'dept', on => { 'e.dept_id' => 'd.id', 'e.region' => 'd.region' } }
+
+    # Arrayref 2-element: [ left_col, right_col ]  — implies '='
+    join => { table => 'dept', on => [ 'employees.dept_id', 'dept.id' ] }
+
+    # Arrayref 3-element: [ left_col, operator, right_col ]
+    # Valid operators: = != <> < > <= >=
+    join => { table => 'ranges', on => [ 'log.score', '>=', 'ranges.min_score' ] }
+
     # Multiple joins
     join => [
-        { table => 'dept',    on => 'e.dept_id   = dept.id'   },
-        { table => 'country', on => 'e.country_id = country.id' },
+        { table => 'dept',    on => { 'e.dept_id'    => 'dept.id'    } },
+        { table => 'country', on => { 'e.country_id' => 'country.id' } },
     ]
 
 =head1 SUBROUTINES/METHODS
@@ -4382,8 +4398,37 @@ sub _build_joins
 		my $jtable = $j->{'table'} or Carp::croak('join: missing "table"');
 		Carp::croak("join: unsafe table name '$jtable'")
 			unless $jtable =~ $SAFE_QUALIFIED;
-		my $on     = $j->{'on'}    or Carp::croak('join: missing "on" condition');
+		my $on_raw = $j->{'on'} or Carp::croak('join: missing "on" condition');
 		Carp::croak("Invalid JOIN type: $type") unless $VALID_JOIN_TYPES{$type};
+		my $on;
+		if(ref($on_raw) eq 'HASH') {
+			my @parts;
+			for my $left (sort keys %{$on_raw}) {
+				my $right = $on_raw->{$left};
+				Carp::croak("join: unsafe on column '$left'")
+					unless $left =~ $SAFE_QUALIFIED;
+				Carp::croak("join: unsafe on column '$right'")
+					unless $right =~ $SAFE_QUALIFIED;
+				push @parts, "$left = $right";
+			}
+			$on = join(' AND ', @parts);
+		} elsif(ref($on_raw) eq 'ARRAY') {
+			my @elems = @{$on_raw};
+			Carp::croak('join: on arrayref must have 2 or 3 elements')
+				unless @elems == 2 || @elems == 3;
+			my ($left, $op, $right) = @elems == 2
+				? ($elems[0], '=', $elems[1])
+				: @elems;
+			Carp::croak("join: unsafe on column '$left'")
+				unless $left =~ $SAFE_QUALIFIED;
+			Carp::croak("join: unsafe on column '$right'")
+				unless $right =~ $SAFE_QUALIFIED;
+			Carp::croak("join: invalid on operator '$op'")
+				unless $op =~ /\A(?:=|!=|<>|<|>|<=|>=)\z/;
+			$on = "$left $op $right";
+		} else {
+			$on = $on_raw;
+		}
 		push @clauses, "$type JOIN $jtable ON ($on)";
 	}
 
