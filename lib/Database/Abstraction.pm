@@ -999,7 +999,7 @@ sub _open :Protected
 
 	$self->_trace(ref($self), ": _open $table");
 
-	return if($self->{$table});
+	return if($self->{'_dbh'}{$table});
 
 	# Read in the database
 	my $dbh;
@@ -1030,7 +1030,7 @@ sub _open :Protected
 		}
 
 		$self->{'type'} = 'DBI';
-		$self->{$table} = $dbh;
+		$self->{'_dbh'}{$table} = $dbh;
 		$self->{'_updated'} = time();
 		return $self;
 	}
@@ -1212,7 +1212,7 @@ sub _open :Protected
 
 		$self->{'_updated'} = time();
 		$self->_fixate($self->{'data'}) if $self->{'data'} && ref($self->{'data'}) eq 'HASH';
-		$self->{$table} = undef;	# No DBI handle; all queries use the in-memory data path
+		$self->{'_dbh'}{$table} = undef;	# No DBI handle; all queries use the in-memory data path
 		return $self;
 	}
 
@@ -1696,7 +1696,7 @@ sub _open :Protected
 	# ref() must be called on the variable, not on the result of 'eq'
 	$self->_fixate($self->{'data'}) if($self->{'data'} && (ref($self->{'data'}) eq 'HASH'));
 
-	$self->{$table} = $dbh;
+	$self->{'_dbh'}{$table} = $dbh;
 	my @statb = stat($slurp_file);
 	$self->{'_updated'} = $statb[9];
 
@@ -2007,7 +2007,7 @@ sub selectall_arrayref {
 			}
 			@rc = @{ _apply_distinct(\@rc, $columns, $distinct) } if $columns || $distinct;
 			return set_return(\@rc, { type => 'arrayref' });
-		} elsif(ref($self->{'data'}) eq 'ARRAY' && !$self->{$table}) {
+		} elsif(ref($self->{'data'}) eq 'ARRAY' && !$self->{'_dbh'}{$table}) {
 			# In-memory scan for array-backed no_entry stores (JSON, XLSX, HTML URL)
 			# where there is no DBI handle.  Mirrors the equivalent path in count().
 			$self->_debug("$table: selectall_arrayref in-memory array scan with criteria");
@@ -2073,7 +2073,7 @@ sub selectall_arrayref {
 		push @query_args, $limit;
 	} elsif(defined($offset)) {
 		# SQLite requires a LIMIT clause when OFFSET is present; -1 means no limit
-		my $dbh = $self->{$table};
+		my $dbh = $self->{'_dbh'}{$table};
 		$query .= ' LIMIT -1'
 			if ($dbh && (($dbh->{Driver}{Name} // '') eq 'SQLite'))
 			|| (($self->{'_dialect'} // '') eq 'sqlite');
@@ -2111,7 +2111,7 @@ sub selectall_arrayref {
 		$self->_debug('cache not used');
 	}
 
-	if(my $sth = $self->{$table}->prepare_cached($query)) {
+	if(my $sth = $self->{'_dbh'}{$table}->prepare_cached($query)) {
 		$sth->execute(@query_args) || croak("$query: @query_args");
 
 		my $rc;
@@ -2289,7 +2289,7 @@ sub each_row
 				my $row = $_;
 				all { $self->_match_criterion(exists($row->{$_}) ? $row->{$_} : undef, $params->{$_}, $_) } @param_keys
 			} values %{$self->{'data'}};
-		} elsif(ref($self->{'data'}) eq 'ARRAY' && !$self->{$table}) {
+		} elsif(ref($self->{'data'}) eq 'ARRAY' && !$self->{'_dbh'}{$table}) {
 			$self->_debug("$table: each_row in-memory array scan with criteria");
 			my @param_keys = keys %{$params};
 			@rc = grep {
@@ -2342,7 +2342,7 @@ sub each_row
 		$query .= ' LIMIT ?';
 		push @query_args, $limit;
 	} elsif(defined($offset)) {
-		my $dbh = $self->{$table};
+		my $dbh = $self->{'_dbh'}{$table};
 		$query .= ' LIMIT -1'
 			if ($dbh && (($dbh->{Driver}{Name} // '') eq 'SQLite'))
 			|| (($self->{'_dialect'} // '') eq 'sqlite');
@@ -2358,8 +2358,8 @@ sub each_row
 		$self->_debug("each_row $query");
 	}
 
-	my $sth = $self->{$table}->prepare_cached($query)
-		or Carp::croak(ref($self), ": each_row prepare failed: ", $self->{$table}->errstr());
+	my $sth = $self->{'_dbh'}{$table}->prepare_cached($query)
+		or Carp::croak(ref($self), ": each_row prepare failed: ", $self->{'_dbh'}{$table}->errstr());
 	$sth->execute(@query_args) || croak("$query: @query_args");
 
 	my $n = 0;
@@ -2514,7 +2514,7 @@ sub selectall_array
 				splice(@rc, $limit)     if defined $limit;
 			}
 			return @rc;
-		} elsif(ref($self->{'data'}) eq 'ARRAY' && !$self->{$table}) {
+		} elsif(ref($self->{'data'}) eq 'ARRAY' && !$self->{'_dbh'}{$table}) {
 			# In-memory scan for array-backed no_entry stores (JSON, XLSX, HTML URL)
 			# where there is no DBI handle.  Mirrors the equivalent path in count().
 			$self->_debug("$table: selectall_array in-memory array scan with criteria");
@@ -2573,7 +2573,7 @@ sub selectall_array
 		}
 	} elsif(defined($offset)) {
 		# List context, offset but no limit — SQLite requires LIMIT with OFFSET
-		my $dbh = $self->{$table};
+		my $dbh = $self->{'_dbh'}{$table};
 		$query .= ' LIMIT -1'
 			if ($dbh && (($dbh->{Driver}{Name} // '') eq 'SQLite'))
 			|| (($self->{'_dialect'} // '') eq 'sqlite');
@@ -2612,7 +2612,7 @@ sub selectall_array
 		$self->_debug('cache not used');
 	}
 
-	if(my $sth = $self->{$table}->prepare_cached($query)) {
+	if(my $sth = $self->{'_dbh'}{$table}->prepare_cached($query)) {
 		$sth->execute(@query_args) || croak("$query: @query_args");
 
 		my $rc;
@@ -2704,9 +2704,9 @@ sub count
 		} elsif((scalar(keys %{$params}) == 1) && defined($params->{'entry'}) && !$self->{'no_entry'}) {
 			# exists() guard: fixate() locks all keys in the slurp hash
 			return (exists($self->{'data'}->{$params->{'entry'}}) && $self->{'data'}->{$params->{'entry'}}) ? 1 : 0;
-		} elsif(!$self->_has_complex_criteria($params) && !$self->{$table}) {
+		} elsif(!$self->_has_complex_criteria($params) && !$self->{'_dbh'}{$table}) {
 			# General in-memory scan for simple column criteria.
-			# Only taken when there is no DBI handle ($self->{$table} is undef),
+			# Only taken when there is no DBI handle ($self->{'_dbh'}{$table} is undef),
 			# i.e. slurp-only backends like Deep.  CSV/XML/SQLite have a DBI handle
 			# and must fall through to the SQL path so that column-name validation
 			# fires in _build_where_conditions.
@@ -2767,7 +2767,7 @@ sub count
 		$self->_debug('cache not used');
 	}
 
-	if(my $sth = $self->{$table}->prepare_cached($query)) {
+	if(my $sth = $self->{'_dbh'}{$table}->prepare_cached($query)) {
 		$sth->execute(@query_args) || croak("$query: @query_args");
 
 		my $count = $sth->fetchrow_arrayref()->[0];
@@ -2924,8 +2924,8 @@ sub fetchrow_hashref {
 		}
 	}
 
-	my $sth = $self->{$table}->prepare_cached($query)
-		or Carp::croak(ref($self), ": prepare failed: ", $self->{$table}->errstr());
+	my $sth = $self->{'_dbh'}{$table}->prepare_cached($query)
+		or Carp::croak(ref($self), ": prepare failed: ", $self->{'_dbh'}{$table}->errstr());
 	$sth->execute(@query_args) || croak("$query: @query_args");
 	my $rc = $sth->fetchrow_hashref();
 	$sth->finish();
@@ -2991,7 +2991,7 @@ sub execute
 	$self->_debug("execute $query");
 
 	# Prepare and execute the query
-	my $sth = $self->{$table}->prepare_cached($query);
+	my $sth = $self->{'_dbh'}{$table}->prepare_cached($query);
 	# DBI->execute() takes a list; normalise args to an array whether it
 	# was passed as an arrayref ([30]) or a bare scalar/list (30).
 	if(exists($args->{'args'})) {
@@ -3111,7 +3111,7 @@ sub columns {
 			@cols = sort keys %{$data->[0]};
 		}
 	} else {
-		my $sth = $self->{$table}->prepare_cached("SELECT * FROM $table WHERE 1=0");
+		my $sth = $self->{'_dbh'}{$table}->prepare_cached("SELECT * FROM $table WHERE 1=0");
 		$sth->execute();
 		@cols = sort @{$sth->{NAME}};
 		$sth->finish();
@@ -3243,9 +3243,9 @@ sub schema {
 			}
 		}
 	} else {
-		my $driver = $self->{$table}->{'Driver'}{'Name'} // '';
+		my $driver = $self->{'_dbh'}{$table}->{'Driver'}{'Name'} // '';
 		if($driver eq 'SQLite') {
-			my $sth = $self->{$table}->prepare_cached("PRAGMA table_info($table)");
+			my $sth = $self->{'_dbh'}{$table}->prepare_cached("PRAGMA table_info($table)");
 			$sth->execute();
 			while(my $row = $sth->fetchrow_hashref()) {
 				$schema{$row->{'name'}} = {
@@ -3257,7 +3257,7 @@ sub schema {
 			}
 			$sth->finish();
 		} else {
-			my $sth = $self->{$table}->column_info(undef, undef, $table, '%');
+			my $sth = $self->{'_dbh'}{$table}->column_info(undef, undef, $table, '%');
 			if($sth) {
 				while(my $row = $sth->fetchrow_hashref()) {
 					$schema{$row->{'COLUMN_NAME'}} = {
@@ -3307,7 +3307,7 @@ sub dbi_source
 	my $self = shift;
 
 	my $table = $self->_open_table({});
-	my $dbh   = $self->{$table};
+	my $dbh   = $self->{'_dbh'}{$table};
 
 	return undef unless $dbh && ref($dbh) && (($dbh->{Driver}{Name} // '') eq 'SQLite');
 
@@ -3446,7 +3446,7 @@ sub aggregate
 
 	my $spec = $self->_validate_aggregate_spec($params);
 
-	if($join_clause && !$self->{$table}) {
+	if($join_clause && !$self->{'_dbh'}{$table}) {
 		my $backend = $self->{'berkeley'} ? 'BerkeleyDB' : ($self->{'type'} // 'slurp');
 		Carp::croak(ref($self), ": aggregate: cannot aggregate a JOIN on the $backend backend");
 	}
@@ -3456,8 +3456,8 @@ sub aggregate
 	# median and stddev are computed in Perl; skip SQL pushdown for them.
 	my $has_perl_only = grep { $PERL_ONLY_AGG_FNS{$_->{'fn'}} } @{$spec->{'measures'}};
 
-	if($self->{$table} && !$has_perl_only) {
-		my ($sql, $args) = $self->_build_aggregate_sql($spec, $join_clause, $table, $self->{$table});
+	if($self->{'_dbh'}{$table} && !$has_perl_only) {
+		my ($sql, $args) = $self->_build_aggregate_sql($spec, $join_clause, $table, $self->{'_dbh'}{$table});
 
 		if(defined($args->[0])) {
 			$self->_debug("aggregate $sql: ", join(', ', @{$args}));
@@ -3479,10 +3479,10 @@ sub aggregate
 			$self->_debug('aggregate cache not used');
 		}
 
-		my $sth = $self->{$table}->prepare_cached($sql)
+		my $sth = $self->{'_dbh'}{$table}->prepare_cached($sql)
 			or do {
 				$self->_warn("aggregate prepare failed on $sql");
-				Carp::croak(ref($self), ': prepare failed: ', $self->{$table}->errstr());
+				Carp::croak(ref($self), ': prepare failed: ', $self->{'_dbh'}{$table}->errstr());
 			};
 		$sth->execute(@{$args}) or Carp::croak("$sql: @{$args}");
 
@@ -4171,7 +4171,7 @@ sub AUTOLOAD {
 			my @_rows = ref($data) eq 'ARRAY' ? @{$data} : values %{$data};
 			return map { exists($_->{$column}) ? $_->{$column} : undef } @_rows;
 		}
-		if($self->{'data'} && !$self->{$table} && !$self->_has_complex_criteria(\%params)) {
+		if($self->{'data'} && !$self->{'_dbh'}{$table} && !$self->_has_complex_criteria(\%params)) {
 			# Non-DBI backends (JSON, XLSX, HTML URL): scan in-memory data with criteria.
 			my @param_keys = keys %params;
 			my @_rows = ref($self->{'data'}) eq 'ARRAY' ? @{$self->{'data'}} : values %{$self->{'data'}};
@@ -4314,7 +4314,7 @@ sub AUTOLOAD {
 	} else {
 		$self->_debug('cache not used');
 	}
-	my $sth = $self->{$table}->prepare_cached($query) || croak($query);
+	my $sth = $self->{'_dbh'}{$table}->prepare_cached($query) || croak($query);
 	$sth->execute(@args) || croak($query);
 
 	if(wantarray) {
@@ -4361,13 +4361,15 @@ sub DESTROY
 		eval { $redis->quit() };
 	}
 
-	# Clean up database handles
-	my $table_name = $self->{'table'} || ref($self);
-	$table_name =~ s/\A.*:://;
-
-	if(my $dbh = delete $self->{$table_name}) {
-		$dbh->disconnect() if $dbh->can('disconnect');
-		$dbh->finish() if $dbh->can('finish');
+	# Clean up database handles.  They are kept apart from the object's own
+	# fields, keyed by table, so that a table may have any name -- "data" or
+	# "id" included -- without its handle overwriting the field of that name.
+	if(ref($self->{'_dbh'}) eq 'HASH') {
+		for my $dbh (grep { defined } values %{delete $self->{'_dbh'}}) {
+			next unless Scalar::Util::blessed($dbh);
+			$dbh->disconnect() if $dbh->can('disconnect');
+			$dbh->finish() if $dbh->can('finish');
+		}
 	}
 
 	# Clean up Berkeley DB
@@ -4889,9 +4891,9 @@ sub _open_table
 	}
 
 	# Open a connection if it's not already open.
-	# BerkeleyDB never sets $self->{$table} (no DBI handle) or $self->{'data'},
+	# BerkeleyDB never sets $self->{'_dbh'}{$table} (no DBI handle) or $self->{'data'},
 	# so we also guard on $self->{'berkeley'} to avoid re-tying on every call.
-	$self->_open() if(!$self->{$table} && !$self->{'data'} && !$self->{'berkeley'});
+	$self->_open() if(!$self->{'_dbh'}{$table} && !$self->{'data'} && !$self->{'berkeley'});
 
 	return $table;
 }
@@ -4904,7 +4906,7 @@ sub _quote_identifier
 
 	my $table = $self->{'table'} || ref($self);
 	$table =~ s/\A.*:://;
-	if(my $dbh = $self->{$table}) {
+	if(my $dbh = $self->{'_dbh'}{$table}) {
 		return $dbh->quote_identifier($name);
 	}
 	return qq{"$name"};

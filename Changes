@@ -9,6 +9,14 @@ Revision history for Database-Abstraction
 	  [ 'left.col', operator, 'right.col' ] accepts any of = != <> < > <= >=.
 	  Column names in both structured forms are validated against $SAFE_QUALIFIED
 	  to prevent SQL injection.  The existing raw-string form is unchanged.
+	[ Bug Fixes ]
+	- A table could not share its name with one of the object's own fields:
+	  the DBI handle was kept in the object under the table's name, so a
+	  table called "data" overwrote the rows read into memory, and reading it
+	  died with "Not an ARRAY reference" (as did DESTROY).  "id", "directory",
+	  "logger", "cache" and the rest were affected the same way.  Handles now
+	  live in $self->{'_dbh'}{$table}.  Code that reached into $self->{$table}
+	  for the handle must read $self->{'_dbh'}{$table} instead.
 
 0.53	Wed Oct 28 12:45:08 PM EDT 2026
 	[ Enhancements ]
