@@ -1,6 +1,6 @@
 Revision history for Database-Abstraction
 
-0.54	TBD
+0.54	Mon Nov  2 08:40:17 PM EST 2026
 	[ Enhancements ]
 	- join 'on' condition now accepts Perl-native forms in addition to raw SQL
 	  strings.  Hashref form { 'left.col' => 'right.col', ... } expresses one
