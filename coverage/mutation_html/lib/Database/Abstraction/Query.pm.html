@@ -360,11 +360,11 @@ Approximate LCSAJ segments: 123<br>
 </span><span class="">   19: 
 </span><span class="">   20: =head1 VERSION
 </span><span class="">   21: 
-</span><span class="">   22: Version 0.51
+</span><span class="">   22: Version 0.54
 </span><span class="">   23: 
 </span><span class="">   24: =cut
 </span><span class="">   25: 
-</span><span class="">   26: our $VERSION = &#39;0.53&#39;;
+</span><span class="">   26: our $VERSION = &#39;0.54&#39;;
 </span><span class="">   27: 
 </span><span class="">   28: =head1 SYNOPSIS
 </span><span class="">   29: 
@@ -892,7 +892,7 @@ Approximate LCSAJ segments: 123<br>
 </span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">551 → 558 → 561</span></span>  551: 	my ($query, $args, $table) = $self-&gt;_build_sql(0);
 </span><span class="">  552: 	$db-&gt;_debug(&quot;Query-&gt;all: $query&quot;);
 </span><span class="">  553: 
-</span><span class="">  554: 	my $sth = $db-&gt;{$table}-&gt;prepare_cached($query);
+</span><span class="">  554: 	my $sth = $db-&gt;{&#39;_dbh&#39;}{$table}-&gt;prepare_cached($query);
 </span><span class="">  555: 	$sth-&gt;execute(@{$args}) or croak(&quot;$query: @{$args}&quot;);
 </span><span class="">  556: 
 </span><span class="">  557: 	my @rows;
@@ -960,7 +960,7 @@ Approximate LCSAJ segments: 123<br>
 </span><span class="">  619: 
 </span><span class="">  620: 	$db-&gt;_debug(&quot;Query-&gt;first: $query&quot;);
 </span><span class="">  621: 
-</span><span class="">  622: 	my $sth = $db-&gt;{$table}-&gt;prepare_cached($query);
+</span><span class="">  622: 	my $sth = $db-&gt;{&#39;_dbh&#39;}{$table}-&gt;prepare_cached($query);
 </span><span class="">  623: 	$sth-&gt;execute(@{$args}) or croak(&quot;$query: @{$args}&quot;);
 </span><span class="">  624: 
 </span><span class="">  625: 	my $row = $sth-&gt;fetchrow_hashref();
@@ -1016,7 +1016,7 @@ Approximate LCSAJ segments: 123<br>
 </span><span class="">  675: 	my ($query, $args, $table) = $self-&gt;_build_sql(1);
 </span><span class="">  676: 	$db-&gt;_debug(&quot;Query-&gt;count: $query&quot;);
 </span><span class="">  677: 
-</span><span class="">  678: 	my $sth = $db-&gt;{$table}-&gt;prepare_cached($query);
+</span><span class="">  678: 	my $sth = $db-&gt;{&#39;_dbh&#39;}{$table}-&gt;prepare_cached($query);
 </span><span class="">  679: 	$sth-&gt;execute(@{$args}) or croak(&quot;$query: @{$args}&quot;);
 </span><span class="">  680: 
 </span><span class="">  681: 	my $row = $sth-&gt;fetchrow_arrayref();
@@ -1096,7 +1096,7 @@ Approximate LCSAJ segments: 123<br>
 </span><span class=""><span class="lcsaj-tip"><span class="lcsaj-dot">●</span><span class="lcsaj-tip-text">755 → 769 → 773</span></span>  755: 	my ($query, $args, $table) = $self-&gt;_build_sql(0);
 </span><span class="">  756: 	$db-&gt;_debug(&quot;Query-&gt;each: $query&quot;);
 </span><span class="">  757: 
-</span><span class="">  758: 	my $sth = $db-&gt;{$table}-&gt;prepare_cached($query);
+</span><span class="">  758: 	my $sth = $db-&gt;{&#39;_dbh&#39;}{$table}-&gt;prepare_cached($query);
 </span><span class="">  759: 	$sth-&gt;execute(@{$args}) or croak(&quot;$query: @{$args}&quot;);
 </span><span class="">  760: 
 </span><span class="">  761: 	my $n = 0;
