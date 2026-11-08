@@ -293,8 +293,8 @@ a.intra-dot:hover { color: #7700bb; }
 <div class="nav"><a href="../../../index.html">Index</a>
  <a href="Abstraction/Query.pm.html">Next ➡</a></div><div class='summary'>
 <strong>Structural Coverage (Approximate)</strong><p>
-TER1 (Statement): 86.40%<br>
-TER2 (Branch): 77.89%<br>
+TER1 (Statement): 86.46%<br>
+TER2 (Branch): 77.96%<br>
 TER3 (LCSAJ): 100.0% (133/133)<br>
 Approximate LCSAJ segments: 1317<br>
 </div>
@@ -1704,7 +1704,7 @@ is( func(INPUT), EXPECTED, &#39;Verify correct return value&#39; );
 </span><span class=""> 1213: 				$self-&gt;{&#39;data&#39;} = \%data;
 </span><span class=""> 1214: 			}
 </span><span class=""> 1215: 			$self-&gt;{&#39;type&#39;} = &#39;HTML&#39;;
-</span><span class="survived-2 tooltip" data-tooltip="Return value mutation survived. Add tests asserting exact return values. Boolean logic mutation survived. Add tests covering both true and false paths."> 1216: 		}
+</span><span class="survived-2 tooltip" data-tooltip="Boolean logic mutation survived. Add tests covering both true and false paths. Return value mutation survived. Add tests asserting exact return values."> 1216: 		}
 </span>
 					<details class="mutant-details">
 					<summary>Mutants (Total: 2, Killed: 0, Survived: 2)</summary>
@@ -1806,7 +1806,7 @@ is( func(INPUT), EXPECTED, &#39;Verify correct return value&#39; );
 </span><span class=""> 1276: 				my (@pids, @fallback_exts);
 </span><span class=""> 1277: 				for my $ext (@probe_exts) {
 </span><span class=""> 1278: 					my $pid = eval { fork() };
-</span><span class="survived-2 tooltip" data-tooltip="Mutation survived. Add targeted tests to validate this branch. Boundary mutation survived. Add tests around edge values (e.g. min, max, off-by-one)."> 1279: 					if(!defined $pid) {
+</span><span class="survived-2 tooltip" data-tooltip="Boundary mutation survived. Add tests around edge values (e.g. min, max, off-by-one). Mutation survived. Add targeted tests to validate this branch."> 1279: 					if(!defined $pid) {
 </span>
 					<details class="mutant-details">
 					<summary>Mutants (Total: 2, Killed: 0, Survived: 2)</summary>
@@ -2250,7 +2250,7 @@ is( func(VALUE_AT_BOUNDARY), EXPECTED, &#39;Test boundary behaviour&#39; );
 </span><span class=""> 1700: 	}
 </span><span class=""> 1701: 
 </span><span class=""> 1702: 	# ref() must be called on the variable, not on the result of &#39;eq&#39;
-</span><span class="survived-2 tooltip" data-tooltip="Boolean logic mutation survived. Add tests covering both true and false paths. Return value mutation survived. Add tests asserting exact return values."> 1703: 	$self-&gt;_fixate($self-&gt;{&#39;data&#39;}) if($self-&gt;{&#39;data&#39;} &amp;&amp; (ref($self-&gt;{&#39;data&#39;}) eq &#39;HASH&#39;));
+</span><span class="survived-2 tooltip" data-tooltip="Return value mutation survived. Add tests asserting exact return values. Boolean logic mutation survived. Add tests covering both true and false paths."> 1703: 	$self-&gt;_fixate($self-&gt;{&#39;data&#39;}) if($self-&gt;{&#39;data&#39;} &amp;&amp; (ref($self-&gt;{&#39;data&#39;}) eq &#39;HASH&#39;));
 </span>
 					<details class="mutant-details">
 					<summary>Mutants (Total: 2, Killed: 0, Survived: 2)</summary>
@@ -2303,7 +2303,7 @@ is( func(INPUT), EXPECTED, &#39;Verify correct return value&#39; );
 </pre>
 								</div>
 							</li></ul></details>
-<span class="survived-2 tooltip" data-tooltip="Return value mutation survived. Add tests asserting exact return values. Boolean logic mutation survived. Add tests covering both true and false paths."> 1714: # $cols     - arrayref of column names to keep, or undef for all columns
+<span class="survived-2 tooltip" data-tooltip="Boolean logic mutation survived. Add tests covering both true and false paths. Return value mutation survived. Add tests asserting exact return values."> 1714: # $cols     - arrayref of column names to keep, or undef for all columns
 </span>
 					<details class="mutant-details">
 					<summary>Mutants (Total: 2, Killed: 0, Survived: 2)</summary>
@@ -2961,7 +2961,7 @@ is( func(VALUE_AT_BOUNDARY), EXPECTED, &#39;Test boundary behaviour&#39; );
 </span><span class=""> 2235: 			splice(@{$rows}, 0, int($bo)) if $bo;
 </span><span class=""> 2236: 			splice(@{$rows}, int($bl))    if defined $bl;
 </span><span class=""> 2237: 		}
-</span><span class="survived-2 tooltip" data-tooltip="Return value mutation survived. Add tests asserting exact return values. Boolean logic mutation survived. Add tests covering both true and false paths."> 2238: 		my $n = 0;
+</span><span class="survived-2 tooltip" data-tooltip="Boolean logic mutation survived. Add tests covering both true and false paths. Return value mutation survived. Add tests asserting exact return values."> 2238: 		my $n = 0;
 </span>
 					<details class="mutant-details">
 					<summary>Mutants (Total: 2, Killed: 0, Survived: 2)</summary>
@@ -3319,7 +3319,7 @@ is( func(VALUE_AT_BOUNDARY), EXPECTED, &#39;Test boundary behaviour&#39; );
 </span><span class=""> 2487: 		} elsif((scalar(keys %{$params}) == 1) &amp;&amp; defined($params-&gt;{&#39;entry&#39;}) &amp;&amp; !$self-&gt;{&#39;no_entry&#39;}) {
 </span><span class=""> 2488: 			# exists() guard: fixate() locks all keys; return empty list (not undef)
 </span><span class=""> 2489: 			# for a missing entry so callers in list context get 0 elements not 1
-</span><span class="survived-2 tooltip" data-tooltip="Boolean logic mutation survived. Add tests covering both true and false paths. Return value mutation survived. Add tests asserting exact return values."> 2490: 			return () unless exists($self-&gt;{&#39;data&#39;}-&gt;{$params-&gt;{&#39;entry&#39;}});
+</span><span class="survived-2 tooltip" data-tooltip="Return value mutation survived. Add tests asserting exact return values. Boolean logic mutation survived. Add tests covering both true and false paths."> 2490: 			return () unless exists($self-&gt;{&#39;data&#39;}-&gt;{$params-&gt;{&#39;entry&#39;}});
 </span>
 					<details class="mutant-details">
 					<summary>Mutants (Total: 2, Killed: 0, Survived: 2)</summary>
@@ -3411,7 +3411,7 @@ is( func(INPUT), EXPECTED, &#39;Verify correct return value&#39; );
 </span><p> <b> Mutants (Total: 1, Killed: 1, Survived: 0)</b><p><span class=""> 2534: 					@rc = sort { ($b-&gt;{$sort_col} // &#39;&#39;) cmp ($a-&gt;{$sort_col} // &#39;&#39;) } @rc;
 </span><span class=""> 2535: 				} else {
 </span><span class=""> 2536: 					@rc = sort { ($a-&gt;{$sort_col} // &#39;&#39;) cmp ($b-&gt;{$sort_col} // &#39;&#39;) } @rc;
-</span><span class="survived-2 tooltip" data-tooltip="Boolean logic mutation survived. Add tests covering both true and false paths. Return value mutation survived. Add tests asserting exact return values."> 2537: 				}
+</span><span class="survived-2 tooltip" data-tooltip="Return value mutation survived. Add tests asserting exact return values. Boolean logic mutation survived. Add tests covering both true and false paths."> 2537: 				}
 </span>
 					<details class="mutant-details">
 					<summary>Mutants (Total: 2, Killed: 0, Survived: 2)</summary>
