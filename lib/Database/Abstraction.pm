@@ -105,7 +105,7 @@ Database::Abstraction - Read-only Database Abstraction Layer (ORM)
 
 =head1 VERSION
 
-Version 0.56
+Version 0.57
 
 =cut
 

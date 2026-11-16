@@ -19,7 +19,7 @@ Database::Abstraction::Query - Fluent, chainable query builder for Database::Abs
 
 =head1 VERSION
 
-Version 0.56
+Version 0.57
 
 =cut
 
