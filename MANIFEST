@@ -111,4 +111,5 @@ t/vars.t
 t/version.t
 t/xlsx.t
 t/xml.t
+t/xml_multi_top_level.t
 t/xml_record.t

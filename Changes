@@ -2,6 +2,12 @@ Revision history for Database-Abstraction
 
 0.57
 	[ Bug Fixes ]
+	- An XML document with several top-level elements (a DMARC report:
+	  version, report_metadata, policy_published, record...) was read from
+	  whichever key Perl listed first, so with no_entry it croaked "XML slurp:
+	  cannot handle HASH structure" on some runs and not others.  The
+	  repeating element (most occurrences, then name) is now always the one
+	  read as rows, and a document with none says so.
 	- no_fixate is now honoured as a per-call argument to selectall_arrayref,
 	  selectall_array (and their deprecated aliases selectall_hashref /
 	  selectall_hash), and fetchrow_hashref.  Previously the flag was only
